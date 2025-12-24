@@ -1,0 +1,22 @@
+{
+  "$schema": "https://cursor.sh/schemas/environment.json",
+  "name": "code-cloud-agents",
+  "description": "Supervised AI system with Dashboard UI",
+  "runtime": {
+    "installScript": "npm install",
+    "startScript": "npm run dev",
+    "buildScript": "npm run build"
+  },
+  "environment": {
+    "NODE_ENV": "development"
+  },
+  "terminals": [
+    {
+      "name": "Dev Server",
+      "command": "npm run dev"
+    }
+  ],
+  "settings": {
+    "allowAgentToUpdateSnapshot": true
+  }
+}
