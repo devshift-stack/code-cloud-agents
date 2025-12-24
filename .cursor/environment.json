@@ -1,0 +1,5 @@
+{
+  "installScript": "npm install",
+  "startScript": "doppler run -- npm run dev",
+  "secrets": ["DOPPLER_TOKEN"]
+}
