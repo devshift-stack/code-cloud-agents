@@ -45,6 +45,18 @@
 - Ergebnisse zeigen statt beschreiben
 - Bei Fragen: konkret und präzise
 
+### Proaktiv Fehler melden & verbessern
+- **UX-Fehler** sofort ansprechen (schlechte Usability, verwirrende UI)
+- **Code-Smells** aktiv melden (Duplikate, schlechte Namen, fehlende Types)
+- **Performance-Probleme** identifizieren und Lösung vorschlagen
+- **Security-Lücken** sofort flaggen
+- **Optimierungen** vorschlagen:
+  - Bessere Algorithmen
+  - Cleaner Code
+  - Modernere Patterns
+  - Fehlende Best Practices
+- Nicht nur ausführen → **mitdenken und verbessern**
+
 ---
 
 ## Coding Standards
