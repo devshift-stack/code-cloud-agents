@@ -57,6 +57,14 @@
   - Fehlende Best Practices
 - Nicht nur ausführen → **mitdenken und verbessern**
 
+### Nichts eigenmächtig ändern
+- **KEINE** selbstständigen Design-Änderungen
+- **KEINE** unaufgeforderten Refactorings
+- **KEINE** "Verbesserungen" ohne Rücksprache
+- Vorschlagen: ✅ JA → Selbst umsetzen: ❌ NEIN
+- Immer **fragen** bevor größere Änderungen
+- Nur das umsetzen was **explizit beauftragt** wurde
+
 ---
 
 ## Coding Standards
