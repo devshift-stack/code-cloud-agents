@@ -46,6 +46,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from './components/ui/select';
+import { TaskInput } from './components/TaskInput';
+
+interface DailyTask {
+  id: string;
+  date: string;
+  task: string;
+  status: 'completed' | 'failed' | 'in_progress';
+}
 
 interface Agent {
   id: string;
@@ -55,6 +63,10 @@ interface Agent {
   language: string;
   lastRun: string;
   executionCount: number;
+  currentTask?: string;
+  stopScore?: number;
+  slackChannel?: string;
+  dailyTasks?: DailyTask[];
 }
 
 interface LogEntry {
@@ -75,6 +87,14 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '1 min ago',
       executionCount: 2847,
+      currentTask: 'Routing: Research Task → Cloud Assistant',
+      stopScore: 12,
+      slackChannel: '#supervisor',
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Task geroutet: Memory Server', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Health-Check alle Agents', status: 'completed' },
+        { id: '3', date: '25.12.', task: 'Neuen Task zuweisen', status: 'in_progress' },
+      ],
     },
     {
       id: 'engineering-lead',
@@ -84,6 +104,14 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '2 min ago',
       executionCount: 1923,
+      currentTask: 'Verifying: MCP Server Artefakte',
+      stopScore: 28,
+      slackChannel: '#engineering',
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Code Review: AgentCard.tsx', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'STOP Score berechnet: 28', status: 'completed' },
+        { id: '3', date: '25.12.', task: 'Artefakte prüfen', status: 'in_progress' },
+      ],
     },
     {
       id: 'cloud-assistant',
@@ -93,6 +121,14 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '30 sec ago',
       executionCount: 4521,
+      currentTask: 'Erstelle: TaskInput Komponente',
+      stopScore: 15,
+      slackChannel: '#assistant',
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: '9 Cloud Agents erstellt', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'MCP Server konfiguriert', status: 'completed' },
+        { id: '3', date: '25.12.', task: 'UI Dashboard erweitert', status: 'in_progress' },
+      ],
     },
     {
       id: 'memory-server',
@@ -102,6 +138,12 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '5 sec ago',
       executionCount: 8934,
+      currentTask: 'Speichere: Decision → Pinecone',
+      stopScore: 5,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Index erstellt: assistant-memory', status: 'completed' },
+        { id: '2', date: '25.12.', task: '15 Erinnerungen gespeichert', status: 'completed' },
+      ],
     },
     {
       id: 'research-agent',
@@ -111,6 +153,12 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '3 min ago',
       executionCount: 1247,
+      currentTask: 'Analysiere: Cursor Rules Dokumentation',
+      stopScore: 18,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Qonto API Docs gelesen', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Codebase analysiert: 35 Dateien', status: 'completed' },
+      ],
     },
     {
       id: 'deployment-agent',
@@ -120,6 +168,11 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '15 min ago',
       executionCount: 456,
+      stopScore: 22,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'npm run build erfolgreich', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Dev Server gestartet', status: 'completed' },
+      ],
     },
     {
       id: 'monitoring-agent',
@@ -129,6 +182,12 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '10 sec ago',
       executionCount: 12847,
+      currentTask: 'Health Check: Alle 9 Agents',
+      stopScore: 8,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Health Check: 847 Prüfungen', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Alert: Accounting Agent pausiert', status: 'completed' },
+      ],
     },
     {
       id: 'backup-agent',
@@ -138,6 +197,10 @@ export default function App() {
       language: 'TypeScript',
       lastRun: '30 min ago',
       executionCount: 892,
+      stopScore: 10,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Tägliches Backup: 12.3 MB', status: 'completed' },
+      ],
     },
     {
       id: 'accounting-agent',
@@ -147,6 +210,7 @@ export default function App() {
       language: 'TypeScript',
       lastRun: 'Zurückgestellt',
       executionCount: 0,
+      stopScore: 0,
     },
   ]);
 
@@ -499,6 +563,17 @@ export default function App() {
               </Button>
             </div>
 
+            {/* Task Input */}
+            <div className="mb-6">
+              <TaskInput
+                agents={agents.map(a => ({ id: a.id, name: a.name }))}
+                onSubmit={(task) => {
+                  toast.success(`Task erstellt: ${task.description}`);
+                  // TODO: Route to Meta Supervisor
+                }}
+              />
+            </div>
+
             {/* Agents Grid */}
             {filteredAgents.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -510,6 +585,7 @@ export default function App() {
                     onPause={handlePauseAgent}
                     onConfigure={handleConfigureAgent}
                     onDelete={handleDeleteAgent}
+                    onSlackOpen={(channel) => window.open(`slack://channel?team=T123&id=${channel}`, '_blank')}
                   />
                 ))}
               </div>
