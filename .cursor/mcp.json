@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": ["tsx", "packages/memory-server/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PINECONE_API_KEY": "${env:PINECONE_API_KEY}",
+        "OPENAI_API_KEY": "${env:OPENAI_API_KEY}",
+        "SHADOW_ACCESS_HASH": "${env:SHADOW_ACCESS_HASH}"
+      }
+    }
+  }
+}
