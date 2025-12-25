@@ -1,5 +1,26 @@
 {
   "mcpServers": {
+    "supervisor": {
+      "command": "npx",
+      "args": ["tsx", "packages/supervisor/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    },
+    "engineering-lead": {
+      "command": "npx",
+      "args": ["tsx", "packages/engineering-lead/src/index.ts"],
+      "cwd": "${workspaceFolder}"
+    },
+    "cloud-assistant": {
+      "command": "npx",
+      "args": ["tsx", "packages/cloud-assistant/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    },
     "memory": {
       "command": "npx",
       "args": ["tsx", "packages/memory-server/src/index.ts"],
@@ -18,7 +39,11 @@
     "deployment": {
       "command": "npx",
       "args": ["tsx", "packages/deployment/src/index.ts"],
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "VERCEL_TOKEN": "${env:VERCEL_TOKEN}",
+        "VERCEL_PROJECT_ID": "${env:VERCEL_PROJECT_ID}"
+      }
     },
     "monitoring": {
       "command": "npx",
