@@ -47,6 +47,9 @@ import {
   SelectValue,
 } from './components/ui/select';
 import { TaskInput } from './components/TaskInput';
+import { RepoTaskList } from './components/RepoTaskList';
+import { TopPriorityTasks } from './components/TopPriorityTasks';
+import { ImprovementSuggestions } from './components/ImprovementSuggestions';
 
 interface DailyTask {
   id: string;
@@ -541,8 +544,17 @@ export default function App() {
               />
             </div>
 
+            {/* Task Management Section */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <TopPriorityTasks />
+              <RepoTaskList />
+            </div>
+
             {/* Activity Log */}
             <ActivityLog logs={logs} />
+
+            {/* Improvement Suggestions */}
+            <ImprovementSuggestions />
           </TabsContent>
 
           <TabsContent value="agents" className="space-y-6">

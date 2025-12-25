@@ -37,3 +37,37 @@ Track and report:
 - Cost accumulation
 - Queue depths
 - Error rates
+
+## GitHub Access Configuration
+
+### Repositories
+- **devshift** (Organization): READ-ONLY access
+  - Clone: ✅ Allowed
+  - Pull: ✅ Allowed
+  - Push: ❌ Denied
+  - Write: ❌ Denied
+
+- **dsactivi2** (Organization): FULL access
+  - Clone: ✅ Allowed
+  - Pull: ✅ Allowed
+  - Push: ✅ Allowed
+  - Write: ✅ Allowed
+
+### Git Operations Rules
+```
+# Cloning (both orgs allowed)
+git clone git@github.com:devshift/<repo>.git      # ✅ Allowed
+git clone git@github.com:dsactivi2/<repo>.git     # ✅ Allowed
+
+# Push (only dsactivi2)
+git push origin <branch>  # Only if remote is dsactivi2 org
+
+# Pull Requests
+# - devshift: READ ONLY (view PRs, no create/merge)
+# - dsactivi2: FULL (create, review, merge)
+```
+
+### Security Constraints
+- Never store credentials in code
+- Use SSH keys or GitHub tokens from environment
+- Log all write operations for audit trail
