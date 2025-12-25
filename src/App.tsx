@@ -46,6 +46,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from './components/ui/select';
+import { TaskInput } from './components/TaskInput';
+import { RepoTaskList } from './components/RepoTaskList';
+import { TopPriorityTasks } from './components/TopPriorityTasks';
+import { ImprovementSuggestions } from './components/ImprovementSuggestions';
+
+interface DailyTask {
+  id: string;
+  date: string;
+  task: string;
+  status: 'completed' | 'failed' | 'in_progress';
+}
 
 interface Agent {
   id: string;
@@ -55,6 +66,10 @@ interface Agent {
   language: string;
   lastRun: string;
   executionCount: number;
+  currentTask?: string;
+  stopScore?: number;
+  slackChannel?: string;
+  dailyTasks?: DailyTask[];
 }
 
 interface LogEntry {
@@ -68,40 +83,137 @@ interface LogEntry {
 export default function App() {
   const [agents, setAgents] = useState<Agent[]>([
     {
-      id: '1',
-      name: 'Data Processor',
-      description: 'Processes and transforms incoming data streams',
-      status: 'active',
-      language: 'Python',
-      lastRun: '2 min ago',
-      executionCount: 1247,
-    },
-    {
-      id: '2',
-      name: 'API Monitor',
-      description: 'Monitors API endpoints for health and performance',
+      id: 'meta-supervisor',
+      name: 'Meta Supervisor',
+      description: 'Routing + Monitoring - Leitet Tasks an richtige Agents',
       status: 'active',
       language: 'TypeScript',
-      lastRun: '5 min ago',
-      executionCount: 892,
+      lastRun: '1 min ago',
+      executionCount: 2847,
+      currentTask: 'Routing: Research Task → Cloud Assistant',
+      stopScore: 12,
+      slackChannel: '#supervisor',
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Task geroutet: Memory Server', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Health-Check alle Agents', status: 'completed' },
+        { id: '3', date: '25.12.', task: 'Neuen Task zuweisen', status: 'in_progress' },
+      ],
     },
     {
-      id: '3',
-      name: 'Backup Agent',
-      description: 'Automated backup and recovery system',
-      status: 'paused',
-      language: 'Go',
-      lastRun: '1 hour ago',
+      id: 'engineering-lead',
+      name: 'Engineering Lead',
+      description: 'Plan + Delegate + Verify + STOP - Qualitätskontrolle',
+      status: 'active',
+      language: 'TypeScript',
+      lastRun: '2 min ago',
+      executionCount: 1923,
+      currentTask: 'Verifying: MCP Server Artefakte',
+      stopScore: 28,
+      slackChannel: '#engineering',
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Code Review: AgentCard.tsx', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'STOP Score berechnet: 28', status: 'completed' },
+        { id: '3', date: '25.12.', task: 'Artefakte prüfen', status: 'in_progress' },
+      ],
+    },
+    {
+      id: 'cloud-assistant',
+      name: 'Cloud Assistant',
+      description: 'Execute + Report + Evidence - Führt Tasks aus',
+      status: 'active',
+      language: 'TypeScript',
+      lastRun: '30 sec ago',
+      executionCount: 4521,
+      currentTask: 'Erstelle: TaskInput Komponente',
+      stopScore: 15,
+      slackChannel: '#assistant',
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: '9 Cloud Agents erstellt', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'MCP Server konfiguriert', status: 'completed' },
+        { id: '3', date: '25.12.', task: 'UI Dashboard erweitert', status: 'in_progress' },
+      ],
+    },
+    {
+      id: 'memory-server',
+      name: 'Memory Server',
+      description: 'Pinecone Vector DB - Langzeitgedächtnis mit Security-Levels',
+      status: 'active',
+      language: 'TypeScript',
+      lastRun: '5 sec ago',
+      executionCount: 8934,
+      currentTask: 'Speichere: Decision → Pinecone',
+      stopScore: 5,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Index erstellt: assistant-memory', status: 'completed' },
+        { id: '2', date: '25.12.', task: '15 Erinnerungen gespeichert', status: 'completed' },
+      ],
+    },
+    {
+      id: 'research-agent',
+      name: 'Research Agent',
+      description: 'Web-Suche, Dokumentation, Codebase-Analyse',
+      status: 'active',
+      language: 'TypeScript',
+      lastRun: '3 min ago',
+      executionCount: 1247,
+      currentTask: 'Analysiere: Cursor Rules Dokumentation',
+      stopScore: 18,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Qonto API Docs gelesen', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Codebase analysiert: 35 Dateien', status: 'completed' },
+      ],
+    },
+    {
+      id: 'deployment-agent',
+      name: 'Deployment Agent',
+      description: 'Build, Deploy, Rollback - CI/CD Operationen',
+      status: 'active',
+      language: 'TypeScript',
+      lastRun: '15 min ago',
       executionCount: 456,
+      stopScore: 22,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'npm run build erfolgreich', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Dev Server gestartet', status: 'completed' },
+      ],
     },
     {
-      id: '4',
-      name: 'Log Analyzer',
-      description: 'Analyzes logs for anomalies and patterns',
-      status: 'stopped',
-      language: 'Rust',
-      lastRun: '3 hours ago',
-      executionCount: 234,
+      id: 'monitoring-agent',
+      name: 'Monitoring Agent',
+      description: 'Health Checks, Metriken, Alerts für alle Agents',
+      status: 'active',
+      language: 'TypeScript',
+      lastRun: '10 sec ago',
+      executionCount: 12847,
+      currentTask: 'Health Check: Alle 9 Agents',
+      stopScore: 8,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Health Check: 847 Prüfungen', status: 'completed' },
+        { id: '2', date: '25.12.', task: 'Alert: Accounting Agent pausiert', status: 'completed' },
+      ],
+    },
+    {
+      id: 'backup-agent',
+      name: 'Backup Agent',
+      description: 'Automatische Backups und Recovery',
+      status: 'active',
+      language: 'TypeScript',
+      lastRun: '30 min ago',
+      executionCount: 892,
+      stopScore: 10,
+      dailyTasks: [
+        { id: '1', date: '25.12.', task: 'Tägliches Backup: 12.3 MB', status: 'completed' },
+      ],
+    },
+    {
+      id: 'accounting-agent',
+      name: 'Accounting Agent',
+      description: 'Buchhaltung - zurückgestellt',
+      status: 'paused',
+      language: 'TypeScript',
+      lastRun: 'Zurückgestellt',
+      executionCount: 0,
+      stopScore: 0,
     },
   ]);
 
@@ -109,44 +221,58 @@ export default function App() {
     {
       id: '1',
       timestamp: '14:23:45',
-      agent: 'Data Processor',
-      message: 'Successfully processed batch of 1,000 records',
+      agent: 'Memory Server',
+      message: 'Erinnerung gespeichert: [decision] Pinecone statt Firebase',
       level: 'success',
     },
     {
       id: '2',
-      timestamp: '14:20:12',
-      agent: 'API Monitor',
-      message: 'All endpoints responding normally',
-      level: 'info',
+      timestamp: '14:22:30',
+      agent: 'Engineering Lead',
+      message: 'Task APPROVED - Alle Artefakte verifiziert',
+      level: 'success',
     },
     {
       id: '3',
-      timestamp: '14:18:30',
-      agent: 'Data Processor',
-      message: 'High memory usage detected (85%)',
-      level: 'warning',
+      timestamp: '14:20:12',
+      agent: 'Monitoring Agent',
+      message: 'Health Check: Alle 9 Agents aktiv',
+      level: 'info',
     },
     {
       id: '4',
-      timestamp: '14:15:22',
-      agent: 'Backup Agent',
-      message: 'Scheduled backup completed successfully',
+      timestamp: '14:18:30',
+      agent: 'Cloud Assistant',
+      message: 'Task ausgeführt: 5 neue MCP Server erstellt',
       level: 'success',
     },
     {
       id: '5',
-      timestamp: '14:12:01',
-      agent: 'Log Analyzer',
-      message: 'Connection timeout to database',
-      level: 'error',
+      timestamp: '14:15:22',
+      agent: 'Backup Agent',
+      message: 'Tägliches Backup erfolgreich: 12.3 MB',
+      level: 'success',
     },
     {
       id: '6',
-      timestamp: '14:10:45',
-      agent: 'API Monitor',
-      message: 'Started health check cycle',
+      timestamp: '14:12:01',
+      agent: 'Accounting Agent',
+      message: 'Agent zurückgestellt',
       level: 'info',
+    },
+    {
+      id: '7',
+      timestamp: '14:10:45',
+      agent: 'Meta Supervisor',
+      message: 'Task geroutet: Research → Cloud Assistant',
+      level: 'info',
+    },
+    {
+      id: '8',
+      timestamp: '14:08:00',
+      agent: 'Research Agent',
+      message: 'Codebase-Analyse abgeschlossen: 35 TypeScript Dateien',
+      level: 'success',
     },
   ]);
 
@@ -418,8 +544,17 @@ export default function App() {
               />
             </div>
 
+            {/* Task Management Section */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <TopPriorityTasks />
+              <RepoTaskList />
+            </div>
+
             {/* Activity Log */}
             <ActivityLog logs={logs} />
+
+            {/* Improvement Suggestions */}
+            <ImprovementSuggestions />
           </TabsContent>
 
           <TabsContent value="agents" className="space-y-6">
@@ -440,6 +575,17 @@ export default function App() {
               </Button>
             </div>
 
+            {/* Task Input */}
+            <div className="mb-6">
+              <TaskInput
+                agents={agents.map(a => ({ id: a.id, name: a.name }))}
+                onSubmit={(task) => {
+                  toast.success(`Task erstellt: ${task.description}`);
+                  // TODO: Route to Meta Supervisor
+                }}
+              />
+            </div>
+
             {/* Agents Grid */}
             {filteredAgents.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -451,6 +597,7 @@ export default function App() {
                     onPause={handlePauseAgent}
                     onConfigure={handleConfigureAgent}
                     onDelete={handleDeleteAgent}
+                    onSlackOpen={(channel) => window.open(`slack://channel?team=T123&id=${channel}`, '_blank')}
                   />
                 ))}
               </div>

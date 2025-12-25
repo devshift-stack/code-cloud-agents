@@ -1,0 +1,72 @@
+{
+  "mcpServers": {
+    "supervisor": {
+      "command": "npx",
+      "args": ["tsx", "packages/supervisor/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    },
+    "engineering-lead": {
+      "command": "npx",
+      "args": ["tsx", "packages/engineering-lead/src/index.ts"],
+      "cwd": "${workspaceFolder}"
+    },
+    "cloud-assistant": {
+      "command": "npx",
+      "args": ["tsx", "packages/cloud-assistant/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+      }
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["tsx", "packages/memory-server/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PINECONE_API_KEY": "${env:PINECONE_API_KEY}",
+        "OPENAI_API_KEY": "${env:OPENAI_API_KEY}",
+        "SHADOW_ACCESS_HASH": "${env:SHADOW_ACCESS_HASH}"
+      }
+    },
+    "research": {
+      "command": "npx",
+      "args": ["tsx", "packages/research/src/index.ts"],
+      "cwd": "${workspaceFolder}"
+    },
+    "deployment": {
+      "command": "npx",
+      "args": ["tsx", "packages/deployment/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "VERCEL_TOKEN": "${env:VERCEL_TOKEN}",
+        "VERCEL_PROJECT_ID": "${env:VERCEL_PROJECT_ID}"
+      }
+    },
+    "monitoring": {
+      "command": "npx",
+      "args": ["tsx", "packages/monitoring/src/index.ts"],
+      "cwd": "${workspaceFolder}"
+    },
+    "backup": {
+      "command": "npx",
+      "args": ["tsx", "packages/backup/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "BACKUP_DIR": "${env:BACKUP_DIR}"
+      }
+    },
+    "accounting": {
+      "command": "npx",
+      "args": ["tsx", "packages/accounting/src/index.ts"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "QONTO_API_KEY": "${env:QONTO_API_KEY}",
+        "QONTO_SECRET_KEY": "${env:QONTO_SECRET_KEY}",
+        "FRONTAPP_API_TOKEN": "${env:FRONTAPP_API_TOKEN}"
+      }
+    }
+  }
+}
