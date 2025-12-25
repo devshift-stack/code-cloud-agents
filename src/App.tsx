@@ -116,9 +116,9 @@ export default function App() {
       id: 'deployment-agent',
       name: 'Deployment Agent',
       description: 'Build, Deploy, Rollback - CI/CD Operationen',
-      status: 'paused',
+      status: 'active',
       language: 'TypeScript',
-      lastRun: '1 hour ago',
+      lastRun: '15 min ago',
       executionCount: 456,
     },
     {
@@ -142,10 +142,10 @@ export default function App() {
     {
       id: 'accounting-agent',
       name: 'Accounting Agent',
-      description: 'Qonto + FrontApp - Rechnungen matchen und hochladen',
-      status: 'stopped',
+      description: 'Buchhaltung - zurückgestellt',
+      status: 'paused',
       language: 'TypeScript',
-      lastRun: 'Nie',
+      lastRun: 'Zurückgestellt',
       executionCount: 0,
     },
   ]);
@@ -190,8 +190,8 @@ export default function App() {
       id: '6',
       timestamp: '14:12:01',
       agent: 'Accounting Agent',
-      message: 'Warte auf Qonto API Key - Agent gestoppt',
-      level: 'warning',
+      message: 'Agent zurückgestellt',
+      level: 'info',
     },
     {
       id: '7',
