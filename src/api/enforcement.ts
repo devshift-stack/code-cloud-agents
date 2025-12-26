@@ -9,6 +9,7 @@ import { Router } from "express";
 import { z } from "zod";
 import type { EnforcementGate } from "../audit/enforcementGate.js";
 import { verifyClaims, generateVerificationReport } from "../audit/claimVerifier.js";
+import { requireAdmin } from "../auth/middleware.ts";
 
 const ApproveSchema = z.object({
   approver: z.string().min(1, "Approver identity required"),
@@ -32,8 +33,9 @@ export function createEnforcementRouter(gate: EnforcementGate): Router {
   /**
    * GET /enforcement/blocked
    * List all currently blocked tasks awaiting human approval
+   * Admin only - sensitive security information
    */
-  router.get("/blocked", (_req, res) => {
+  router.get("/blocked", requireAdmin, (_req, res) => {
     const pending = gate.getAllPendingApprovals();
     res.json({
       blocked_count: pending.length,
@@ -47,8 +49,9 @@ export function createEnforcementRouter(gate: EnforcementGate): Router {
   /**
    * GET /enforcement/blocked/:taskId
    * Get details of a specific blocked task
+   * Admin only
    */
-  router.get("/blocked/:taskId", (req, res) => {
+  router.get("/blocked/:taskId", requireAdmin, (req, res) => {
     const pending = gate.getPendingApproval(req.params.taskId);
 
     if (!pending) {
@@ -71,8 +74,9 @@ export function createEnforcementRouter(gate: EnforcementGate): Router {
   /**
    * POST /enforcement/approve/:taskId
    * Approve a blocked task - REQUIRES human action
+   * Admin only - SECURITY CRITICAL
    */
-  router.post("/approve/:taskId", (req, res) => {
+  router.post("/approve/:taskId", requireAdmin, (req, res) => {
     try {
       const parsed = ApproveSchema.safeParse(req.body);
 
@@ -109,8 +113,9 @@ export function createEnforcementRouter(gate: EnforcementGate): Router {
   /**
    * POST /enforcement/reject/:taskId
    * Reject a blocked task permanently
+   * Admin only
    */
-  router.post("/reject/:taskId", (req, res) => {
+  router.post("/reject/:taskId", requireAdmin, (req, res) => {
     try {
       const parsed = RejectSchema.safeParse(req.body);
 

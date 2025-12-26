@@ -1,15 +1,17 @@
 /**
  * Audit Router - View audit logs and supervisor decisions
+ * All endpoints require admin access - sensitive security data
  */
 
 import { Router } from "express";
 import type { Database } from "../db/database.js";
+import { requireAdmin } from "../auth/middleware.ts";
 
 export function createAuditRouter(db: Database): Router {
   const router = Router();
 
-  // List audit entries
-  router.get("/", (req, res) => {
+  // List audit entries - Admin only
+  router.get("/", requireAdmin, (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
       const entries = db.listAuditEntries(limit);
@@ -20,8 +22,8 @@ export function createAuditRouter(db: Database): Router {
     }
   });
 
-  // Get audit entry by ID
-  router.get("/:id", (req, res) => {
+  // Get audit entry by ID - Admin only
+  router.get("/:id", requireAdmin, (req, res) => {
     try {
       const entry = db.getAuditEntry(req.params.id);
 
@@ -36,8 +38,8 @@ export function createAuditRouter(db: Database): Router {
     }
   });
 
-  // Get stop score statistics
-  router.get("/stats/stop-scores", (_req, res) => {
+  // Get stop score statistics - Admin only
+  router.get("/stats/stop-scores", requireAdmin, (_req, res) => {
     try {
       const stats = db.getStopScoreStats();
       res.json(stats);

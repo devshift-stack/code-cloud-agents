@@ -2,11 +2,13 @@
  * Chat API Router
  *
  * Endpoints for chat interface
+ * Requires authentication for most endpoints
  */
 
 import { Router, type Request, type Response } from "express";
 import { ChatManager } from "../chat/manager.ts";
 import type { ChatRequest } from "../chat/types.ts";
+import { requireAuth } from "../auth/middleware.ts";
 
 export function createChatRouter(chatManager: ChatManager): Router {
   const router = Router();
@@ -14,8 +16,9 @@ export function createChatRouter(chatManager: ChatManager): Router {
   /**
    * POST /api/chat/send
    * Send message to agent
+   * Requires authentication
    */
-  router.post("/send", async (req: Request, res: Response) => {
+  router.post("/send", requireAuth, async (req: Request, res: Response) => {
     try {
       const request: ChatRequest = req.body;
 
@@ -41,8 +44,9 @@ export function createChatRouter(chatManager: ChatManager): Router {
   /**
    * GET /api/chat/:chatId/messages
    * Get chat history
+   * Requires authentication
    */
-  router.get("/:chatId/messages", (req: Request, res: Response) => {
+  router.get("/:chatId/messages", requireAuth, (req: Request, res: Response) => {
     try {
       const { chatId } = req.params;
       const limit = parseInt(req.query.limit as string) || 50;
@@ -59,8 +63,9 @@ export function createChatRouter(chatManager: ChatManager): Router {
   /**
    * GET /api/chat/list/:userId
    * List user's chats
+   * Requires authentication
    */
-  router.get("/list/:userId", (req: Request, res: Response) => {
+  router.get("/list/:userId", requireAuth, (req: Request, res: Response) => {
     try {
       const { userId } = req.params;
       const page = parseInt(req.query.page as string) || 1;
@@ -77,8 +82,9 @@ export function createChatRouter(chatManager: ChatManager): Router {
   /**
    * DELETE /api/chat/:chatId
    * Delete chat
+   * Requires authentication
    */
-  router.delete("/:chatId", (req: Request, res: Response) => {
+  router.delete("/:chatId", requireAuth, (req: Request, res: Response) => {
     try {
       const { chatId } = req.params;
       chatManager.deleteChat(chatId);
@@ -92,8 +98,9 @@ export function createChatRouter(chatManager: ChatManager): Router {
   /**
    * PUT /api/chat/:chatId/title
    * Update chat title
+   * Requires authentication
    */
-  router.put("/:chatId/title", (req: Request, res: Response) => {
+  router.put("/:chatId/title", requireAuth, (req: Request, res: Response) => {
     try {
       const { chatId } = req.params;
       const { title } = req.body;
