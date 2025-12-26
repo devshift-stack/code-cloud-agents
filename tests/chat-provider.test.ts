@@ -8,49 +8,22 @@ import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert";
 import { ChatManager } from "../src/chat/manager.ts";
 import { ChatStorage } from "../src/chat/storage.ts";
-import { Database } from "../src/db/database.ts";
+import { initDatabase } from "../src/db/database.ts";
 import fs from "node:fs";
 import path from "node:path";
 
 // Test database setup
 const TEST_DB_PATH = path.join(process.cwd(), "test-chat-provider.db");
 
-function setupTestDatabase(): Database {
+function setupTestDatabase() {
   // Remove existing test DB
   if (fs.existsSync(TEST_DB_PATH)) {
     fs.unlinkSync(TEST_DB_PATH);
   }
 
-  const db = new Database(TEST_DB_PATH);
-
-  // Create required tables
-  db.prepare(
-    `CREATE TABLE IF NOT EXISTS chats (
-      id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
-      title TEXT NOT NULL,
-      agent_name TEXT,
-      message_count INTEGER DEFAULT 0,
-      last_message TEXT,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )`
-  ).run();
-
-  db.prepare(
-    `CREATE TABLE IF NOT EXISTS chat_messages (
-      id TEXT PRIMARY KEY,
-      chat_id TEXT NOT NULL,
-      role TEXT NOT NULL,
-      content TEXT NOT NULL,
-      agent_name TEXT,
-      tokens_input INTEGER,
-      tokens_output INTEGER,
-      tokens_total INTEGER,
-      timestamp TEXT NOT NULL,
-      FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE
-    )`
-  ).run();
+  // Use initDatabase() which returns a Database interface
+  process.env.SQLITE_PATH = TEST_DB_PATH;
+  const db = initDatabase();
 
   return db;
 }
@@ -62,7 +35,7 @@ function cleanupTestDatabase() {
 }
 
 describe("Chat Provider Integration", () => {
-  let db: Database;
+  let db: any;
   let storage: ChatStorage;
   let manager: ChatManager;
 

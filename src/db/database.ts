@@ -40,6 +40,7 @@ export interface Database {
   getAuditEntry(id: string): AuditEntry | undefined;
   listAuditEntries(limit?: number): AuditEntry[];
   getStopScoreStats(): { total: number; stopped: number; avgScore: number };
+  getRawDb(): BetterSqlite3.Database;
 }
 
 export function initDatabase(): Database {
@@ -78,8 +79,34 @@ export function initDatabase(): Database {
         created_at TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS chats (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        agent_name TEXT,
+        message_count INTEGER DEFAULT 0,
+        last_message TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id TEXT PRIMARY KEY,
+        chat_id TEXT NOT NULL,
+        role TEXT NOT NULL,
+        content TEXT NOT NULL,
+        agent_name TEXT,
+        tokens_input INTEGER,
+        tokens_output INTEGER,
+        tokens_total INTEGER,
+        timestamp TEXT NOT NULL,
+        FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE
+      );
+
       CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
       CREATE INDEX IF NOT EXISTS idx_audit_task_id ON audit_entries(task_id);
+      CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id);
+      CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON chat_messages(chat_id);
     `);
   } catch (error) {
     console.warn("SQLite unavailable, using in-memory fallback:", error);
@@ -186,6 +213,10 @@ export function initDatabase(): Database {
       const avgScore = (avgStmt.get() as { avg: number | null }).avg ?? 0;
 
       return { total, stopped, avgScore: Math.round(avgScore * 100) / 100 };
+    },
+
+    getRawDb(): BetterSqlite3.Database {
+      return db;
     },
   };
 }
