@@ -5,6 +5,7 @@
  * Do not use in production without explicit approval.
  */
 
+export { createGitHubClient, type GitHubClient, type GitHubIssue } from "./github/client.js";
 export { createWhatsAppClient, type WhatsAppClient, type WhatsAppMessage } from "./whatsapp/client.js";
 export { createVoiceClient, type VoiceClient, type VoiceCall } from "./voice/client.js";
 export { createGoogleClient, type GoogleClient } from "./google/client.js";
@@ -16,6 +17,10 @@ export { createPineconeClient, type PineconeClient, type PineconeVector } from "
  */
 export async function getAllIntegrationStatus(): Promise<Record<string, { enabled: boolean; connected: boolean }>> {
   return {
+    github: {
+      enabled: process.env.GITHUB_ENABLED === "true",
+      connected: false,
+    },
     whatsapp: {
       enabled: process.env.WHATSAPP_ENABLED === "true",
       connected: false,
