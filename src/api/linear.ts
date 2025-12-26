@@ -34,6 +34,20 @@ const CreateProjectSchema = z.object({
   leadId: z.string().optional(),
 });
 
+const UpdateIssueSchema = z.object({
+  title: z.string().min(1).max(200).optional(),
+  description: z.string().optional(),
+  priority: z.number().int().min(0).max(4).optional(),
+  stateId: z.string().optional(),
+  assigneeId: z.string().optional(),
+  labelIds: z.array(z.string()).optional(),
+});
+
+const CreateCommentSchema = z.object({
+  issueId: z.string().min(1),
+  body: z.string().min(1),
+});
+
 /**
  * Creates Linear REST API router
  * @returns Express Router with Linear endpoints
@@ -479,6 +493,134 @@ export function createLinearRouter(): Router {
       });
     } catch (error) {
       console.error("Failed to list users:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  });
+
+  /**
+   * PATCH /api/linear/issues/:issueId
+   * Update an existing issue
+   */
+  router.patch("/issues/:issueId", async (req, res) => {
+    try {
+      if (!linearClient.isEnabled()) {
+        return res.status(403).json({
+          success: false,
+          error: "Linear integration is disabled",
+        });
+      }
+
+      if (!sdk) {
+        return res.status(400).json({
+          success: false,
+          error: "Linear API key not configured",
+        });
+      }
+
+      const { issueId } = req.params;
+
+      const parsed = UpdateIssueSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid request",
+          details: parsed.error.issues,
+        });
+      }
+
+      const payload = await sdk.updateIssue(issueId, {
+        title: parsed.data.title,
+        description: parsed.data.description,
+        priority: parsed.data.priority,
+        stateId: parsed.data.stateId,
+        assigneeId: parsed.data.assigneeId,
+        labelIds: parsed.data.labelIds,
+      });
+
+      const issue = await payload.issue;
+
+      if (!issue) {
+        return res.status(500).json({
+          success: false,
+          error: "Failed to update issue",
+        });
+      }
+
+      res.json({
+        success: true,
+        issue: {
+          id: issue.id,
+          identifier: issue.identifier,
+          title: issue.title,
+          url: issue.url,
+          updatedAt: issue.updatedAt,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to update issue:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  });
+
+  /**
+   * POST /api/linear/comments
+   * Add a comment to an issue
+   */
+  router.post("/comments", async (req, res) => {
+    try {
+      if (!linearClient.isEnabled()) {
+        return res.status(403).json({
+          success: false,
+          error: "Linear integration is disabled",
+        });
+      }
+
+      if (!sdk) {
+        return res.status(400).json({
+          success: false,
+          error: "Linear API key not configured",
+        });
+      }
+
+      const parsed = CreateCommentSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid request",
+          details: parsed.error.issues,
+        });
+      }
+
+      const payload = await sdk.createComment({
+        issueId: parsed.data.issueId,
+        body: parsed.data.body,
+      });
+
+      const comment = await payload.comment;
+
+      if (!comment) {
+        return res.status(500).json({
+          success: false,
+          error: "Failed to create comment",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        comment: {
+          id: comment.id,
+          body: comment.body,
+          createdAt: comment.createdAt,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to create comment:", error);
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",

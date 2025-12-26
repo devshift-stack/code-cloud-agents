@@ -16,6 +16,7 @@ import { createAuthRouter } from "./api/auth.js";
 import { createUsersRouter } from "./api/users.js";
 import { createGitHubRouter } from "./api/github.js";
 import { createLinearRouter } from "./api/linear.js";
+import { createAgentControlRouter } from "./api/agent-control.js";
 import { createGitHubWebhookRouter } from "./webhooks/github.js";
 import { createLinearWebhookRouter } from "./webhooks/linear.js";
 import { createSettingsRouter } from "./api/settings.js";
@@ -71,6 +72,7 @@ async function main() {
   app.use("/api/demo", createDemoRouter(db));
   app.use("/api/github", createGitHubRouter());
   app.use("/api/linear", createLinearRouter());
+  app.use("/api/agents", createAgentControlRouter());
   app.use("/api/settings", createSettingsRouter(db));
   app.use("/api/memory", createMemoryRouter(db));
 
