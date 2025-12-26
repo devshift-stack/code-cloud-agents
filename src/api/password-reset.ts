@@ -12,6 +12,7 @@ import {
 } from "../db/password-reset.js";
 import { getUserByEmail } from "../db/users.js";
 import { passwordResetRateLimiter } from "../auth/rate-limiter.js";
+import { sendPasswordResetEmail } from "../email/mailer.js";
 
 /**
  * Password reset request payload
@@ -77,14 +78,19 @@ export function createPasswordResetRouter(db: Database): Router {
       // Generate reset token
       const token = generatePasswordResetToken(rawDb, user.id, user.email);
 
-      // In production, send email here
-      // For now, return token in response (DEV ONLY!)
+      // Send password reset email
+      const emailResult = await sendPasswordResetEmail(user.email, token);
+
+      if (!emailResult.success) {
+        // Don't reveal email send failure to prevent user enumeration
+        console.error("[Password Reset] Email send failed:", emailResult.error);
+      }
+
       res.json({
         success: true,
         message: "If an account with that email exists, a password reset link has been sent.",
-        // DEV ONLY: Remove in production
-        resetToken: token,
-        resetUrl: `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password?token=${token}`,
+        // Include preview URL for development (Ethereal)
+        ...(emailResult.previewUrl && { previewUrl: emailResult.previewUrl }),
       });
     } catch (error) {
       console.error("[Password Reset] Request error:", error);

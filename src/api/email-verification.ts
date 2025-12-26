@@ -14,6 +14,7 @@ import {
 } from "../db/email-verification.js";
 import { getUserById, updateUser } from "../db/users.js";
 import { emailVerificationRateLimiter } from "../auth/rate-limiter.js";
+import { sendVerificationEmail } from "../email/mailer.js";
 
 export function createEmailVerificationRouter(db: Database): Router {
   const router = Router();
@@ -44,14 +45,21 @@ export function createEmailVerificationRouter(db: Database): Router {
       // Generate new verification token
       const token = generateVerificationToken(rawDb, userId, user.email);
 
-      // In production, send email here
-      // For now, return token in response (DEV ONLY!)
+      // Send verification email
+      const emailResult = await sendVerificationEmail(user.email, token);
+
+      if (!emailResult.success) {
+        return res.status(500).json({
+          error: "Failed to send verification email",
+          details: emailResult.error,
+        });
+      }
+
       res.json({
         success: true,
-        message: "Verification email sent",
-        // DEV ONLY: Remove in production
-        verificationToken: token,
-        verificationUrl: `${process.env.FRONTEND_URL || "http://localhost:3000"}/verify-email?token=${token}`,
+        message: "Verification email sent successfully",
+        // Include preview URL for development (Ethereal)
+        ...(emailResult.previewUrl && { previewUrl: emailResult.previewUrl }),
       });
     } catch (error) {
       console.error("[Email Verification] Send error:", error);
