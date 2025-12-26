@@ -11,6 +11,7 @@ import { createTaskRouter } from "./api/tasks.js";
 import { createAuditRouter } from "./api/audit.js";
 import { createEnforcementRouter } from "./api/enforcement.js";
 import { createDemoRouter } from "./api/demo.js";
+import { createLinearRouter } from "./api/linear.js";
 import { handleSlackEvents } from "./api/slack-events.js";
 import { initDatabase } from "./db/database.js";
 import { initQueue } from "./queue/queue.js";
@@ -50,6 +51,7 @@ async function main() {
   app.use("/api/audit", createAuditRouter(db));
   app.use("/api/enforcement", createEnforcementRouter(gate));
   app.use("/api/demo", createDemoRouter(db));
+  app.use("/api/linear", createLinearRouter());
 
   // Slack Events (Mujo Interactive Bot)
   app.post("/api/slack/events", handleSlackEvents);
@@ -87,6 +89,17 @@ async function main() {
     console.log("");
     console.log("🤖 Mujo Interactive Bot:");
     console.log("   POST /api/slack/events     - Slack events webhook");
+    console.log("");
+    console.log("📐 Linear Integration:");
+    console.log("   GET  /api/linear/status    - Linear connection status");
+    console.log("   GET  /api/linear/teams     - List teams");
+    console.log("   GET  /api/linear/issues    - List issues");
+    console.log("   POST /api/linear/issues    - Create issue");
+    console.log("   GET  /api/linear/projects  - List projects");
+    console.log("   POST /api/linear/projects  - Create project");
+    console.log("   GET  /api/linear/states    - List workflow states");
+    console.log("   GET  /api/linear/labels    - List labels");
+    console.log("   GET  /api/linear/users     - List users");
   });
 }
 
