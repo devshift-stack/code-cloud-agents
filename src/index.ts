@@ -10,6 +10,9 @@ import { createHealthRouter } from "./api/health.js";
 import { createTaskRouter } from "./api/tasks.js";
 import { createAuditRouter } from "./api/audit.js";
 import { createEnforcementRouter } from "./api/enforcement.js";
+import { createWebhookRouter } from "./api/webhooks.js";
+import { createBillingRouter } from "./api/billing.js";
+import { createModulesRouter } from "./api/modules.js";
 import { initDatabase } from "./db/database.js";
 import { initQueue } from "./queue/queue.js";
 import { createEnforcementGate } from "./audit/enforcementGate.js";
@@ -47,6 +50,9 @@ async function main() {
   app.use("/api/tasks", createTaskRouter(db, queue, gate));
   app.use("/api/audit", createAuditRouter(db));
   app.use("/api/enforcement", createEnforcementRouter(gate));
+  app.use("/api/webhooks", createWebhookRouter());
+  app.use("/api/billing", createBillingRouter());
+  app.use("/api/modules", createModulesRouter());
 
   // API info endpoint
   app.get("/api", (_req, res) => {
@@ -72,6 +78,14 @@ async function main() {
     console.log("   GET  /api/enforcement/blocked  - Blocked tasks");
     console.log("   POST /api/enforcement/approve  - Human approval");
     console.log("   POST /api/enforcement/reject   - Human rejection");
+    console.log("   GET  /api/webhooks  - List webhooks");
+    console.log("   POST /api/webhooks  - Register webhook");
+    console.log("   POST /api/webhooks/incoming  - Receive incoming webhooks");
+    console.log("   GET  /api/billing/summary  - Cost summary");
+    console.log("   GET  /api/billing/usage/:userId  - User usage");
+    console.log("   POST /api/billing/limits  - Set user limits (Admin)");
+    console.log("   GET  /api/modules  - List all modules");
+    console.log("   GET  /api/modules/report  - Module status report");
   });
 }
 
