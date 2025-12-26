@@ -46,10 +46,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from './components/ui/select';
-import { TaskInput } from './components/TaskInput';
-import { RepoTaskList } from './components/RepoTaskList';
-import { TopPriorityTasks } from './components/TopPriorityTasks';
-import { ImprovementSuggestions } from './components/ImprovementSuggestions';
 import { StatusDashboard } from './components/StatusDashboard';
 
 interface DailyTask {
@@ -436,10 +432,16 @@ export default function App() {
               <StatusDashboard />
             </div>
 
-            {/* Task Management Section */}
+            {/* Task Management Section - Coming Soon */}
             <div className="grid gap-6 lg:grid-cols-2">
-              <TopPriorityTasks />
-              <RepoTaskList />
+              <div className="rounded-lg border bg-card p-6">
+                <h3 className="text-lg font-semibold mb-2">Top Priority Tasks</h3>
+                <p className="text-sm text-muted-foreground">Task management coming soon...</p>
+              </div>
+              <div className="rounded-lg border bg-card p-6">
+                <h3 className="text-lg font-semibold mb-2">Repository Tasks</h3>
+                <p className="text-sm text-muted-foreground">Repository integration coming soon...</p>
+              </div>
             </div>
 
             {/* Activity Log */}
