@@ -10,6 +10,8 @@ import { createHealthRouter } from "./api/health.js";
 import { createTaskRouter } from "./api/tasks.js";
 import { createAuditRouter } from "./api/audit.js";
 import { createEnforcementRouter } from "./api/enforcement.js";
+import { createDemoRouter } from "./api/demo.js";
+import { handleSlackEvents } from "./api/slack-events.js";
 import { initDatabase } from "./db/database.js";
 import { initQueue } from "./queue/queue.js";
 import { createEnforcementGate } from "./audit/enforcementGate.js";
@@ -47,6 +49,10 @@ async function main() {
   app.use("/api/tasks", createTaskRouter(db, queue, gate));
   app.use("/api/audit", createAuditRouter(db));
   app.use("/api/enforcement", createEnforcementRouter(gate));
+  app.use("/api/demo", createDemoRouter(db));
+
+  // Slack Events (Mujo Interactive Bot)
+  app.post("/api/slack/events", handleSlackEvents);
 
   // API info endpoint
   app.get("/api", (_req, res) => {
@@ -72,6 +78,15 @@ async function main() {
     console.log("   GET  /api/enforcement/blocked  - Blocked tasks");
     console.log("   POST /api/enforcement/approve  - Human approval");
     console.log("   POST /api/enforcement/reject   - Human rejection");
+    console.log("");
+    console.log("🎁 Demo Invite System:");
+    console.log("   POST /api/demo/invites     - Create demo invite (Admin)");
+    console.log("   GET  /api/demo/invites     - List invites (Admin)");
+    console.log("   POST /api/demo/redeem      - Redeem invite code");
+    console.log("   GET  /api/demo/users/:id   - Get demo user status");
+    console.log("");
+    console.log("🤖 Mujo Interactive Bot:");
+    console.log("   POST /api/slack/events     - Slack events webhook");
   });
 }
 
