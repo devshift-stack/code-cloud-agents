@@ -4,7 +4,6 @@
  */
 
 import { Router, type Request, type Response } from "express";
-import bcrypt from "bcrypt";
 import { initDatabase } from "../db/database.js";
 import {
   generateTokenPair,
@@ -13,6 +12,7 @@ import {
   revokeToken,
   refreshAccessToken,
 } from "../auth/jwt.js";
+import { verifyUserPassword, getUserById } from "../db/users.js";
 
 const db = initDatabase();
 
@@ -34,49 +34,39 @@ export function createAuthRouter(): Router {
         });
       }
 
-      // TODO: Get user from database
-      // For now, demo user for testing
-      const demoUser = {
-        id: "demo-user-id",
-        email: "admin@example.com",
-        passwordHash:
-          "$2b$10$rBV2JDeWW3.vKyXiLhJz5OwGAj1CflM8zVnsUnCLhx1xCxKzRJW4C", // "admin123"
-        role: "admin" as const,
-      };
+      // Verify user credentials against database
+      const rawDb = db.getRawDb();
+      const user = await verifyUserPassword(rawDb, email, password);
 
-      // Check if user exists
-      if (email !== demoUser.email) {
+      if (!user) {
         return res.status(401).json({
           error: "Invalid credentials",
         });
       }
 
-      // Verify password
-      const passwordValid = await bcrypt.compare(
-        password,
-        demoUser.passwordHash
-      );
-
-      if (!passwordValid) {
-        return res.status(401).json({
-          error: "Invalid credentials",
+      // Check if user is active
+      if (!user.isActive) {
+        return res.status(403).json({
+          error: "Account deactivated",
+          message: "Your account has been deactivated. Please contact support.",
         });
       }
 
       // Generate tokens
       const tokens = generateTokenPair({
-        userId: demoUser.id,
-        role: demoUser.role,
-        email: demoUser.email,
+        userId: user.id,
+        role: user.role,
+        email: user.email,
       });
 
       // Return tokens
       res.json({
         success: true,
         user: {
-          id: demoUser.id,
-          email: demoUser.email,
-          role: demoUser.role,
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          displayName: user.displayName,
         },
         tokens: {
           accessToken: tokens.accessToken,
@@ -232,13 +222,27 @@ export function createAuthRouter(): Router {
         });
       }
 
-      // TODO: Get full user details from database
+      // Get full user details from database
+      const rawDb = db.getRawDb();
+      const user = getUserById(rawDb, payload.userId);
+
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found",
+        });
+      }
+
+      // Exclude password hash
       res.json({
         success: true,
         user: {
-          id: payload.userId,
-          email: payload.email,
-          role: payload.role,
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          displayName: user.displayName,
+          createdAt: user.createdAt,
+          lastLoginAt: user.lastLoginAt,
+          isActive: user.isActive,
         },
       });
     } catch (error) {
