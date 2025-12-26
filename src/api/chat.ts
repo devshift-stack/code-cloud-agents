@@ -1,0 +1,174 @@
+/**
+ * Chat API Router
+ *
+ * Endpoints for chat interface
+ */
+
+import { Router, type Request, type Response } from "express";
+import { ChatManager } from "../chat/manager.ts";
+import type { ChatRequest } from "../chat/types.ts";
+
+export function createChatRouter(chatManager: ChatManager): Router {
+  const router = Router();
+
+  /**
+   * POST /api/chat/send
+   * Send message to agent
+   */
+  router.post("/send", async (req: Request, res: Response) => {
+    try {
+      const request: ChatRequest = req.body;
+
+      // Validate request
+      if (!request.userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      if (!request.agentName) {
+        return res.status(400).json({ error: "agentName is required" });
+      }
+      if (!request.message) {
+        return res.status(400).json({ error: "message is required" });
+      }
+
+      const response = await chatManager.sendMessage(request);
+      res.json(response);
+    } catch (error: any) {
+      console.error("Chat send error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  /**
+   * GET /api/chat/:chatId/messages
+   * Get chat history
+   */
+  router.get("/:chatId/messages", (req: Request, res: Response) => {
+    try {
+      const { chatId } = req.params;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      const history = chatManager.getChatHistory(chatId, limit, offset);
+      res.json(history);
+    } catch (error: any) {
+      console.error("Get chat history error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  /**
+   * GET /api/chat/list/:userId
+   * List user's chats
+   */
+  router.get("/list/:userId", (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 20;
+
+      const chats = chatManager.listChats(userId, page, pageSize);
+      res.json(chats);
+    } catch (error: any) {
+      console.error("List chats error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  /**
+   * DELETE /api/chat/:chatId
+   * Delete chat
+   */
+  router.delete("/:chatId", (req: Request, res: Response) => {
+    try {
+      const { chatId } = req.params;
+      chatManager.deleteChat(chatId);
+      res.json({ success: true, message: "Chat deleted" });
+    } catch (error: any) {
+      console.error("Delete chat error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  /**
+   * PUT /api/chat/:chatId/title
+   * Update chat title
+   */
+  router.put("/:chatId/title", (req: Request, res: Response) => {
+    try {
+      const { chatId } = req.params;
+      const { title } = req.body;
+
+      if (!title) {
+        return res.status(400).json({ error: "title is required" });
+      }
+
+      chatManager.updateChatTitle(chatId, title);
+      res.json({ success: true, message: "Chat title updated" });
+    } catch (error: any) {
+      console.error("Update chat title error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  /**
+   * GET /api/chat/agents
+   * List available agents
+   */
+  router.get("/agents", (_req: Request, res: Response) => {
+    // Available agents (from your system)
+    const agents = [
+      {
+        name: "emir",
+        displayName: "Emir (Supervisor)",
+        description: "Lead supervisor, coordinates all agents and makes final decisions",
+        capabilities: ["planning", "review", "coordination", "decision-making"],
+      },
+      {
+        name: "planner",
+        displayName: "Planner",
+        description: "Creates detailed project plans with requirements and architecture",
+        capabilities: ["planning", "architecture", "requirements"],
+      },
+      {
+        name: "berater",
+        displayName: "Berater (Consultant)",
+        description: "Project intake specialist, asks precise questions about requirements",
+        capabilities: ["consultation", "requirements-gathering", "risk-analysis"],
+      },
+      {
+        name: "designer",
+        displayName: "Designer",
+        description: "UI/UX designer, creates design concepts and ensures accessibility",
+        capabilities: ["ui-design", "ux-design", "accessibility"],
+      },
+      {
+        name: "coder",
+        displayName: "Coder",
+        description: "Implements features according to plan and design specifications",
+        capabilities: ["coding", "implementation", "debugging"],
+      },
+      {
+        name: "tester",
+        displayName: "Tester",
+        description: "Creates test plans and writes unit/integration/E2E tests",
+        capabilities: ["testing", "qa", "test-automation"],
+      },
+      {
+        name: "security",
+        displayName: "Security",
+        description: "Security review specialist, checks for vulnerabilities",
+        capabilities: ["security-review", "vulnerability-scanning", "secure-coding"],
+      },
+      {
+        name: "docs",
+        displayName: "Docs",
+        description: "Technical writer, creates README, guides, and API documentation",
+        capabilities: ["documentation", "technical-writing", "api-docs"],
+      },
+    ];
+
+    res.json({ agents });
+  });
+
+  return router;
+}

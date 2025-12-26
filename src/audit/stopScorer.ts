@@ -53,7 +53,7 @@ export function computeStopScore(reasons: StopReason[]): StopScoreResult {
   let severity: Severity;
   if (score >= 70) {
     severity = "CRITICAL";
-  } else if (score >= 45) {
+  } else if (score >= 40) {
     severity = "HIGH";
   } else if (score >= 20) {
     severity = "MEDIUM";

@@ -14,7 +14,7 @@
     "backend:dev": "tsx watch src/index.ts",
     "backend:build": "tsc -p tsconfig.json",
     "backend:start": "node dist/index.js",
-    "test": "node --test tests/**/*.test.ts",
+    "test": "tsx --test tests/**/*.test.ts",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:health": "tsx src/db/health.ts",
     "queue:status": "tsx src/queue/status.ts"
