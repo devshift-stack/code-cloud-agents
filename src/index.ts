@@ -12,6 +12,7 @@ import { createTaskRouter } from "./api/tasks.js";
 import { createAuditRouter } from "./api/audit.js";
 import { createEnforcementRouter } from "./api/enforcement.js";
 import { createDemoRouter } from "./api/demo.js";
+import { createAuthRouter } from "./api/auth.js";
 import { createGitHubRouter } from "./api/github.js";
 import { createLinearRouter } from "./api/linear.js";
 import { createGitHubWebhookRouter } from "./webhooks/github.js";
@@ -60,6 +61,7 @@ async function main() {
 
   // Mount API routers
   app.use("/health", createHealthRouter(db, queue));
+  app.use("/api/auth", createAuthRouter());
   app.use("/api/tasks", createTaskRouter(db, queue, gate));
   app.use("/api/audit", createAuditRouter(db));
   app.use("/api/enforcement", createEnforcementRouter(gate));
