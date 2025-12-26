@@ -13,6 +13,7 @@ import {
   refreshAccessToken,
 } from "../auth/jwt.js";
 import { verifyUserPassword, getUserById } from "../db/users.js";
+import { loginRateLimiter } from "../auth/rate-limiter.js";
 
 const db = initDatabase();
 
@@ -22,8 +23,9 @@ export function createAuthRouter(): Router {
   /**
    * POST /api/auth/login
    * Login with email and password
+   * Rate limited: 5 attempts per 15 minutes
    */
-  router.post("/login", async (req: Request, res: Response) => {
+  router.post("/login", loginRateLimiter, async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
 

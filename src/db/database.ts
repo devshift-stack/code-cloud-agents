@@ -7,6 +7,8 @@ import { randomUUID } from "crypto";
 import { initSettingsTables } from "./settings.js";
 import { initEmbeddingsTable } from "./embeddings.js";
 import { initUsersTable } from "./users.js";
+import { initEmailVerificationTable } from "./email-verification.js";
+import { initPasswordResetTable } from "./password-reset.js";
 
 export interface Task {
   id: string;
@@ -120,6 +122,12 @@ export function initDatabase(): Database {
 
     // Initialize users table
     initUsersTable(db);
+
+    // Initialize email verification table
+    initEmailVerificationTable(db);
+
+    // Initialize password reset table
+    initPasswordResetTable(db);
   } catch (error) {
     console.warn("SQLite unavailable, using in-memory fallback:", error);
     db = new BetterSqlite3(":memory:");
@@ -158,6 +166,12 @@ export function initDatabase(): Database {
 
     // Initialize users table in fallback
     initUsersTable(db);
+
+    // Initialize email verification table in fallback
+    initEmailVerificationTable(db);
+
+    // Initialize password reset table in fallback
+    initPasswordResetTable(db);
   }
 
   return {

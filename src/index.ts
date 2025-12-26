@@ -14,6 +14,8 @@ import { createEnforcementRouter } from "./api/enforcement.js";
 import { createDemoRouter } from "./api/demo.js";
 import { createAuthRouter } from "./api/auth.js";
 import { createUsersRouter } from "./api/users.js";
+import { createEmailVerificationRouter } from "./api/email-verification.js";
+import { createPasswordResetRouter } from "./api/password-reset.js";
 import { createGitHubRouter } from "./api/github.js";
 import { createLinearRouter } from "./api/linear.js";
 import { createAgentControlRouter } from "./api/agent-control.js";
@@ -70,6 +72,8 @@ async function main() {
   app.use("/health", createHealthRouter(db, queue));
   app.use("/api/auth", createAuthRouter());
   app.use("/api/users", createUsersRouter(db));
+  app.use("/api/email-verification", createEmailVerificationRouter(db));
+  app.use("/api/password-reset", createPasswordResetRouter(db));
   app.use("/api/tasks", createTaskRouter(db, queue, gate));
   app.use("/api/audit", createAuditRouter(db));
   app.use("/api/enforcement", createEnforcementRouter(gate));
