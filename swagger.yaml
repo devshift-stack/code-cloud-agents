@@ -1,0 +1,736 @@
+openapi: 3.0.3
+info:
+  title: Code Cloud Agents API
+  description: |
+    Supervised AI system with Engineering Lead Supervisor and Cloud Assistant.
+
+    ## Architecture
+    - **META_SUPERVISOR**: Routing + Monitoring
+    - **ENGINEERING_LEAD_SUPERVISOR**: Plan + Delegate + Verify + STOP
+    - **CLOUD_ASSISTANT**: Execute + Report + Evidence
+
+    ## Features
+    - 🤖 Multi-Agent Task Management
+    - 🔍 Audit & Verification System
+    - 🛡️ Enforcement Gate (STOP Score 0-100)
+    - 💾 Memory System (21 Endpoints)
+    - 🔗 GitHub & Linear Integration
+    - 📊 Real-time WebSocket Updates
+
+  version: 0.1.0
+  contact:
+    name: activi-dev
+    url: https://github.com/dsactivi-2/code-cloud-agents
+  license:
+    name: MIT
+
+servers:
+  - url: http://178.156.178.70:3000
+    description: Production Server
+  - url: http://localhost:3000
+    description: Local Development
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Authentication
+    description: JWT authentication and authorization
+  - name: Tasks
+    description: Task management and execution
+  - name: Audit
+    description: Audit logging and verification
+  - name: Enforcement
+    description: Enforcement gate (STOP decisions)
+  - name: Memory
+    description: Memory system (21 endpoints)
+  - name: GitHub
+    description: GitHub REST API integration
+  - name: Linear
+    description: Linear REST API integration
+  - name: Settings
+    description: System settings management
+  - name: Webhooks
+    description: GitHub & Linear webhook handlers
+  - name: Slack
+    description: Slack integration (Mujo Bot)
+  - name: Demo
+    description: Demo and testing endpoints
+
+paths:
+  # ==================== HEALTH ====================
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: Check system health status
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, unhealthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  components:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        enum: [healthy, unhealthy]
+                      queue:
+                        type: string
+                        enum: [healthy, unhealthy]
+                  mode:
+                    type: string
+                    enum: [in-memory, redis]
+              example:
+                status: healthy
+                timestamp: "2025-12-26T15:30:45.892Z"
+                components:
+                  database: healthy
+                  queue: healthy
+                mode: in-memory
+
+  # ==================== API INFO ====================
+  /api:
+    get:
+      tags: [Health]
+      summary: API information
+      description: Get API metadata
+      responses:
+        '200':
+          description: API info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  version:
+                    type: string
+                  status:
+                    type: string
+                  supervisor:
+                    type: string
+                  mode:
+                    type: string
+              example:
+                name: code-cloud-agents
+                version: 0.1.0
+                status: running
+                supervisor: ENGINEERING_LEAD_SUPERVISOR
+                mode: SUPERVISED
+
+  # ==================== AUTHENTICATION ====================
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      description: Authenticate user and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+            example:
+              email: admin@example.com
+              password: secret123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      role:
+                        type: string
+                        enum: [admin, user]
+        '401':
+          description: Invalid credentials
+
+  # ==================== TASKS ====================
+  /api/tasks:
+    get:
+      tags: [Tasks]
+      summary: List all tasks
+      description: Get all tasks from database
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+    post:
+      tags: [Tasks]
+      summary: Create new task
+      description: Create a new supervised task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, description, agent]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                agent:
+                  type: string
+                  enum: [CLOUD_ASSISTANT, ENGINEERING_LEAD_SUPERVISOR]
+                priority:
+                  type: string
+                  enum: [low, medium, high]
+            example:
+              name: Implement authentication
+              description: Add JWT auth to API
+              agent: CLOUD_ASSISTANT
+              priority: high
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '403':
+          description: Task blocked by enforcement gate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blocked:
+                    type: boolean
+                  stopScore:
+                    type: integer
+                  reasons:
+                    type: array
+                    items:
+                      type: string
+
+  /api/tasks/{id}:
+    get:
+      tags: [Tasks]
+      summary: Get task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found
+
+  # ==================== AUDIT ====================
+  /api/audit:
+    get:
+      tags: [Audit]
+      summary: Get audit logs
+      description: Retrieve audit entries
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditEntry'
+
+  /api/audit/verify/{id}:
+    post:
+      tags: [Audit]
+      summary: Verify claims in task
+      description: Run claim verification on task output
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verification report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verified:
+                    type: boolean
+                  claims:
+                    type: array
+                    items:
+                      type: object
+                  report:
+                    type: string
+
+  # ==================== ENFORCEMENT ====================
+  /api/enforcement/blocked:
+    get:
+      tags: [Enforcement]
+      summary: Get blocked tasks
+      description: List tasks blocked by enforcement gate
+      responses:
+        '200':
+          description: Blocked tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    taskId:
+                      type: string
+                    stopScore:
+                      type: integer
+                    reasons:
+                      type: array
+                      items:
+                        type: string
+                    timestamp:
+                      type: string
+
+  /api/enforcement/approve:
+    post:
+      tags: [Enforcement]
+      summary: Approve blocked task
+      description: Human approval for high STOP score tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [taskId, approver]
+              properties:
+                taskId:
+                  type: string
+                approver:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Task approved
+        '404':
+          description: Task not found
+
+  /api/enforcement/reject:
+    post:
+      tags: [Enforcement]
+      summary: Reject blocked task
+      description: Permanently reject high STOP score task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [taskId, rejector]
+              properties:
+                taskId:
+                  type: string
+                rejector:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Task rejected
+
+  # ==================== MEMORY SYSTEM (21 Endpoints) ====================
+  /api/memory/conversations:
+    get:
+      tags: [Memory]
+      summary: Get all conversations
+      responses:
+        '200':
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+    post:
+      tags: [Memory]
+      summary: Create conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agentName]
+              properties:
+                agentName:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        '201':
+          description: Conversation created
+
+  /api/memory/conversations/{id}:
+    get:
+      tags: [Memory]
+      summary: Get conversation by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+
+  /api/memory/conversations/{id}/messages:
+    post:
+      tags: [Memory]
+      summary: Add message to conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role, content]
+              properties:
+                role:
+                  type: string
+                  enum: [user, assistant, system]
+                content:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        '201':
+          description: Message added
+
+  /api/memory/search:
+    post:
+      tags: [Memory]
+      summary: Semantic search in memory
+      description: Search conversations using vector similarity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: integer
+                  default: 5
+                agentName:
+                  type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /api/memory/stats:
+    get:
+      tags: [Memory]
+      summary: Get memory statistics
+      responses:
+        '200':
+          description: Memory stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalConversations:
+                    type: integer
+                  totalMessages:
+                    type: integer
+                  agents:
+                    type: array
+                    items:
+                      type: string
+
+  # ==================== GITHUB ====================
+  /api/github/repos:
+    get:
+      tags: [GitHub]
+      summary: List user repositories
+      responses:
+        '200':
+          description: List of repos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /api/github/issues/{owner}/{repo}:
+    get:
+      tags: [GitHub]
+      summary: Get repository issues
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of issues
+
+  # ==================== LINEAR ====================
+  /api/linear/issues:
+    get:
+      tags: [Linear]
+      summary: Get Linear issues
+      responses:
+        '200':
+          description: List of issues
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /api/linear/projects:
+    get:
+      tags: [Linear]
+      summary: Get Linear projects
+      responses:
+        '200':
+          description: List of projects
+
+  # ==================== SETTINGS ====================
+  /api/settings:
+    get:
+      tags: [Settings]
+      summary: Get all settings
+      responses:
+        '200':
+          description: Settings object
+          content:
+            application/json:
+              schema:
+                type: object
+
+    put:
+      tags: [Settings]
+      summary: Update settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Settings updated
+
+  # ==================== WEBHOOKS ====================
+  /api/webhooks/github:
+    post:
+      tags: [Webhooks]
+      summary: GitHub webhook handler
+      description: Handles GitHub webhook events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+
+  /api/webhooks/linear:
+    post:
+      tags: [Webhooks]
+      summary: Linear webhook handler
+      description: Handles Linear webhook events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+
+  # ==================== SLACK ====================
+  /api/slack/events:
+    post:
+      tags: [Slack]
+      summary: Slack events handler
+      description: Mujo Interactive Bot event handler
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Event processed
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        agent:
+          type: string
+          enum: [CLOUD_ASSISTANT, ENGINEERING_LEAD_SUPERVISOR]
+        status:
+          type: string
+          enum: [pending, in_progress, completed, failed, blocked]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        stopScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        result:
+          type: object
+          nullable: true
+
+    AuditEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        taskId:
+          type: string
+        agent:
+          type: string
+        action:
+          type: string
+        stopScore:
+          type: integer
+        reasons:
+          type: array
+          items:
+            type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        agentName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        messageCount:
+          type: integer
+        metadata:
+          type: object
+          nullable: true
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

@@ -46,6 +46,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from './components/ui/select';
+import { TaskInput } from './components/TaskInput';
+import { RepoTaskList } from './components/RepoTaskList';
+import { TopPriorityTasks } from './components/TopPriorityTasks';
+import { ImprovementSuggestions } from './components/ImprovementSuggestions';
+import { StatusDashboard } from './components/StatusDashboard';
+
+interface DailyTask {
+  id: string;
+  date: string;
+  task: string;
+  status: 'completed' | 'failed' | 'in_progress';
+}
 
 interface Agent {
   id: string;
@@ -416,6 +428,18 @@ export default function App() {
                 trend={{ value: 2, direction: 'up' }}
                 icon={<Activity className="w-4 h-4 text-muted-foreground" />}
               />
+            </div>
+
+            {/* Agent 1: System Status Dashboard */}
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">System Status</h2>
+              <StatusDashboard />
+            </div>
+
+            {/* Task Management Section */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <TopPriorityTasks />
+              <RepoTaskList />
             </div>
 
             {/* Activity Log */}

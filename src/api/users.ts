@@ -74,7 +74,6 @@ export function createUsersRouter(db: Database): Router {
    * GET /api/users/me
    * Get current user's profile
    */
-  router.get("/me", requireJWT, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const user = getUserById(rawDb, req.userId!);
 
@@ -103,7 +102,6 @@ export function createUsersRouter(db: Database): Router {
    * GET /api/users/:id
    * Get user by ID (Admin only, or own profile)
    */
-  router.get("/:id", requireJWT, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
 
@@ -142,7 +140,6 @@ export function createUsersRouter(db: Database): Router {
    * POST /api/users
    * Create new user (Admin only)
    */
-  router.post("/", requireJWTAdmin, async (req: Request, res: Response) => {
     try {
       const { email, password, role, displayName } = req.body;
 
@@ -196,7 +193,6 @@ export function createUsersRouter(db: Database): Router {
    * PATCH /api/users/:id
    * Update user (Admin only, or own profile with limited fields)
    */
-  router.patch("/:id", requireJWT, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { email, role, displayName, isActive } = req.body;
@@ -260,7 +256,6 @@ export function createUsersRouter(db: Database): Router {
    * POST /api/users/:id/password
    * Change user password (Admin only, or own password)
    */
-  router.post("/:id/password", requireJWT, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { currentPassword, newPassword } = req.body;
@@ -331,7 +326,6 @@ export function createUsersRouter(db: Database): Router {
    * DELETE /api/users/:id
    * Delete user (Admin only)
    */
-  router.delete("/:id", requireJWTAdmin, async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
 

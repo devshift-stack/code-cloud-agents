@@ -18,6 +18,7 @@ import { createEmailVerificationRouter } from "./api/email-verification.js";
 import { createPasswordResetRouter } from "./api/password-reset.js";
 import { createGitHubRouter } from "./api/github.js";
 import { createLinearRouter } from "./api/linear.js";
+import { createAgentControlRouter } from "./api/agent-control.js";
 import { createGitHubWebhookRouter } from "./webhooks/github.js";
 import { createLinearWebhookRouter } from "./webhooks/linear.js";
 import { createSettingsRouter } from "./api/settings.js";
@@ -27,6 +28,8 @@ import { WebSocketManager } from "./websocket/server.js";
 import { initDatabase } from "./db/database.js";
 import { initQueue } from "./queue/queue.js";
 import { createEnforcementGate } from "./audit/enforcementGate.js";
+import { setupSwagger } from "./swagger/index.js";
+import { registerAllWebhookWorkers } from "./queue/workers/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -43,6 +46,9 @@ async function main() {
   // Initialize queue
   const queue = initQueue();
   console.log("✅ Queue initialized (mode:", queue.mode, ")");
+
+  // Register webhook event workers
+  registerAllWebhookWorkers(queue, db);
 
   // Initialize enforcement gate (HARD STOP enforcement)
   const gate = createEnforcementGate(db);
@@ -74,11 +80,15 @@ async function main() {
   app.use("/api/demo", createDemoRouter(db));
   app.use("/api/github", createGitHubRouter());
   app.use("/api/linear", createLinearRouter());
+  app.use("/api/agents", createAgentControlRouter());
   app.use("/api/settings", createSettingsRouter(db));
   app.use("/api/memory", createMemoryRouter(db));
 
   // Slack Events (Mujo Interactive Bot)
   app.post("/api/slack/events", handleSlackEvents);
+
+  // Setup Swagger UI Documentation
+  setupSwagger(app);
 
   // API info endpoint
   app.get("/api", (_req, res) => {
