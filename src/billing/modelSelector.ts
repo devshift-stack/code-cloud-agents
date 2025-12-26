@@ -1,98 +1,226 @@
 /**
- * Model Selector - Selects optimal AI model based on task
+ * Model Selector - Supervisor chooses optimal model to minimize costs
+ *
+ * Decision logic:
+ * - Simple tasks → Haiku (cheapest)
+ * - Medium complexity → Sonnet (balanced)
+ * - High complexity → Opus (most capable)
+ * - Local preference → Ollama (free)
  */
 
-import type { ModelProvider } from "../shared/types/common.ts";
+export type TaskComplexity = "simple" | "medium" | "high";
 
 export interface ModelRecommendation {
   model: string;
-  provider: ModelProvider;
-  reason: string;
-}
-
-export interface SelectionOptions {
-  preferLocal?: boolean;
-  maxCostUSD?: number;
-  requireReasoning?: boolean;
+  provider: "anthropic" | "openai" | "xai" | "ollama";
+  reasoning: string;
+  estimatedCostUSD: number;
+  estimatedCostEUR: number;
 }
 
 /**
- * Select optimal model for a task
+ * Analyze task complexity based on description
+ */
+export function analyzeTaskComplexity(taskDescription: string): TaskComplexity {
+  const desc = taskDescription.toLowerCase();
+
+  // High complexity indicators
+  const highComplexityKeywords = [
+    "refactor",
+    "architect",
+    "design system",
+    "migration",
+    "complex",
+    "multi-step",
+    "integration",
+    "security",
+    "performance optimization",
+    "algorithm",
+    "ai model",
+  ];
+
+  // Simple task indicators
+  const simpleKeywords = [
+    "typo",
+    "fix typo",
+    "update text",
+    "change color",
+    "add comment",
+    "simple fix",
+    "quick fix",
+    "minor",
+    "small",
+  ];
+
+  // Check for high complexity
+  if (highComplexityKeywords.some((keyword) => desc.includes(keyword))) {
+    return "high";
+  }
+
+  // Check for simple tasks
+  if (simpleKeywords.some((keyword) => desc.includes(keyword))) {
+    return "simple";
+  }
+
+  // Default to medium
+  return "medium";
+}
+
+/**
+ * Select optimal model based on task complexity and preferences
  */
 export function selectModel(
-  message: string,
-  options: SelectionOptions = {}
+  taskDescription: string,
+  options: {
+    preferLocal?: boolean;
+    maxCostUSD?: number;
+    forceModel?: string;
+  } = {}
 ): ModelRecommendation {
-  const { preferLocal = false, maxCostUSD, requireReasoning = false } = options;
+  const complexity = analyzeTaskComplexity(taskDescription);
 
-  // Estimate complexity
-  const isComplex = isComplexTask(message);
-  const isLongText = message.length > 1000;
+  // If forceModel is specified, use it
+  if (options.forceModel) {
+    return {
+      model: options.forceModel,
+      provider: getProviderForModel(options.forceModel),
+      reasoning: "Forced by user preference",
+      estimatedCostUSD: estimateCost(options.forceModel, 1000, 500).costUSD,
+      estimatedCostEUR: estimateCost(options.forceModel, 1000, 500).costEUR,
+    };
+  }
 
-  // Prefer local if requested
-  if (preferLocal) {
+  // Prefer local models if requested
+  if (options.preferLocal) {
     return {
       model: "llama3",
       provider: "ollama",
-      reason: "Local model preferred",
+      reasoning: "Local model preferred (FREE)",
+      estimatedCostUSD: 0,
+      estimatedCostEUR: 0,
     };
   }
 
-  // Require reasoning (Claude Opus, GPT-4)
-  if (requireReasoning || isComplex) {
-    if (!maxCostUSD || maxCostUSD >= 0.05) {
+  // Select based on complexity
+  switch (complexity) {
+    case "simple":
+      // Use cheapest model for simple tasks
       return {
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-haiku-3-5",
         provider: "anthropic",
-        reason: "Complex task requires advanced reasoning",
+        reasoning: "Simple task - using most cost-effective model (Haiku)",
+        estimatedCostUSD: estimateCost("claude-haiku-3-5", 1000, 500).costUSD,
+        estimatedCostEUR: estimateCost("claude-haiku-3-5", 1000, 500).costEUR,
       };
-    }
-  }
 
-  // Budget-conscious selection
-  if (maxCostUSD && maxCostUSD < 0.01) {
-    return {
-      model: "gemini-pro",
-      provider: "gemini",
-      reason: "Cost-optimized selection",
-    };
-  }
+    case "medium":
+      // Use balanced model
+      if (options.maxCostUSD && options.maxCostUSD < 0.01) {
+        // Budget constrained - use Haiku
+        return {
+          model: "claude-haiku-3-5",
+          provider: "anthropic",
+          reasoning: "Budget constrained - using Haiku for medium task",
+          estimatedCostUSD: estimateCost("claude-haiku-3-5", 2000, 1000).costUSD,
+          estimatedCostEUR: estimateCost("claude-haiku-3-5", 2000, 1000).costEUR,
+        };
+      }
 
-  // Long text processing
-  if (isLongText) {
-    return {
-      model: "claude-3-haiku-20240307",
-      provider: "anthropic",
-      reason: "Optimized for long text processing",
-    };
-  }
+      return {
+        model: "claude-sonnet-4-5",
+        provider: "anthropic",
+        reasoning: "Medium complexity - using balanced model (Sonnet)",
+        estimatedCostUSD: estimateCost("claude-sonnet-4-5", 2000, 1000).costUSD,
+        estimatedCostEUR: estimateCost("claude-sonnet-4-5", 2000, 1000).costEUR,
+      };
 
-  // Default: Claude Sonnet (best balance)
+    case "high":
+      // Use most capable model
+      if (options.maxCostUSD && options.maxCostUSD < 0.05) {
+        // Budget constrained - use Sonnet instead of Opus
+        return {
+          model: "claude-sonnet-4-5",
+          provider: "anthropic",
+          reasoning: "High complexity but budget constrained - using Sonnet",
+          estimatedCostUSD: estimateCost("claude-sonnet-4-5", 5000, 2000).costUSD,
+          estimatedCostEUR: estimateCost("claude-sonnet-4-5", 5000, 2000).costEUR,
+        };
+      }
+
+      return {
+        model: "claude-opus-4-5",
+        provider: "anthropic",
+        reasoning: "High complexity - using most capable model (Opus)",
+        estimatedCostUSD: estimateCost("claude-opus-4-5", 5000, 2000).costUSD,
+        estimatedCostEUR: estimateCost("claude-opus-4-5", 5000, 2000).costEUR,
+      };
+  }
+}
+
+/**
+ * Get provider for a specific model
+ */
+function getProviderForModel(model: string): "anthropic" | "openai" | "xai" | "ollama" {
+  if (model.startsWith("claude")) return "anthropic";
+  if (model.startsWith("gpt")) return "openai";
+  if (model.startsWith("grok")) return "xai";
+  return "ollama";
+}
+
+/**
+ * Estimate cost for a model (rough estimate)
+ */
+function estimateCost(
+  model: string,
+  inputTokens: number,
+  outputTokens: number
+): { costUSD: number; costEUR: number } {
+  const pricing: Record<string, { input: number; output: number }> = {
+    "claude-opus-4-5": { input: 15.0, output: 75.0 },
+    "claude-sonnet-4-5": { input: 3.0, output: 15.0 },
+    "claude-haiku-3-5": { input: 0.25, output: 1.25 },
+    "gpt-4": { input: 30.0, output: 60.0 },
+    "gpt-3.5-turbo": { input: 0.5, output: 1.5 },
+    "grok-beta": { input: 5.0, output: 15.0 },
+    llama3: { input: 0, output: 0 },
+  };
+
+  const price = pricing[model] || { input: 3.0, output: 15.0 };
+
+  const costUSD =
+    (inputTokens / 1_000_000) * price.input + (outputTokens / 1_000_000) * price.output;
+  const costEUR = costUSD * 0.92;
+
   return {
-    model: "claude-3-5-sonnet-20241022",
-    provider: "anthropic",
-    reason: "Best balance of performance and cost",
+    costUSD: parseFloat(costUSD.toFixed(6)),
+    costEUR: parseFloat(costEUR.toFixed(6)),
   };
 }
 
 /**
- * Detect if task is complex based on keywords
+ * Compare cost of different models for the same task
  */
-function isComplexTask(message: string): boolean {
-  const complexKeywords = [
-    "analyze",
-    "debug",
-    "refactor",
-    "architecture",
-    "design",
-    "implement",
-    "optimize",
-    "security",
-    "performance",
-    "algorithm",
-  ];
+export function compareCosts(
+  taskDescription: string,
+  models: string[]
+): ModelRecommendation[] {
+  return models.map((model) => {
+    const complexity = analyzeTaskComplexity(taskDescription);
+    const tokens =
+      complexity === "simple"
+        ? { input: 1000, output: 500 }
+        : complexity === "medium"
+          ? { input: 2000, output: 1000 }
+          : { input: 5000, output: 2000 };
 
-  const lowerMessage = message.toLowerCase();
+    const cost = estimateCost(model, tokens.input, tokens.output);
 
-  return complexKeywords.some((keyword) => lowerMessage.includes(keyword));
+    return {
+      model,
+      provider: getProviderForModel(model),
+      reasoning: `Estimated for ${complexity} complexity task`,
+      estimatedCostUSD: cost.costUSD,
+      estimatedCostEUR: cost.costEUR,
+    };
+  });
 }

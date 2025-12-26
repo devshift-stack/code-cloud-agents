@@ -2,7 +2,7 @@
  * Database Module - SQLite persistence layer
  */
 
-import BetterSqlite3 from "better-sqlite3";
+import Database from "better-sqlite3";
 import { randomUUID } from "crypto";
 import { initSettingsTables } from "./settings.js";
 import { initEmbeddingsTable } from "./embeddings.js";
@@ -51,10 +51,10 @@ export interface Database {
 export function initDatabase(): Database {
   const dbPath = process.env.SQLITE_PATH ?? "./data/app.sqlite";
 
-  let db: BetterSqlite3.Database;
+  let db: Database.Database;
 
   try {
-    db = new BetterSqlite3(dbPath);
+    db = new Database(dbPath);
     db.pragma("journal_mode = WAL");
 
     // Create tables
@@ -130,7 +130,7 @@ export function initDatabase(): Database {
     initPasswordResetTable(db);
   } catch (error) {
     console.warn("SQLite unavailable, using in-memory fallback:", error);
-    db = new BetterSqlite3(":memory:");
+    db = new Database(":memory:");
     db.exec(`
       CREATE TABLE tasks (
         id TEXT PRIMARY KEY,

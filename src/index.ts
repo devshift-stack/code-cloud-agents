@@ -10,9 +10,9 @@ import { createHealthRouter } from "./api/health.js";
 import { createTaskRouter } from "./api/tasks.js";
 import { createAuditRouter } from "./api/audit.js";
 import { createEnforcementRouter } from "./api/enforcement.js";
-import { createDemoRouter } from "./api/demo.js";
-import { createSwaggerRouter } from "./api/swagger.js";
-import { handleSlackEvents } from "./api/slack-events.js";
+import { createWebhookRouter } from "./api/webhooks.js";
+import { createBillingRouter } from "./api/billing.js";
+import { createModulesRouter } from "./api/modules.js";
 import { initDatabase } from "./db/database.js";
 import { initQueue } from "./queue/queue.js";
 import { createEnforcementGate } from "./audit/enforcementGate.js";
@@ -50,11 +50,9 @@ async function main() {
   app.use("/api/tasks", createTaskRouter(db, queue, gate));
   app.use("/api/audit", createAuditRouter(db));
   app.use("/api/enforcement", createEnforcementRouter(gate));
-  app.use("/api/demo", createDemoRouter(db));
-  app.use("/api/docs", createSwaggerRouter());
-
-  // Slack Events (Mujo Interactive Bot)
-  app.post("/api/slack/events", handleSlackEvents);
+  app.use("/api/webhooks", createWebhookRouter());
+  app.use("/api/billing", createBillingRouter());
+  app.use("/api/modules", createModulesRouter());
 
   // API info endpoint
   app.get("/api", (_req, res) => {
@@ -80,20 +78,14 @@ async function main() {
     console.log("   GET  /api/enforcement/blocked  - Blocked tasks");
     console.log("   POST /api/enforcement/approve  - Human approval");
     console.log("   POST /api/enforcement/reject   - Human rejection");
-    console.log("");
-    console.log("🎁 Demo Invite System:");
-    console.log("   POST /api/demo/invites     - Create demo invite (Admin)");
-    console.log("   GET  /api/demo/invites     - List invites (Admin)");
-    console.log("   POST /api/demo/redeem      - Redeem invite code");
-    console.log("   GET  /api/demo/users/:id   - Get demo user status");
-    console.log("");
-    console.log("🤖 Mujo Interactive Bot:");
-    console.log("   POST /api/slack/events     - Slack events webhook");
-    console.log("");
-    console.log("📚 API Documentation:");
-    console.log("   GET  /api/docs             - Swagger UI (Interactive API Docs)");
-    console.log("   GET  /api/docs/openapi.json - OpenAPI 3.0 JSON Spec");
-    console.log("   GET  /api/docs/openapi.yaml - OpenAPI 3.0 YAML Spec");
+    console.log("   GET  /api/webhooks  - List webhooks");
+    console.log("   POST /api/webhooks  - Register webhook");
+    console.log("   POST /api/webhooks/incoming  - Receive incoming webhooks");
+    console.log("   GET  /api/billing/summary  - Cost summary");
+    console.log("   GET  /api/billing/usage/:userId  - User usage");
+    console.log("   POST /api/billing/limits  - Set user limits (Admin)");
+    console.log("   GET  /api/modules  - List all modules");
+    console.log("   GET  /api/modules/report  - Module status report");
   });
 }
 
