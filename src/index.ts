@@ -3,6 +3,10 @@
  * Supervised AI system with Engineering Lead Supervisor and Cloud Assistant
  */
 
+// Load environment variables first
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -68,8 +72,20 @@ async function main() {
   app.use("/api/webhooks/github", express.text({ type: "application/json" }), createGitHubWebhookRouter(db, queue));
   app.use("/api/webhooks/linear", express.text({ type: "application/json" }), createLinearWebhookRouter(db, queue));
 
-  // All other routes use JSON parsing
+  // All other routes use JSON parsing with error handling
   app.use(express.json());
+
+  // JSON parse error handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof SyntaxError && 'body' in err) {
+      console.error('❌ JSON Parse Error:', err.message);
+      return res.status(400).json({
+        error: 'Invalid JSON',
+        message: err.message
+      });
+    }
+    next(err);
+  });
 
   // Serve static dashboard
   const publicPath = join(__dirname, "..", "public");
