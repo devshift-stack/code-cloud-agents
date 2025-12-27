@@ -5,7 +5,7 @@
 
 import { Router, type Request, type Response } from "express";
 import type { Database } from "../db/database.js";
-import { requireJWT, type AuthenticatedRequest } from "../auth/middleware.js";
+import { requireAuth, type AuthenticatedRequest } from "../auth/middleware.js";
 import {
   generateVerificationToken,
   verifyEmailToken,
@@ -25,7 +25,7 @@ export function createEmailVerificationRouter(db: Database): Router {
    * Send verification email (authenticated users only)
    * Rate limited: 3 attempts per hour
    */
-  router.post("/send", emailVerificationRateLimiter, requireJWT, async (req: AuthenticatedRequest, res: Response) => {
+  router.post("/send", emailVerificationRateLimiter, requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const userId = req.userId!;
       const user = getUserById(rawDb, userId);
@@ -111,7 +111,7 @@ export function createEmailVerificationRouter(db: Database): Router {
    * GET /api/email-verification/status
    * Check verification status
    */
-  router.get("/status", requireJWT, async (req: AuthenticatedRequest, res: Response) => {
+  router.get("/status", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const userId = req.userId!;
       const user = getUserById(rawDb, userId);

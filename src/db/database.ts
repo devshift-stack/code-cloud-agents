@@ -46,6 +46,7 @@ export interface Database {
   listAuditEntries(limit?: number): AuditEntry[];
   getStopScoreStats(): { total: number; stopped: number; avgScore: number };
   getRawDb(): BetterSqlite3.Database;
+  close(): void;
 }
 
 export function initDatabase(): Database {
@@ -252,6 +253,15 @@ export function initDatabase(): Database {
 
     getRawDb(): BetterSqlite3.Database {
       return db;
+    },
+
+    close(): void {
+      try {
+        db.close();
+        console.log("✅ Database connection closed");
+      } catch (error) {
+        console.error("❌ Error closing database:", error);
+      }
     },
   };
 }

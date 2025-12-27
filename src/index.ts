@@ -112,7 +112,7 @@ async function main() {
   const wsManager = new WebSocketManager(server);
 
   // Example: Broadcast agent status every 10 seconds
-  setInterval(() => {
+  const statusInterval = setInterval(() => {
     wsManager.broadcastAgentStatus({
       agentName: "ENGINEERING_LEAD_SUPERVISOR",
       state: "idle",
@@ -200,6 +200,32 @@ async function main() {
 
   // Export wsManager for use in other modules
   (global as typeof global & { wsManager?: WebSocketManager }).wsManager = wsManager;
+
+  // Graceful shutdown handler
+  const shutdown = async (signal: string) => {
+    console.log(`\n🛑 ${signal} received, shutting down gracefully...`);
+
+    // Clear intervals
+    clearInterval(statusInterval);
+
+    // Stop accepting new connections
+    server.close(() => {
+      console.log("✅ HTTP server closed");
+    });
+
+    // Close WebSocket connections
+    wsManager.close();
+
+    // Close database connection
+    db.close();
+
+    console.log("👋 Shutdown complete");
+    process.exit(0);
+  };
+
+  // Register shutdown handlers
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 }
 
 main().catch((error) => {
