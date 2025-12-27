@@ -1,6 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { LoginPage } from './components/LoginPage';
+import { ChatInterface } from './components/ChatInterface';
+import { TaskBoard } from './components/TaskBoard';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { AgentCard } from './components/AgentCard';
 import { CreateAgentDialog } from './components/CreateAgentDialog';
@@ -28,6 +31,8 @@ import {
   User,
   LogOut,
   Settings as SettingsIcon,
+  MessageSquare,
+  CheckSquare,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -74,6 +79,10 @@ interface LogEntry {
 }
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ id: string; email: string; name: string; role: string } | null>(null);
+
+  // All useState hooks MUST be before any conditional returns
   const [agents, setAgents] = useState<Agent[]>([
     {
       id: '1',
@@ -168,6 +177,35 @@ export default function App() {
     maxRetries: '3',
     timeout: '30',
   });
+
+  // Check authentication on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    if (token && user) {
+      try {
+        setCurrentUser(JSON.parse(user));
+        setIsAuthenticated(true);
+      } catch {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+  }, []);
+
+  const handleLoginSuccess = (user: { id: string; email: string; name: string; role: string }) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    toast.success('Logged out successfully');
+  };
 
   const handleStartAgent = (id: string) => {
     setAgents(
@@ -270,6 +308,11 @@ export default function App() {
   const activeAgents = agents.filter((a) => a.status === 'active').length;
   const totalExecutions = agents.reduce((acc, agent) => acc + agent.executionCount, 0);
 
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -341,7 +384,7 @@ export default function App() {
                   <SettingsIcon className="w-4 h-4 mr-2" />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
                 </DropdownMenuItem>
@@ -358,6 +401,14 @@ export default function App() {
             <TabsTrigger value="dashboard">
               <Activity className="w-4 h-4 mr-2" />
               Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="chat">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              AI Chat
+            </TabsTrigger>
+            <TabsTrigger value="tasks">
+              <CheckSquare className="w-4 h-4 mr-2" />
+              Tasks
             </TabsTrigger>
             <TabsTrigger value="agents">
               <Bot className="w-4 h-4 mr-2" />
@@ -446,6 +497,14 @@ export default function App() {
 
             {/* Activity Log */}
             <ActivityLog logs={logs} />
+          </TabsContent>
+
+          <TabsContent value="chat" className="h-[calc(100vh-16rem)]">
+            <ChatInterface />
+          </TabsContent>
+
+          <TabsContent value="tasks">
+            <TaskBoard />
           </TabsContent>
 
           <TabsContent value="agents" className="space-y-6">
