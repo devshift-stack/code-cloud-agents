@@ -1,0 +1,20 @@
+extends: ["spectral:oas"]
+
+rules:
+  otop-operation-id-required:
+    description: "Each operation must have operationId (OTOP Function Registry needs stable IDs)."
+    message: "Missing operationId."
+    severity: error
+    given: "$.paths[*][*]"
+    then:
+      field: "operationId"
+      function: truthy
+
+  otop-tags-required:
+    description: "Each operation must have at least one tag."
+    message: "Missing tags."
+    severity: error
+    given: "$.paths[*][*]"
+    then:
+      field: "tags"
+      function: truthy
