@@ -19,7 +19,9 @@
     "db:migrate": "tsx src/db/migrate.ts",
     "db:health": "tsx src/db/health.ts",
     "queue:status": "tsx src/queue/status.ts",
-    "generate:api": "openapi-typescript swagger.yaml -o src/generated/api-types.ts"
+    "generate:api": "openapi-typescript swagger.yaml -o src/generated/api-types.ts",
+    "otop:doctor": "bash ./scripts/backend-doctor-v2.sh",
+    "otop:check": "bash ./scripts/backend-doctor-v2.sh"
   },
   "build": {
     "appId": "com.devshift.code-cloud-agents",
