@@ -7,7 +7,7 @@ import { createLinearClient } from "./client.js";
 /**
  * Example 1: Check connection status
  */
-async function exampleCheckStatus() {
+export async function exampleCheckStatus() {
   const linear = createLinearClient();
 
   const status = await linear.getStatus();
@@ -24,7 +24,7 @@ async function exampleCheckStatus() {
 /**
  * Example 2: List all teams
  */
-async function exampleListTeams() {
+export async function exampleListTeams() {
   const linear = createLinearClient();
 
   const result = await linear.listTeams();
@@ -42,7 +42,7 @@ async function exampleListTeams() {
 /**
  * Example 3: Create a simple issue
  */
-async function exampleCreateSimpleIssue() {
+export async function exampleCreateSimpleIssue() {
   const linear = createLinearClient();
 
   const result = await linear.createIssue({
@@ -63,7 +63,7 @@ async function exampleCreateSimpleIssue() {
 /**
  * Example 4: Create issue with full options
  */
-async function exampleCreateFullIssue() {
+export async function exampleCreateFullIssue() {
   const linear = createLinearClient();
 
   // First, get team and state IDs
@@ -114,7 +114,7 @@ Shows 500 error`,
 /**
  * Example 5: List workflow states for a team
  */
-async function exampleListWorkflowStates() {
+export async function exampleListWorkflowStates() {
   const linear = createLinearClient();
 
   // Get first team
@@ -141,7 +141,7 @@ async function exampleListWorkflowStates() {
 /**
  * Example 6: List all labels
  */
-async function exampleListLabels() {
+export async function exampleListLabels() {
   const linear = createLinearClient();
 
   const result = await linear.listLabels();
@@ -159,7 +159,7 @@ async function exampleListLabels() {
 /**
  * Example 7: STOP Score Alert → Linear Issue
  */
-async function exampleStopScoreIssue() {
+export async function exampleStopScoreIssue() {
   const linear = createLinearClient();
 
   const stopScore = 75;
@@ -195,7 +195,7 @@ async function exampleStopScoreIssue() {
 /**
  * Example 8: GitHub Issue → Linear Issue (Integration)
  */
-async function exampleGitHubToLinear() {
+export async function exampleGitHubToLinear() {
   const linear = createLinearClient();
 
   // Simulate GitHub issue data

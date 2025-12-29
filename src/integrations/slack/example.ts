@@ -7,7 +7,7 @@ import { createSlackClient } from "./client.js";
 /**
  * Example 1: Send a simple message
  */
-async function exampleSendMessage() {
+export async function exampleSendMessage() {
   const slack = createSlackClient();
 
   const result = await slack.sendMessage({
@@ -25,7 +25,7 @@ async function exampleSendMessage() {
 /**
  * Example 2: Send message with rich formatting (blocks)
  */
-async function exampleSendRichMessage() {
+export async function exampleSendRichMessage() {
   const slack = createSlackClient();
 
   const result = await slack.sendMessage({
@@ -86,7 +86,7 @@ async function exampleSendRichMessage() {
 /**
  * Example 3: Send message via Webhook (simpler, no token needed)
  */
-async function exampleSendWebhook() {
+export async function exampleSendWebhook() {
   const slack = createSlackClient();
 
   const result = await slack.sendWebhook("🚨 Critical error detected by Supervisor!");
@@ -101,7 +101,7 @@ async function exampleSendWebhook() {
 /**
  * Example 4: List all channels
  */
-async function exampleListChannels() {
+export async function exampleListChannels() {
   const slack = createSlackClient();
 
   const result = await slack.listChannels();
@@ -121,7 +121,7 @@ async function exampleListChannels() {
 /**
  * Example 5: Check connection status
  */
-async function exampleCheckStatus() {
+export async function exampleCheckStatus() {
   const slack = createSlackClient();
 
   const result = await slack.getStatus();
@@ -138,7 +138,7 @@ async function exampleCheckStatus() {
 /**
  * Example 6: Send message in thread (reply)
  */
-async function exampleReplyInThread() {
+export async function exampleReplyInThread() {
   const slack = createSlackClient();
 
   // First message
@@ -164,7 +164,7 @@ async function exampleReplyInThread() {
 /**
  * Example 7: STOP Score Alert
  */
-async function exampleStopScoreAlert() {
+export async function exampleStopScoreAlert() {
   const slack = createSlackClient();
 
   const stopScore = 75;

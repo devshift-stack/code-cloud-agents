@@ -99,9 +99,9 @@ export class MemorySearch {
         role: row.role,
         content: row.content,
         agentName: row.agent_name,
-        tokensInput: row.tokens_input,
-        tokensOutput: row.tokens_output,
-        tokensTotal: row.tokens_total,
+        tokensInput: row.input_tokens,
+        tokensOutput: row.output_tokens,
+        tokensTotal: row.total_tokens,
         timestamp: row.timestamp,
       };
 
@@ -183,7 +183,7 @@ export class MemorySearch {
     if (keywords.length === 0) return [];
 
     // Search for messages containing these keywords
-    const keywordPattern = keywords.join("|");
+    // Future: use keywords.join("|") for regex search
     const results = this.searchMessages({
       query: keywords[0], // Use most relevant keyword
       limit,
@@ -216,9 +216,9 @@ export class MemorySearch {
       role: msgRow.role,
       content: msgRow.content,
       agentName: msgRow.agent_name,
-      tokensInput: msgRow.tokens_input,
-      tokensOutput: msgRow.tokens_output,
-      tokensTotal: msgRow.tokens_total,
+      tokensInput: msgRow.input_tokens,
+      tokensOutput: msgRow.output_tokens,
+      tokensTotal: msgRow.total_tokens,
       timestamp: msgRow.timestamp,
     };
 
@@ -236,9 +236,9 @@ export class MemorySearch {
       role: row.role,
       content: row.content,
       agentName: row.agent_name,
-      tokensInput: row.tokens_input,
-      tokensOutput: row.tokens_output,
-      tokensTotal: row.tokens_total,
+      tokensInput: row.input_tokens,
+      tokensOutput: row.output_tokens,
+      tokensTotal: row.total_tokens,
       timestamp: row.timestamp,
     }));
 
@@ -256,9 +256,9 @@ export class MemorySearch {
       role: row.role,
       content: row.content,
       agentName: row.agent_name,
-      tokensInput: row.tokens_input,
-      tokensOutput: row.tokens_output,
-      tokensTotal: row.tokens_total,
+      tokensInput: row.input_tokens,
+      tokensOutput: row.output_tokens,
+      tokensTotal: row.total_tokens,
       timestamp: row.timestamp,
     }));
 

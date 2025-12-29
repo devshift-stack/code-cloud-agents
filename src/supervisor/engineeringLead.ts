@@ -30,7 +30,7 @@ export interface WorkSubmission {
  * Reviews work submissions and makes approval decisions
  */
 export class EngineeringLeadSupervisor {
-  private readonly stopThreshold: number;
+  readonly stopThreshold: number;
 
   constructor(stopThreshold = 40) {
     this.stopThreshold = stopThreshold;

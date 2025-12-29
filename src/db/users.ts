@@ -17,6 +17,7 @@ export interface User {
   updatedAt?: string;
   lastLoginAt?: string;
   isActive: boolean;
+  emailVerified?: boolean;
 }
 
 export interface UserCreateData {
@@ -31,6 +32,7 @@ export interface UserUpdateData {
   role?: "admin" | "user" | "demo";
   displayName?: string;
   isActive?: boolean;
+  emailVerified?: boolean;
 }
 
 const SALT_ROUNDS = 10;

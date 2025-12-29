@@ -36,14 +36,14 @@ export async function initEmailTransporter(): Promise<void> {
         port: 587,
         secure: false,
         auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
+          user: testAccount!.user,
+          pass: testAccount!.pass,
         },
       });
       console.log("✅ Email: Ethereal test account created");
       console.log(`   📧 View emails at: https://ethereal.email/messages`);
-      console.log(`   👤 Login: ${testAccount.user}`);
-      console.log(`   🔑 Password: ${testAccount.pass}`);
+      console.log(`   👤 Login: ${testAccount!.user}`);
+      console.log(`   🔑 Password: ${testAccount!.pass}`);
     }
 
     // Verify connection

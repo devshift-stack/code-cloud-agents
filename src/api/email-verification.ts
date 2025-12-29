@@ -9,7 +9,6 @@ import { requireAuth, type AuthenticatedRequest } from "../auth/middleware.js";
 import {
   generateVerificationToken,
   verifyEmailToken,
-  resendVerificationToken,
   getVerificationToken,
 } from "../db/email-verification.js";
 import { getUserById, updateUser } from "../db/users.js";

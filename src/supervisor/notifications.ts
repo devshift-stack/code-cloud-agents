@@ -8,7 +8,7 @@ import { createSlackClient, type SlackMessage } from "../integrations/slack/clie
 import type { StopScoreResult, Severity } from "../audit/stopScorer.js";
 import type { SystemHealth } from "../meta/metaSupervisor.js";
 import type { StatusProposal } from "../assistant/cloudAssistant.js";
-import { addHumor, getMujoSignature, type Language } from "../integrations/slack/humor.js";
+import { getMujoSignature, type Language } from "../integrations/slack/humor.js";
 
 export interface NotificationConfig {
   channel: string; // Default channel for notifications (e.g., "#alerts")
@@ -64,7 +64,7 @@ export class SupervisorNotifications {
     }
 
     const emoji = this.getSeverityEmoji(stopScore.severity);
-    const color = this.getSeverityColor(stopScore.severity);
+    // Color available via getSeverityColor() for rich formatting
 
     const message: SlackMessage = {
       channel: this.config.channel,
@@ -386,9 +386,9 @@ export class SupervisorNotifications {
   }
 
   /**
-   * Get severity color
+   * Get severity color for rich formatting
    */
-  private getSeverityColor(severity: Severity): string {
+  getSeverityColor(severity: Severity): string {
     switch (severity) {
       case "CRITICAL":
         return "#FF0000";

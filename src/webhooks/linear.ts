@@ -96,7 +96,11 @@ function storeWebhookEvent(
   db.createAuditEntry({
     agent: "linear_webhook",
     action: `webhook:${eventType}.${action}`,
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       type: eventType,
       action,
       data: {
@@ -105,8 +109,8 @@ function storeWebhookEvent(
         team: payload.data.team?.name,
       },
     }),
-    output: JSON.stringify({ status: "received" }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 }
 

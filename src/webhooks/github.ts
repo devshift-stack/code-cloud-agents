@@ -32,6 +32,25 @@ export interface GitHubWebhookPayload {
     login: string;
   };
   // Event-specific data
+  ref?: string;
+  commits?: unknown[];
+  pull_request?: {
+    number: number;
+    title?: string;
+    state?: string;
+    [key: string]: unknown;
+  };
+  issue?: {
+    number: number;
+    title?: string;
+    state?: string;
+    [key: string]: unknown;
+  };
+  comment?: {
+    id: number;
+    body?: string;
+    [key: string]: unknown;
+  };
   [key: string]: unknown;
 }
 
@@ -67,14 +86,18 @@ function storeWebhookEvent(db: Database, event: GitHubEvent, payload: GitHubWebh
   db.createAuditEntry({
     agent: "github_webhook",
     action: `webhook:${event}`,
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       event,
       repository: payload.repository.full_name,
       action: payload.action,
       sender: payload.sender.login,
     }),
-    output: JSON.stringify({ status: "received" }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 }
 

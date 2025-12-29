@@ -105,7 +105,7 @@ export function createWebSocketClient(token: string) {
 /**
  * React Hook Example
  */
-export function useWebSocket(token: string) {
+export function useWebSocket(_token: string) {
   // In a real React app:
   /*
   import { useEffect, useState } from 'react';

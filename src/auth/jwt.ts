@@ -29,7 +29,7 @@ function registerUserToken(userId: string, token: string): void {
 /**
  * Unregister a token for a user
  */
-function _unregisterUserToken(userId: string, token: string): void {
+export function unregisterUserToken(userId: string, token: string): void {
   const tokens = userTokens.get(userId);
   if (tokens) {
     tokens.delete(token);

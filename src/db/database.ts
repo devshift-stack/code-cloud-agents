@@ -2,7 +2,7 @@
  * Database Module - SQLite persistence layer
  */
 
-import Database from "better-sqlite3";
+import Database, { type Database as BetterSqlite3Database } from "better-sqlite3";
 import { randomUUID } from "crypto";
 import { initSettingsTables } from "./settings.js";
 import { initEmbeddingsTable } from "./embeddings.js";
@@ -25,6 +25,8 @@ export interface Task {
 export interface AuditEntry {
   id: string;
   task_id?: string;
+  agent?: string;
+  action?: string;
   decision: "APPROVED" | "STOP_REQUIRED";
   final_status: "COMPLETE" | "COMPLETE_WITH_GAPS" | "STOP_REQUIRED";
   risk_level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
@@ -45,7 +47,7 @@ export interface Database {
   getAuditEntry(id: string): AuditEntry | undefined;
   listAuditEntries(limit?: number): AuditEntry[];
   getStopScoreStats(): { total: number; stopped: number; avgScore: number };
-  getRawDb(): BetterSqlite3.Database;
+  getRawDb(): BetterSqlite3Database;
   close(): void;
 }
 
@@ -252,7 +254,7 @@ export function initDatabase(): Database {
       return { total, stopped, avgScore: Math.round(avgScore * 100) / 100 };
     },
 
-    getRawDb(): BetterSqlite3.Database {
+    getRawDb(): BetterSqlite3Database {
       return db;
     },
 

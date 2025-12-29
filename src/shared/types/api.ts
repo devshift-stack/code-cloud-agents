@@ -4,7 +4,9 @@
 
 import type { RiskLevel } from "./common.js";
 import type { AgentStatistics, AgentPerformance } from "./agent.js";
-import type { Task, TaskResult } from "./task.js";
+import type { Task } from "./task.js";
+// Re-export for external use
+export type { TaskResult } from "./task.js";
 
 /**
  * Health check response
