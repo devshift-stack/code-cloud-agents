@@ -11,7 +11,6 @@ import type { components } from '@/generated/api-types';
 
 // Type-safe types from OpenAPI
 type Task = components['schemas']['Task'];
-type TaskInput = components['schemas']['TaskInput'];
 
 // ============================================
 // EXAMPLE 1: GET /api/tasks (List all tasks)
@@ -127,28 +126,7 @@ export function CreateTaskForm() {
 }
 
 // ============================================
-// EXAMPLE 3: DELETE /api/tasks/{id}
-// ============================================
-
-export async function deleteTask(taskId: string) {
-  // Type-safe API call with operationId: tasks_delete_api_tasks_id
-  const { error } = await api.DELETE('/api/tasks/{id}', {
-    params: {
-      path: {
-        id: taskId,
-      },
-    },
-  });
-
-  if (error) {
-    throw new Error('Failed to delete task');
-  }
-
-  return true;
-}
-
-// ============================================
-// EXAMPLE 4: GET /health (Health check)
+// EXAMPLE 3: GET /health (Health check)
 // ============================================
 
 export async function checkBackendHealth() {
@@ -163,16 +141,16 @@ export async function checkBackendHealth() {
 }
 
 // ============================================
-// EXAMPLE 5: POST /api/enforcement/approve
+// EXAMPLE 4: POST /api/enforcement/approve
 // ============================================
 
-export async function approveTask(taskId: string, comments: string) {
+export async function approveTask(taskId: string, reason: string) {
   // Type-safe API call with operationId: enforcement_post_api_enforcement_approve
   const { data, error } = await api.POST('/api/enforcement/approve', {
     body: {
       taskId,
-      approver: 'current-user',
-      comments,
+      approvedBy: 'current-user',
+      reason,
     },
   });
 
