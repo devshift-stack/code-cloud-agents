@@ -115,7 +115,7 @@ export function createBillingRouter(): Router {
    * GET /api/billing/limits - Get all user limits (Admin only)
    * Requires admin privileges
    */
-  router.get("/limits", requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+  router.get("/limits", requireAdmin, (_req: AuthenticatedRequest, res: Response) => {
     try {
       const limits = costTracker.getAllLimits();
 
