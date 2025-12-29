@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
+import cors from "cors";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createServer } from "http";
@@ -30,7 +31,10 @@ import { createMemoryRouter } from "./api/memory.js";
 import { createWebhookRouter } from "./api/webhooks.js";
 import { createBillingRouter } from "./api/billing.js";
 import { createModulesRouter } from "./api/modules.js";
+import { createChatRouter } from "./api/chat.js";
 import { handleSlackEvents } from "./api/slack-events.js";
+import { ChatStorage } from "./chat/storage.js";
+import { ChatManager } from "./chat/manager.js";
 import { WebSocketManager } from "./websocket/server.js";
 import { initDatabase } from "./db/database.js";
 import { initQueue } from "./queue/queue.js";
@@ -65,8 +69,16 @@ async function main() {
   const gate = createEnforcementGate(db);
   console.log("✅ Enforcement Gate active (STOP decisions are BLOCKING)");
 
+  // Initialize Chat system
+  const chatStorage = new ChatStorage(db);
+  const chatManager = new ChatManager(chatStorage);
+  console.log("✅ Chat system initialized");
+
   // Create Express app
   const app = express();
+  
+  // Enable CORS for all origins
+  app.use(cors());
 
   // Webhook routes need raw body for signature verification
   app.use("/api/webhooks/github", express.text({ type: "application/json" }), createGitHubWebhookRouter(db, queue));
@@ -109,6 +121,7 @@ async function main() {
   app.use("/api/webhooks", createWebhookRouter());
   app.use("/api/billing", createBillingRouter());
   app.use("/api/modules", createModulesRouter());
+  app.use("/api/chat", createChatRouter(chatManager));
 
   // Slack Events (Mujo Interactive Bot)
   app.post("/api/slack/events", handleSlackEvents);
