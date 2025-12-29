@@ -88,7 +88,7 @@ async function main() {
   app.use(express.json());
 
   // JSON parse error handler
-  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  app.use((err: any, _req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (err instanceof SyntaxError && 'body' in err) {
       console.error('❌ JSON Parse Error:', err.message);
       return res.status(400).json({

@@ -536,7 +536,7 @@ export function createMemoryRouter(db: Database): Router {
    * GET /api/memory/embeddings/stats
    * Get embedding statistics
    */
-  router.get("/embeddings/stats", (req, res) => {
+  router.get("/embeddings/stats", (_req, res) => {
     try {
       const stats = embeddingsManager.getStats();
 

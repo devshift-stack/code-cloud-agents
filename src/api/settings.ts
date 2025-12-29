@@ -282,7 +282,7 @@ export function createSettingsRouter(db: Database): Router {
    * GET /api/settings/system
    * Get all system settings (Admin-only)
    */
-  router.get("/system", requireAdmin, (req: AuthenticatedRequest, res) => {
+  router.get("/system", requireAdmin, (_req: AuthenticatedRequest, res) => {
     try {
       const systemSettings = settingsDB.getAllSystemSettings();
 
