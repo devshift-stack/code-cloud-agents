@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
@@ -12,6 +12,19 @@ import {
 } from './ui/select';
 import { toast } from 'sonner';
 import { Send, Bot, User } from 'lucide-react';
+
+/**
+ * Get stored user from localStorage
+ */
+function getStoredUser(): { id: string; role: string } | null {
+  try {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    return JSON.parse(userStr);
+  } catch {
+    return null;
+  }
+}
 
 interface Message {
   id: string;
@@ -78,6 +91,12 @@ export function ChatInterface() {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
+    const storedUser = getStoredUser();
+    if (!storedUser) {
+      toast.error('Please log in to send messages');
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -94,16 +113,22 @@ export function ChatInterface() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'x-user-id': storedUser.id,
+          'x-user-role': storedUser.role,
         },
         body: JSON.stringify({
+          userId: storedUser.id,
           message: input,
           agentName: selectedAgent,
           chatId: chatId,
+          includeHistory: true,
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to send message');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to send message');
+      }
 
       const data = await response.json();
 
@@ -115,7 +140,7 @@ export function ChatInterface() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response,
+        content: data.content || data.response,
         timestamp: new Date().toISOString(),
         agentName: selectedAgent,
       };

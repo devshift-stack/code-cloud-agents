@@ -280,4 +280,79 @@ export class DemoInviteManager {
     if (row.expires_at && new Date(row.expires_at) < new Date()) return "expired";
     return "active";
   }
+
+  /**
+   * Get demo statistics
+   */
+  getStats(): {
+    totalInvites: number;
+    activeInvites: number;
+    redeemedInvites: number;
+    expiredInvites: number;
+    totalUsers: number;
+    activeUsers: number;
+  } {
+    try {
+      const invites = this.listInvites();
+      const users = this.listUsers();
+
+      const activeInvites = invites.filter(i => i.status === "active").length;
+      const redeemedInvites = invites.filter(i => i.status === "redeemed").length;
+      const expiredInvites = invites.filter(i => i.status === "expired").length;
+      const activeUsers = users.filter(u => u.status === "active").length;
+
+      return {
+        totalInvites: invites.length,
+        activeInvites,
+        redeemedInvites,
+        expiredInvites,
+        totalUsers: users.length,
+        activeUsers,
+      };
+    } catch {
+      return {
+        totalInvites: 0,
+        activeInvites: 0,
+        redeemedInvites: 0,
+        expiredInvites: 0,
+        totalUsers: 0,
+        activeUsers: 0,
+      };
+    }
+  }
+
+  /**
+   * Initialize demo tables if they don't exist
+   */
+  initTables(): void {
+    const rawDb = this.db.getRawDb();
+    
+    rawDb.exec(`
+      CREATE TABLE IF NOT EXISTS demo_invites (
+        code TEXT PRIMARY KEY,
+        credit_limit_usd REAL NOT NULL,
+        max_messages INTEGER NOT NULL,
+        max_days INTEGER NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        expires_at TEXT,
+        redeemed_by TEXT,
+        redeemed_at TEXT
+      );
+      
+      CREATE TABLE IF NOT EXISTS demo_users (
+        id TEXT PRIMARY KEY,
+        email TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        invite_code TEXT NOT NULL,
+        credit_limit_usd REAL NOT NULL,
+        credit_used_usd REAL DEFAULT 0,
+        message_limit INTEGER NOT NULL,
+        message_count INTEGER DEFAULT 0,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
+        status TEXT DEFAULT 'active'
+      );
+    `);
+  }
 }

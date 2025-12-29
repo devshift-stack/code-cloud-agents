@@ -12,6 +12,7 @@ import { Router } from "express";
 import { z } from "zod";
 import type { Database } from "../db/database.js";
 import { SettingsDB } from "../db/settings.js";
+import { requireAdmin, type AuthenticatedRequest } from "../auth/middleware.js";
 
 // Default user settings
 const DEFAULT_USER_SETTINGS = {
@@ -281,13 +282,8 @@ export function createSettingsRouter(db: Database): Router {
    * GET /api/settings/system
    * Get all system settings (Admin-only)
    */
-  router.get("/system", (req, res) => {
+  router.get("/system", requireAdmin, (req: AuthenticatedRequest, res) => {
     try {
-      // TODO: Add admin authentication check
-      // if (!req.user?.isAdmin) {
-      //   return res.status(403).json({ success: false, error: "Admin access required" });
-      // }
-
       const systemSettings = settingsDB.getAllSystemSettings();
 
       // Parse JSON values
@@ -359,10 +355,9 @@ export function createSettingsRouter(db: Database): Router {
    * PUT /api/settings/system
    * Update system settings (Admin-only, partial update)
    */
-  router.put("/system", (req, res) => {
+  router.put("/system", requireAdmin, (req: AuthenticatedRequest, res) => {
     try {
-      // TODO: Add admin authentication check
-      const updatedBy = req.body._updatedBy || "admin"; // From auth middleware
+      const updatedBy = req.userId || "admin";
 
       const parsed = SystemSettingsSchema.safeParse(req.body);
       if (!parsed.success) {

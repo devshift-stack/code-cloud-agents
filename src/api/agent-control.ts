@@ -107,6 +107,92 @@ const agents: Map<number, Agent> = new Map([
 // Agent logs storage (in-memory for now)
 const agentLogs: Map<number, string[]> = new Map();
 
+// Helper function to get default agents (for testing)
+function getDefaultAgents(): Map<number, Agent> {
+  return new Map([
+    [0, {
+      id: 0,
+      name: "Agent 0",
+      role: "Lead Developer & Orchestrator",
+      status: "online",
+      currentTask: "Koordiniert Team, macht Code Reviews",
+      completedTasks: 13,
+      uptime: 86400,
+      lastActivity: new Date().toISOString(),
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["coordination", "code-review", "deployment", "architecture"],
+      },
+    }],
+    [1, {
+      id: 1,
+      name: "Agent 1",
+      role: "Frontend Developer",
+      status: "offline",
+      currentTask: null,
+      completedTasks: 0,
+      uptime: 0,
+      lastActivity: new Date(Date.now() - 3600000).toISOString(),
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["react", "typescript", "ui-design", "testing"],
+      },
+    }],
+    [2, {
+      id: 2,
+      name: "Agent 2",
+      role: "Security & Backend Infrastructure",
+      status: "offline",
+      currentTask: null,
+      completedTasks: 0,
+      uptime: 0,
+      lastActivity: new Date(Date.now() - 7200000).toISOString(),
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["jwt", "authentication", "security", "infrastructure"],
+      },
+    }],
+    [3, {
+      id: 3,
+      name: "Agent 3",
+      role: "Integrations & APIs",
+      status: "online",
+      currentTask: "Implementiert Agent Control API",
+      completedTasks: 2,
+      uptime: 3600,
+      lastActivity: new Date().toISOString(),
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["github", "linear", "slack", "webhooks", "rest-api"],
+      },
+    }],
+    [4, {
+      id: 4,
+      name: "Agent 4",
+      role: "Documentation & DevOps",
+      status: "offline",
+      currentTask: null,
+      completedTasks: 0,
+      uptime: 0,
+      lastActivity: new Date(Date.now() - 86400000).toISOString(),
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["swagger", "postman", "devops", "ci-cd"],
+      },
+    }],
+  ]);
+}
+
+/**
+ * Reset agents to default state (for testing)
+ */
+export function resetAgents(): void {
+  agents.clear();
+  const defaults = getDefaultAgents();
+  defaults.forEach((agent, id) => agents.set(id, agent));
+  agentLogs.clear();
+}
+
 // Initialize logs for all agents
 agents.forEach((_, id) => {
   agentLogs.set(id, [

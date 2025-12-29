@@ -15,6 +15,9 @@ export function createDemoRouter(db: Database): Router {
   const router = Router();
   const demoManager = new DemoInviteManager(db);
   const redeemLimiter = createRateLimiter(5, 60000);
+  
+  // Initialize demo tables
+  demoManager.initTables();
 
   /**
    * POST /api/demo/invites

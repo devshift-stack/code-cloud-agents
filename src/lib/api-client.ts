@@ -1,12 +1,26 @@
 import createClient, { type Middleware } from 'openapi-fetch';
 import type { paths } from '@/generated/api-types';
 
-// Auth middleware
+/**
+ * Get stored user from localStorage
+ */
+function getStoredUser(): { id: string; role: string } | null {
+  try {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    return JSON.parse(userStr);
+  } catch {
+    return null;
+  }
+}
+
+// Auth middleware - uses x-user-id and x-user-role headers
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
-    const token = localStorage.getItem('token');
-    if (token) {
-      request.headers.set('Authorization', `Bearer ${token}`);
+    const user = getStoredUser();
+    if (user) {
+      request.headers.set('x-user-id', user.id);
+      request.headers.set('x-user-role', user.role);
     }
     return request;
   },
