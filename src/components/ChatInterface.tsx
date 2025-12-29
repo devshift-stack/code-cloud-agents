@@ -144,7 +144,7 @@ export function ChatInterface() {
         <div className="flex items-center justify-between">
           <CardTitle>AI Chat</CardTitle>
           <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[200px]" data-testid="cloudagents.chat.agent.select">
               <SelectValue placeholder="Select Agent" />
             </SelectTrigger>
             <SelectContent>
@@ -239,8 +239,9 @@ export function ChatInterface() {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               disabled={isLoading}
+              data-testid="cloudagents.chat.message.input"
             />
-            <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
+            <Button onClick={handleSend} disabled={isLoading || !input.trim()} data-testid="cloudagents.chat.send.button">
               <Send className="w-4 h-4" />
             </Button>
           </div>
