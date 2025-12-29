@@ -7,6 +7,22 @@ import type { Database as BetterSqlite3Database } from "better-sqlite3";
 import type { Chat, ChatMessage } from "./types.ts";
 import type { Database } from "../db/database.ts";
 
+// Database row types
+interface ChatRow {
+  id: string;
+  user_id: string;
+  title: string;
+  agent_name: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+  last_message: string | null;
+}
+
+interface CountRow {
+  count: number;
+}
+
 export class ChatStorage {
   private db: BetterSqlite3Database;
 
@@ -45,7 +61,7 @@ export class ChatStorage {
         `SELECT id, user_id, title, agent_name, created_at, updated_at, message_count, last_message
          FROM chats WHERE id = ?`
       )
-      .get(chatId);
+      .get(chatId) as ChatRow | undefined;
 
     if (!row) return null;
 
@@ -57,7 +73,7 @@ export class ChatStorage {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       messageCount: row.message_count,
-      lastMessage: row.last_message,
+      lastMessage: row.last_message ?? undefined,
     };
   }
 
@@ -81,7 +97,7 @@ export class ChatStorage {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       messageCount: row.message_count,
-      lastMessage: row.last_message,
+      lastMessage: row.last_message ?? undefined,
     }));
   }
 
@@ -89,7 +105,7 @@ export class ChatStorage {
   countChats(userId: string): number {
     const result = this.db
       .prepare(`SELECT COUNT(*) as count FROM chats WHERE user_id = ?`)
-      .get(userId);
+      .get(userId) as CountRow;
     return result.count;
   }
 
@@ -214,7 +230,7 @@ export class ChatStorage {
   countMessages(chatId: string): number {
     const result = this.db
       .prepare(`SELECT COUNT(*) as count FROM chat_messages WHERE chat_id = ?`)
-      .get(chatId);
+      .get(chatId) as CountRow;
     return result.count;
   }
 

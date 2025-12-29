@@ -7,22 +7,48 @@ interface Stats {
   chatCount: number;
 }
 
+/**
+ * Get stored user for auth headers
+ */
+function getStoredUser(): { id: string; role: string } | null {
+  try {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    return JSON.parse(userStr);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get auth headers for API calls
+ */
+function getAuthHeaders(): Record<string, string> {
+  const user = getStoredUser();
+  if (!user) return {};
+  return {
+    'x-user-id': user.id,
+    'x-user-role': user.role,
+  };
+}
+
 export function StatusDashboard() {
   const [stats, setStats] = useState<Stats>({
     serverStatus: 'offline',
     userCount: 0,
-    agentCount: 5, // Fixwert: Agent 0-4
+    agentCount: 5, // Fixed: 5 agents available
     chatCount: 0,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    const headers = getAuthHeaders();
 
     // 1. Health Check
-    fetch('http://178.156.178.70:3000/health')
+    fetch('/api/health')
       .then(res => res.json())
-      .then(data => {
+      .then(() => {
         if (!cancelled) {
           setStats(prev => ({ ...prev, serverStatus: 'online' }));
         }
@@ -33,14 +59,24 @@ export function StatusDashboard() {
         }
       });
 
-    // 2. User Count (TODO: API anpassen wenn verfügbar)
-    // Aktuell: Dummy Wert
-    if (!cancelled) {
-      setStats(prev => ({ ...prev, userCount: 10 }));
+    // 2. User Count (from /api/users/stats - requires admin)
+    if (headers['x-user-role'] === 'admin') {
+      fetch('/api/users/stats', { headers })
+        .then(res => res.json())
+        .then(data => {
+          if (!cancelled && data.stats) {
+            setStats(prev => ({ ...prev, userCount: data.stats.total || 0 }));
+          }
+        })
+        .catch(() => {
+          // Fallback: count remains 0
+        });
     }
 
     // 3. Memory Stats
-    fetch('http://178.156.178.70:3000/api/memory/stats/test-user')
+    const user = getStoredUser();
+    const userId = user?.id || 'test-user';
+    fetch(`/api/memory/stats/${userId}`, { headers })
       .then(res => res.json())
       .then(data => {
         if (!cancelled) {

@@ -322,6 +322,57 @@ export class DemoInviteManager {
   }
 
   /**
+   * Alias for getInvite (used by demo.ts)
+   */
+  getInviteByCode(code: string): DemoInvite | null {
+    return this.getInvite(code);
+  }
+
+  /**
+   * Alias for getUser (used by demo.ts)
+   */
+  getDemoUser(userId: string): DemoUser | null {
+    return this.getUser(userId);
+  }
+
+  /**
+   * Deactivate an invite
+   */
+  deactivateInvite(inviteCode: string): void {
+    const rawDb = this.db.getRawDb();
+    rawDb.prepare(`
+      UPDATE demo_invites
+      SET expires_at = datetime('now')
+      WHERE code = ?
+    `).run(inviteCode);
+  }
+
+  /**
+   * Deactivate a demo user
+   */
+  deactivateDemoUser(userId: string): void {
+    const rawDb = this.db.getRawDb();
+    rawDb.prepare(`
+      UPDATE demo_users
+      SET status = 'suspended'
+      WHERE id = ?
+    `).run(userId);
+  }
+
+  /**
+   * Expire old demo users (returns count)
+   */
+  expireOldDemoUsers(): number {
+    const rawDb = this.db.getRawDb();
+    const result = rawDb.prepare(`
+      UPDATE demo_users
+      SET status = 'expired'
+      WHERE status = 'active' AND end_date < datetime('now')
+    `).run();
+    return result.changes;
+  }
+
+  /**
    * Initialize demo tables if they don't exist
    */
   initTables(): void {

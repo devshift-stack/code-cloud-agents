@@ -164,19 +164,19 @@ export function createLinearRouter(): Router {
           priority: issue.priority,
           url: issue.url,
           state: {
-            id: issue.state?.id,
-            name: issue.state?.name,
-            type: issue.state?.type,
+            id: (issue.state as any)?.id,
+            name: (issue.state as any)?.name,
+            type: (issue.state as any)?.type,
           },
           team: {
-            id: issue.team?.id,
-            name: issue.team?.name,
-            key: issue.team?.key,
+            id: (issue.team as any)?.id,
+            name: (issue.team as any)?.name,
+            key: (issue.team as any)?.key,
           },
           assignee: issue.assignee
             ? {
-                id: issue.assignee.id,
-                name: issue.assignee.name,
+                id: (issue.assignee as any).id,
+                name: (issue.assignee as any).name,
               }
             : null,
           createdAt: issue.createdAt,

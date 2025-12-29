@@ -57,11 +57,9 @@ export function createDemoRouter(db: Database): Router {
    * GET /api/demo/invites
    * Listet alle Demo-Invites (Admin only)
    */
-  router.get("/invites", requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+  router.get("/invites", requireAdmin, (_req: AuthenticatedRequest, res: Response) => {
     try {
-      const adminUserId = req.userId!;
-
-      const invites = demoManager.listInvites(adminUserId);
+      const invites = demoManager.listInvites();
 
       res.json({
         invites,
@@ -87,14 +85,16 @@ export function createDemoRouter(db: Database): Router {
       }
 
       // Nur public info zurückgeben
+      const isActive = invite.status === "active";
+      const notExpired = !invite.expiresAt || new Date(invite.expiresAt) > new Date();
       res.json({
         code: invite.code,
         creditLimitUSD: invite.creditLimitUSD,
         maxMessages: invite.maxMessages,
         maxDays: invite.maxDays,
         expiresAt: invite.expiresAt,
-        active: invite.active,
-        available: invite.active && new Date(invite.expiresAt) > new Date() && invite.usedCount < invite.maxUses,
+        active: isActive,
+        available: isActive && notExpired,
       });
     } catch (error: any) {
       console.error("Get invite error:", error);
@@ -132,17 +132,9 @@ export function createDemoRouter(db: Database): Router {
           id: demoUser.id,
           email: demoUser.email,
           isDemo: true,
-          expiresAt: demoUser.expiresAt,
-          credits: {
-            limitUSD: demoUser.creditLimitUSD,
-            usedUSD: demoUser.creditUsedUSD,
-            remainingUSD: demoUser.creditLimitUSD - demoUser.creditUsedUSD,
-          },
-          messages: {
-            limit: demoUser.maxMessages,
-            used: demoUser.messagesUsed,
-            remaining: demoUser.maxMessages - demoUser.messagesUsed,
-          },
+          expiresAt: demoUser.validity.endDate,
+          credits: demoUser.credits,
+          messages: demoUser.messages,
         },
         message: "Demo account created successfully",
       });
@@ -169,23 +161,13 @@ export function createDemoRouter(db: Database): Router {
         id: demoUser.id,
         email: demoUser.email,
         isDemo: true,
-        active: demoUser.active,
-        blocked: demoUser.blocked,
-        createdAt: demoUser.createdAt,
-        expiresAt: demoUser.expiresAt,
-        daysRemaining: Math.ceil((new Date(demoUser.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-        credits: {
-          limitUSD: demoUser.creditLimitUSD,
-          usedUSD: demoUser.creditUsedUSD,
-          remainingUSD: demoUser.creditLimitUSD - demoUser.creditUsedUSD,
-          percentageUsed: (demoUser.creditUsedUSD / demoUser.creditLimitUSD) * 100,
-        },
-        messages: {
-          limit: demoUser.maxMessages,
-          used: demoUser.messagesUsed,
-          remaining: demoUser.maxMessages - demoUser.messagesUsed,
-          percentageUsed: (demoUser.messagesUsed / demoUser.maxMessages) * 100,
-        },
+        active: demoUser.status === "active",
+        blocked: demoUser.status === "suspended",
+        createdAt: demoUser.validity.startDate,
+        expiresAt: demoUser.validity.endDate,
+        daysRemaining: demoUser.validity.daysRemaining,
+        credits: demoUser.credits,
+        messages: demoUser.messages,
       });
     } catch (error: any) {
       console.error("Get demo user error:", error);

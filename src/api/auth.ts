@@ -8,7 +8,6 @@ import { initDatabase } from "../db/database.js";
 import {
   generateTokenPair,
   verifyAccessToken,
-  verifyRefreshToken,
   revokeToken,
   refreshAccessToken,
 } from "../auth/jwt.js";

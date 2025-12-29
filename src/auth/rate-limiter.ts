@@ -47,7 +47,7 @@ interface RateLimitEntry {
 /**
  * Redis client singleton
  */
-let redisClient: Redis | null = null;
+let redisClient: any = null;
 let redisAvailable = false;
 
 /**
@@ -75,7 +75,7 @@ function initRedis(): void {
       redisAvailable = true;
     });
 
-    redisClient.on("error", (err) => {
+    redisClient.on("error", (err: Error) => {
       console.warn("⚠️ Redis connection error, falling back to in-memory rate limiting:", err.message);
       redisAvailable = false;
     });

@@ -54,7 +54,7 @@ export function createUsersRouter(db: Database): Router {
    * GET /api/users/stats
    * Get user statistics (Admin only)
    */
-  router.get("/stats", requireAdmin, async (req: Request, res: Response) => {
+  router.get("/stats", requireAdmin, async (_req: AuthenticatedRequest, res: Response) => {
     try {
       const stats = getUserStats(rawDb);
 
@@ -74,7 +74,7 @@ export function createUsersRouter(db: Database): Router {
    * GET /api/users/me
    * Get current user's profile
    */
-  router.get("/me", requireAuth, async (req: Request, res: Response) => {
+  router.get("/me", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const user = getUserById(rawDb, req.userId!);
 
@@ -103,7 +103,7 @@ export function createUsersRouter(db: Database): Router {
    * GET /api/users/:id
    * Get user by ID (Admin only, or own profile)
    */
-  router.get("/:id", requireAuth, async (req: Request, res: Response) => {
+  router.get("/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
 
@@ -196,7 +196,7 @@ export function createUsersRouter(db: Database): Router {
    * PATCH /api/users/:id
    * Update user (Admin only, or own profile with limited fields)
    */
-  router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
+  router.patch("/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { email, role, displayName, isActive } = req.body;
@@ -260,7 +260,7 @@ export function createUsersRouter(db: Database): Router {
    * POST /api/users/:id/password
    * Change user password (Admin only, or own password)
    */
-  router.post("/:id/password", requireAuth, async (req: Request, res: Response) => {
+  router.post("/:id/password", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
       const { currentPassword, newPassword } = req.body;
