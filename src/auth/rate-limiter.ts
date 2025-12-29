@@ -5,7 +5,14 @@
  */
 
 import type { Request, Response, NextFunction } from "express";
-import Redis from "ioredis";
+
+// Optional Redis import - falls back to in-memory if not available
+let Redis: any = null;
+try {
+  Redis = require("ioredis");
+} catch {
+  console.log("ℹ️ ioredis not installed, using in-memory rate limiting only");
+}
 
 /**
  * Rate limit configuration
@@ -47,6 +54,12 @@ let redisAvailable = false;
  * Initialize Redis connection
  */
 function initRedis(): void {
+  // Skip if ioredis is not installed
+  if (!Redis) {
+    console.log("ℹ️ ioredis not available, using in-memory rate limiting");
+    return;
+  }
+
   const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
   try {
