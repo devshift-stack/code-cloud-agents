@@ -11,7 +11,7 @@ import type { components } from '@/generated/api-types';
 
 // Type-safe types from OpenAPI
 type Task = components['schemas']['Task'];
-// TaskInput would be: Partial<Task> when defined in swagger
+type TaskInput = components['schemas']['TaskInput'];
 
 // ============================================
 // EXAMPLE 1: GET /api/tasks (List all tasks)
@@ -132,11 +132,13 @@ export function CreateTaskForm() {
 
 export async function deleteTask(taskId: string) {
   // Type-safe API call with operationId: tasks_delete_api_tasks_id
-  // Note: Path may need adjustment based on generated types
-  const { error } = await (api.DELETE as (path: string, options?: unknown) => Promise<{ error?: unknown }>)(
-    `/api/tasks/${taskId}`,
-    {}
-  );
+  const { error } = await api.DELETE('/api/tasks/{id}', {
+    params: {
+      path: {
+        id: taskId,
+      },
+    },
+  });
 
   if (error) {
     throw new Error('Failed to delete task');
@@ -169,8 +171,8 @@ export async function approveTask(taskId: string, comments: string) {
   const { data, error } = await api.POST('/api/enforcement/approve', {
     body: {
       taskId,
-      approvedBy: 'current-user',
-      reason: comments,
+      approver: 'current-user',
+      comments,
     },
   });
 
