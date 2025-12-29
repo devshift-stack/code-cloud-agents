@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "repo": { "name": "code-cloud-agents", "type": "fullstack" },
+  "backend": {
+    "framework": "express",
+    "openapi": { "file": "", "format": "" },
+    "health_hints_sample": 
+  },
+  "frontend": {
+    "framework": "nextjs,vite",
+    "api_config_hints_sample": ,
+    "ui_ids": { "data_testid": "LOW", "data_otop_id": "LOW" }
+  }
+}

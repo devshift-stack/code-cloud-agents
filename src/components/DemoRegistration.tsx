@@ -163,6 +163,7 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
                   className="font-mono text-center"
                   disabled={loading}
                   required
+                  data-testid="cloudagents.demo.invite.code.input"
                 />
               </div>
 
@@ -173,7 +174,7 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
                 </Alert>
               )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading} data-testid="cloudagents.demo.invite.continue.button">
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -236,6 +237,7 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
+                data-testid="cloudagents.demo.register.email.input"
               />
             </div>
 
@@ -250,6 +252,7 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
                 disabled={loading}
                 minLength={8}
                 required
+                data-testid="cloudagents.demo.register.password.input"
               />
             </div>
 
@@ -263,6 +266,7 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 disabled={loading}
                 required
+                data-testid="cloudagents.demo.register.passwordconfirm.input"
               />
             </div>
 
@@ -280,10 +284,11 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
                 onClick={() => setStep('code')}
                 disabled={loading}
                 className="flex-1"
+                data-testid="cloudagents.demo.register.back.button"
               >
                 Back
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1">
+              <Button type="submit" disabled={loading} className="flex-1" data-testid="cloudagents.demo.register.submit.button">
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

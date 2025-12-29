@@ -4,10 +4,10 @@
  * Tests for Agent lifecycle management and control endpoints
  */
 
-import { describe, it } from "node:test";
+import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert";
 import type { Request, Response } from "express";
-import { createAgentControlRouter } from "../src/api/agent-control.ts";
+import { createAgentControlRouter, resetAgents } from "../src/api/agent-control.ts";
 
 // Mock Express Response
 function createMockResponse() {
@@ -48,6 +48,10 @@ function createMockRequest(
 }
 
 describe("Agent Control API", () => {
+  // Reset agents before each test to ensure isolation
+  beforeEach(() => {
+    resetAgents();
+  });
   describe("GET /api/agents", () => {
     it("returns list of all agents", async () => {
       const router = createAgentControlRouter();

@@ -9,14 +9,16 @@ import { costTracker } from "../billing/costTracker.ts";
 import { selectModel, compareCosts } from "../billing/modelSelector.ts";
 import { MODEL_PRICING, formatCost } from "../billing/pricing.ts";
 import type { UserLimit } from "../billing/types.ts";
+import { requireAdmin, requireAuth, type AuthenticatedRequest } from "../auth/middleware.ts";
 
 export function createBillingRouter(): Router {
   const router = Router();
 
   /**
    * GET /api/billing/summary - Get cost summary for time period
+   * Requires authentication
    */
-  router.get("/summary", (req: Request, res: Response) => {
+  router.get("/summary", requireAuth, (req: AuthenticatedRequest, res: Response) => {
     try {
       const startDate = (req.query.start as string) || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const endDate = (req.query.end as string) || new Date().toISOString();
@@ -34,8 +36,9 @@ export function createBillingRouter(): Router {
 
   /**
    * GET /api/billing/usage/:userId - Get user usage for current month
+   * Requires authentication
    */
-  router.get("/usage/:userId", (req: Request, res: Response) => {
+  router.get("/usage/:userId", requireAuth, (req: AuthenticatedRequest, res: Response) => {
     try {
       const userId = req.params.userId;
       const month = (req.query.month as string) || undefined;
@@ -57,8 +60,9 @@ export function createBillingRouter(): Router {
 
   /**
    * GET /api/billing/costs - Get all cost entries
+   * Requires admin privileges
    */
-  router.get("/costs", (req: Request, res: Response) => {
+  router.get("/costs", requireAdmin, (req: AuthenticatedRequest, res: Response) => {
     try {
       const limit = parseInt(req.query.limit as string) || 1000;
       const costs = costTracker.getAllCosts(limit);
@@ -77,8 +81,9 @@ export function createBillingRouter(): Router {
 
   /**
    * POST /api/billing/log - Log a cost entry
+   * Requires authentication
    */
-  router.post("/log", (req: Request, res: Response) => {
+  router.post("/log", requireAuth, (req: AuthenticatedRequest, res: Response) => {
     try {
       const entry = req.body;
 
@@ -108,10 +113,10 @@ export function createBillingRouter(): Router {
 
   /**
    * GET /api/billing/limits - Get all user limits (Admin only)
+   * Requires admin privileges
    */
-  router.get("/limits", (req: Request, res: Response) => {
+  router.get("/limits", requireAdmin, (_req: AuthenticatedRequest, res: Response) => {
     try {
-      // TODO: Add admin authentication check
       const limits = costTracker.getAllLimits();
 
       res.json({
@@ -128,8 +133,9 @@ export function createBillingRouter(): Router {
 
   /**
    * GET /api/billing/limits/:userId - Get user limit
+   * Requires authentication
    */
-  router.get("/limits/:userId", (req: Request, res: Response) => {
+  router.get("/limits/:userId", requireAuth, (req: AuthenticatedRequest, res: Response) => {
     try {
       const limit = costTracker.getUserLimit(req.params.userId);
 
@@ -148,10 +154,10 @@ export function createBillingRouter(): Router {
 
   /**
    * POST /api/billing/limits - Set user limit (Admin only)
+   * Requires admin privileges
    */
-  router.post("/limits", (req: Request, res: Response) => {
+  router.post("/limits", requireAdmin, (req: AuthenticatedRequest, res: Response) => {
     try {
-      // TODO: Add admin authentication check
       const limitData: Omit<UserLimit, "createdAt" | "updatedAt"> = req.body;
 
       // Validate required fields
@@ -174,10 +180,10 @@ export function createBillingRouter(): Router {
 
   /**
    * DELETE /api/billing/limits/:userId - Remove user limit (Admin only)
+   * Requires admin privileges
    */
-  router.delete("/limits/:userId", (req: Request, res: Response) => {
+  router.delete("/limits/:userId", requireAdmin, (req: AuthenticatedRequest, res: Response) => {
     try {
-      // TODO: Add admin authentication check
       const deleted = costTracker.removeUserLimit(req.params.userId);
 
       if (!deleted) {
@@ -195,8 +201,9 @@ export function createBillingRouter(): Router {
 
   /**
    * GET /api/billing/limits/:userId/status - Check limit status
+   * Requires authentication
    */
-  router.get("/limits/:userId/status", (req: Request, res: Response) => {
+  router.get("/limits/:userId/status", requireAuth, (req: AuthenticatedRequest, res: Response) => {
     try {
       const status = costTracker.checkLimit(req.params.userId);
 
@@ -215,8 +222,9 @@ export function createBillingRouter(): Router {
 
   /**
    * POST /api/billing/model-select - Get model recommendation
+   * Requires authentication
    */
-  router.post("/model-select", (req: Request, res: Response) => {
+  router.post("/model-select", requireAuth, (req: AuthenticatedRequest, res: Response) => {
     try {
       const { taskDescription, preferLocal, maxCostUSD, forceModel } = req.body;
 
@@ -241,8 +249,9 @@ export function createBillingRouter(): Router {
 
   /**
    * POST /api/billing/compare - Compare costs for different models
+   * Requires authentication
    */
-  router.post("/compare", (req: Request, res: Response) => {
+  router.post("/compare", requireAuth, (req: AuthenticatedRequest, res: Response) => {
     try {
       const { taskDescription, models } = req.body;
 

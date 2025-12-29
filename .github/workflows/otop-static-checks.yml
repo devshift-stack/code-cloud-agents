@@ -1,0 +1,40 @@
+name: OTOP Static Checks
+on:
+  pull_request:
+  push:
+
+jobs:
+  otop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: UI ID audit (non-blocking report)
+        run: |
+          if [ -f scripts/otop-uiid-audit.sh ]; then
+            bash scripts/otop-uiid-audit.sh || true
+            cat otop.audit.uiids.md || true
+          else
+            echo "No UI audit script."
+          fi
+
+      - name: Hardcoded URL audit (block on critical findings)
+        run: |
+          if [ -f scripts/otop-env-audit.sh ]; then
+            bash scripts/otop-env-audit.sh || true
+            # fail if we find hardcoded localhost or obvious prod domains in src/ (tune as needed)
+            if rg -n "http://localhost:|https://api\." . -g'!**/node_modules/**' -g'!**/dist/**' -g'!**/build/**' -g'!**/.next/**' -g'!**/.venv/**' ; then
+              echo "Hardcoded URL found. Move to ENV/proxy."
+              exit 1
+            fi
+          else
+            echo "No env audit script."
+          fi
+
+      - name: OpenAPI lint (block if spec exists and fails)
+        run: |
+          if [ -f scripts/otop-openapi-lint.sh ]; then
+            bash scripts/otop-openapi-lint.sh
+          else
+            echo "No OpenAPI lint script."
+          fi

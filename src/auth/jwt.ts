@@ -13,9 +13,35 @@ const REFRESH_TOKEN_EXPIRY = "7d"; // 7 days
 // Token blacklist (in-memory for now, should be Redis in production)
 const tokenBlacklist = new Set<string>();
 
+// User token registry (tracks active tokens per user for revokeAllUserTokens)
+const userTokens = new Map<string, Set<string>>();
+
+/**
+ * Register a token for a user (for tracking/revocation)
+ */
+function registerUserToken(userId: string, token: string): void {
+  if (!userTokens.has(userId)) {
+    userTokens.set(userId, new Set());
+  }
+  userTokens.get(userId)!.add(token);
+}
+
+/**
+ * Unregister a token for a user
+ */
+function _unregisterUserToken(userId: string, token: string): void {
+  const tokens = userTokens.get(userId);
+  if (tokens) {
+    tokens.delete(token);
+    if (tokens.size === 0) {
+      userTokens.delete(userId);
+    }
+  }
+}
+
 export interface TokenPayload {
   userId: string;
-  role: "admin" | "user";
+  role: "admin" | "user" | "demo";
   email?: string;
 }
 
@@ -65,6 +91,10 @@ export function generateRefreshToken(payload: TokenPayload): string {
 export function generateTokenPair(payload: TokenPayload): TokenPair {
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
+
+  // Register tokens for user tracking (enables revokeAllUserTokens)
+  registerUserToken(payload.userId, accessToken);
+  registerUserToken(payload.userId, refreshToken);
 
   return {
     accessToken,
@@ -132,16 +162,26 @@ export function revokeToken(token: string): void {
 
 /**
  * Revoke all tokens for a user (logout all sessions)
+ * Adds all user's tokens to the blacklist and clears tracking
  */
-export function revokeAllUserTokens(userId: string): void {
-  // Note: This is a simplified implementation
-  // In production, you'd want to:
-  // 1. Store tokens in Redis with user ID
-  // 2. Delete all tokens for the user
-  // For now, we just mark this as a TODO
-  console.warn(
-    `TODO: Implement revokeAllUserTokens for userId: ${userId}`
-  );
+export function revokeAllUserTokens(userId: string): number {
+  const tokens = userTokens.get(userId);
+  if (!tokens || tokens.size === 0) {
+    return 0;
+  }
+
+  // Add all tokens to blacklist
+  let count = 0;
+  for (const token of tokens) {
+    tokenBlacklist.add(token);
+    count++;
+  }
+
+  // Clear user's token registry
+  userTokens.delete(userId);
+
+  console.log(`[JWT] Revoked ${count} tokens for user: ${userId}`);
+  return count;
 }
 
 /**

@@ -102,9 +102,10 @@ export function initDatabase(): Database {
         role TEXT NOT NULL,
         content TEXT NOT NULL,
         agent_name TEXT,
-        tokens_input INTEGER,
-        tokens_output INTEGER,
-        tokens_total INTEGER,
+        input_tokens INTEGER,
+        output_tokens INTEGER,
+        total_tokens INTEGER,
+        metadata TEXT,
         timestamp TEXT NOT NULL,
         FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE
       );

@@ -1,5 +1,5 @@
-# Build stage
-FROM node:20-alpine AS builder
+# Backend-only Production Dockerfile
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -8,25 +8,12 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
-# Copy source
+# Copy source and build files
 COPY src ./src
-
-# Build
-RUN npm run build
-
-# Production stage
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Copy package files and install production dependencies
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Copy built files
-COPY --from=builder /app/dist ./dist
+COPY build ./build
+COPY public ./public
 
 # Create data directory
 RUN mkdir -p /app/data
@@ -37,4 +24,5 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+# Run backend directly with tsx
+CMD ["npx", "tsx", "src/index.ts"]

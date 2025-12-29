@@ -376,15 +376,26 @@ export default function App() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  data-testid="agents.navigation.profile.menuitem"
+                  data-otop-id="agents.navigation.profile.menuitem"
+                >
                   <User className="w-4 h-4 mr-2" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCurrentTab('settings')}>
+                <DropdownMenuItem
+                  onClick={() => setCurrentTab('settings')}
+                  data-testid="agents.navigation.settingsMenu.menuitem"
+                  data-otop-id="agents.navigation.settingsMenu.menuitem"
+                >
                   <SettingsIcon className="w-4 h-4 mr-2" />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout}>
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  data-testid="agents.navigation.logout.button"
+                  data-otop-id="agents.navigation.logout.button"
+                >
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
                 </DropdownMenuItem>
@@ -398,23 +409,43 @@ export default function App() {
       <main className="container mx-auto px-4 py-8">
         <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
           <TabsList className="hidden md:inline-flex mb-8">
-            <TabsTrigger value="dashboard">
+            <TabsTrigger
+              value="dashboard"
+              data-testid="agents.navigation.dashboard.tab"
+              data-otop-id="agents.navigation.dashboard.tab"
+            >
               <Activity className="w-4 h-4 mr-2" />
               Dashboard
             </TabsTrigger>
-            <TabsTrigger value="chat">
+            <TabsTrigger
+              value="chat"
+              data-testid="agents.navigation.chat.tab"
+              data-otop-id="agents.navigation.chat.tab"
+            >
               <MessageSquare className="w-4 h-4 mr-2" />
               AI Chat
             </TabsTrigger>
-            <TabsTrigger value="tasks">
+            <TabsTrigger
+              value="tasks"
+              data-testid="agents.navigation.tasks.tab"
+              data-otop-id="agents.navigation.tasks.tab"
+            >
               <CheckSquare className="w-4 h-4 mr-2" />
               Tasks
             </TabsTrigger>
-            <TabsTrigger value="agents">
+            <TabsTrigger
+              value="agents"
+              data-testid="agents.navigation.agents.tab"
+              data-otop-id="agents.navigation.agents.tab"
+            >
               <Bot className="w-4 h-4 mr-2" />
               Agents
             </TabsTrigger>
-            <TabsTrigger value="settings">
+            <TabsTrigger
+              value="settings"
+              data-testid="agents.navigation.settings.tab"
+              data-otop-id="agents.navigation.settings.tab"
+            >
               <SettingsIcon className="w-4 h-4 mr-2" />
               Settings
             </TabsTrigger>
@@ -517,9 +548,15 @@ export default function App() {
                   className="pl-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  data-testid="agents.agent.list.search.input"
+                  data-otop-id="agents.agent.list.search.input"
                 />
               </div>
-              <Button onClick={() => setDialogOpen(true)}>
+              <Button
+                onClick={() => setDialogOpen(true)}
+                data-testid="agents.agent.list.create.button"
+                data-otop-id="agents.agent.list.create.button"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Agent
               </Button>

@@ -18,7 +18,10 @@
     "test": "tsx --test tests/**/*.test.ts",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:health": "tsx src/db/health.ts",
-    "queue:status": "tsx src/queue/status.ts"
+    "queue:status": "tsx src/queue/status.ts",
+    "generate:api": "openapi-typescript swagger.yaml -o src/generated/api-types.ts",
+    "otop:doctor": "bash ./scripts/backend-doctor-v2.sh",
+    "otop:check": "bash ./scripts/backend-doctor-v2.sh"
   },
   "build": {
     "appId": "com.devshift.code-cloud-agents",
@@ -85,6 +88,7 @@
     "embla-carousel-react": "^8.6.0",
     "express": "^5.2.1",
     "input-otp": "^1.4.2",
+    "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.487.0",
     "next-themes": "^0.4.6",
@@ -113,9 +117,12 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react-swc": "^3.10.2",
+    "ajv": "^8.17.1",
     "autoprefixer": "^10.4.20",
     "electron": "^33.0.0",
     "electron-builder": "^25.1.8",
+    "openapi-fetch": "^0.15.0",
+    "openapi-typescript": "^7.10.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "tailwindcss-animate": "^1.0.7",

@@ -1,66 +1,82 @@
 openapi: 3.0.0
 info:
   title: Code Cloud Agents API
-  description: |
-    **Supervised AI System with Engineering Lead Supervisor and Cloud Assistant**
+  description: '**Supervised AI System with Engineering Lead Supervisor and Cloud
+    Assistant**
 
-    Ein intelligentes Supervisor-System, das AI-Agenten überwacht, Risiken bewertet und bei kritischen Entscheidungen automatisch eingreift.
+
+    Ein intelligentes Supervisor-System, das AI-Agenten überwacht, Risiken bewertet
+    und bei kritischen Entscheidungen automatisch eingreift.
+
 
     ## Features
+
     - 🎯 STOP-Score System (0-100 Risikobewertung)
+
     - 🛡️ Enforcement Gate (HARD STOP bei Score ≥ 70)
+
     - 📊 Task Management mit Audit-Trail
+
     - 🔍 Vollständige Audit-Log Dokumentation
+
     - 💬 AI-Chat mit Multi-Provider Support
+
     - 🎫 Demo Invite System mit Usage-Limits
 
+
     ## Authentication
+
     Currently all endpoints are open. Authentication (JWT) is planned for future releases.
 
+
     ## Rate Limiting
+
     - Demo endpoints: 5 requests per 15 minutes
+
     - Other endpoints: No limit (production will add limits)
 
+
     ## Base URL
+
     - Development: `http://localhost:3000`
+
     - Production: `http://178.156.178.70:3000`
 
+    '
   version: 0.1.0
   contact:
     name: Step2Job GmbH
     email: support@step2job.de
   license:
     name: Proprietary
-
 servers:
-  - url: http://localhost:3000
-    description: Development server
-  - url: http://178.156.178.70:3000
-    description: Production server
-
+- url: http://localhost:3000
+  description: Development server
+- url: http://178.156.178.70:3000
+  description: Production server
 tags:
-  - name: Health
-    description: Health check and API info endpoints
-  - name: Tasks
-    description: Task management and supervision
-  - name: Audit
-    description: Audit log and compliance tracking
-  - name: Enforcement
-    description: STOP-Score enforcement and human approvals
-  - name: Chat
-    description: AI chat with multi-agent support
-  - name: Demo
-    description: Demo invite system for user onboarding
-  - name: Slack
-    description: Slack integration and webhooks
-
+- name: Health
+  description: Health check and API info endpoints
+- name: Tasks
+  description: Task management and supervision
+- name: Audit
+  description: Audit log and compliance tracking
+- name: Enforcement
+  description: STOP-Score enforcement and human approvals
+- name: Chat
+  description: AI chat with multi-agent support
+- name: Demo
+  description: Demo invite system for user onboarding
+- name: Slack
+  description: Slack integration and webhooks
 paths:
   /api:
     get:
       tags:
-        - Health
+      - Health
       summary: Get API information
-      description: Returns basic API metadata including version, status, and supervisor mode
+      description: Returns basic API metadata including version, status, and supervisor
+        mode
       responses:
         '200':
           description: API information
@@ -84,11 +100,11 @@ paths:
                   mode:
                     type: string
                     example: SUPERVISED
-
+      operationId: health_get_api
   /health:
     get:
       tags:
-        - Health
+      - Health
       summary: Health check
       description: Returns health status of database, queue, and system uptime
       responses:
@@ -111,11 +127,11 @@ paths:
                   uptime:
                     type: number
                     example: 123.45
-
+      operationId: health_get_health
   /api/tasks:
     get:
       tags:
-        - Tasks
+      - Tasks
       summary: List all tasks
       description: Returns all tasks with their current status and metadata
       responses:
@@ -127,14 +143,17 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Task'
-
+      operationId: tasks_get_api_tasks
     post:
       tags:
-        - Tasks
+      - Tasks
       summary: Create a new task
-      description: |
-        Creates a new supervised task. The task will be evaluated by the EnforcementGate.
+      description: 'Creates a new supervised task. The task will be evaluated by the
+        EnforcementGate.
+
         If STOP_REQUIRED, the task will be blocked until human approval.
+
+        '
       requestBody:
         required: true
         content:
@@ -142,7 +161,7 @@ paths:
             schema:
               type: object
               required:
-                - title
+              - title
               properties:
                 title:
                   type: string
@@ -154,12 +173,16 @@ paths:
                   example: Add JWT-based authentication with login and logout endpoints
                 priority:
                   type: string
-                  enum: [low, medium, high]
+                  enum:
+                  - low
+                  - medium
+                  - high
                   default: medium
                   example: high
                 assignee:
                   type: string
-                  enum: [cloud_assistant]
+                  enum:
+                  - cloud_assistant
                   default: cloud_assistant
                   example: cloud_assistant
                 artefacts:
@@ -180,21 +203,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: tasks_post_api_tasks
   /api/tasks/{id}:
     get:
       tags:
-        - Tasks
+      - Tasks
       summary: Get task by ID
       description: Returns details of a specific task including its status and logs
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Task ID
-          example: abc123def456
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Task ID
+        example: abc123def456
       responses:
         '200':
           description: Task details
@@ -208,21 +231,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: tasks_get_api_tasks_id
     post:
       tags:
-        - Tasks
+      - Tasks
       summary: Submit work for a task
-      description: |
-        Submit completed work for evaluation. The EnforcementGate will calculate a STOP-Score.
+      description: 'Submit completed work for evaluation. The EnforcementGate will
+        calculate a STOP-Score.
+
         If score ≥ 70, the task will be blocked.
+
+        '
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Task ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Task ID
       requestBody:
         required: true
         content:
@@ -230,22 +256,27 @@ paths:
             schema:
               type: object
               required:
-                - content
+              - content
               properties:
                 content:
                   type: string
                   minLength: 1
-                  example: "Implemented JWT authentication with express-jwt. Created /login and /logout endpoints."
+                  example: Implemented JWT authentication with express-jwt. Created
+                    /login and /logout endpoints.
                 artefacts:
                   type: array
                   items:
                     type: string
-                  example: ["src/auth/jwt.ts", "src/api/auth.ts"]
+                  example:
+                  - src/auth/jwt.ts
+                  - src/api/auth.ts
                 claims:
                   type: array
                   items:
                     type: string
-                  example: ["Authentication is secure", "All tests passing"]
+                  example:
+                  - Authentication is secure
+                  - All tests passing
       responses:
         '200':
           description: Work evaluated successfully
@@ -280,22 +311,24 @@ paths:
                     type: array
                     items:
                       type: string
-                    example: ["UNPROVEN_CLAIM", "MISSING_EVIDENCE"]
-
+                    example:
+                    - UNPROVEN_CLAIM
+                    - MISSING_EVIDENCE
+      operationId: tasks_post_api_tasks_id
   /api/audit:
     get:
       tags:
-        - Audit
+      - Audit
       summary: List audit entries
       description: Returns audit log entries with optional limit
       parameters:
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 100
-          description: Maximum number of entries to return
-          example: 50
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 100
+        description: Maximum number of entries to return
+        example: 50
       responses:
         '200':
           description: List of audit entries
@@ -305,20 +338,20 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AuditEntry'
-
+      operationId: audit_get_api_audit
   /api/audit/{id}:
     get:
       tags:
-        - Audit
+      - Audit
       summary: Get audit entry by ID
       description: Returns details of a specific audit entry
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Audit entry ID
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Audit entry ID
       responses:
         '200':
           description: Audit entry details
@@ -332,13 +365,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: audit_get_api_audit_id
   /api/enforcement/blocked:
     get:
       tags:
-        - Enforcement
+      - Enforcement
       summary: Get blocked tasks
-      description: Returns all tasks currently blocked by the EnforcementGate awaiting human review
+      description: Returns all tasks currently blocked by the EnforcementGate awaiting
+        human review
       responses:
         '200':
           description: List of blocked tasks
@@ -359,23 +393,28 @@ paths:
                       type: array
                       items:
                         type: string
-                      example: ["UNPROVEN_CLAIM", "MISSING_EVIDENCE"]
+                      example:
+                      - UNPROVEN_CLAIM
+                      - MISSING_EVIDENCE
                     blockedAt:
                       type: string
                       format: date-time
-                      example: "2025-12-26T12:00:00.000Z"
+                      example: '2025-12-26T12:00:00.000Z'
                     requiredAction:
                       type: string
-                      example: "Address: UNPROVEN_CLAIM, MISSING_EVIDENCE"
-
+                      example: 'Address: UNPROVEN_CLAIM, MISSING_EVIDENCE'
+      operationId: enforcement_get_api_enforcement_blocked
   /api/enforcement/approve:
     post:
       tags:
-        - Enforcement
+      - Enforcement
       summary: Approve a blocked task
-      description: |
-        Human approval to unblock a task. Requires approval reason and approver info.
+      description: 'Human approval to unblock a task. Requires approval reason and
+        approver info.
+
         This is a CRITICAL action that overrides the STOP-Score enforcement.
+
+        '
       requestBody:
         required: true
         content:
@@ -383,9 +422,9 @@ paths:
             schema:
               type: object
               required:
-                - taskId
-                - approvedBy
-                - reason
+              - taskId
+              - approvedBy
+              - reason
               properties:
                 taskId:
                   type: string
@@ -395,7 +434,7 @@ paths:
                   example: admin@example.com
                 reason:
                   type: string
-                  example: "Evidence verified manually, claims are valid"
+                  example: Evidence verified manually, claims are valid
       responses:
         '200':
           description: Task approved and unblocked
@@ -406,7 +445,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Task approved, gate opened"
+                    example: Task approved, gate opened
                   taskId:
                     type: string
                     example: abc123
@@ -416,14 +455,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: enforcement_post_api_enforcement_approve
   /api/enforcement/reject:
     post:
       tags:
-        - Enforcement
+      - Enforcement
       summary: Reject a blocked task
-      description: |
-        Human rejection of a blocked task. The task will be marked as stopped.
+      description: 'Human rejection of a blocked task. The task will be marked as
+        stopped.
+
+        '
       requestBody:
         required: true
         content:
@@ -431,9 +472,9 @@ paths:
             schema:
               type: object
               required:
-                - taskId
-                - rejectedBy
-                - reason
+              - taskId
+              - rejectedBy
+              - reason
               properties:
                 taskId:
                   type: string
@@ -443,7 +484,7 @@ paths:
                   example: admin@example.com
                 reason:
                   type: string
-                  example: "Claims cannot be verified, evidence insufficient"
+                  example: Claims cannot be verified, evidence insufficient
       responses:
         '200':
           description: Task rejected and stopped
@@ -454,7 +495,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Task rejected and stopped"
+                    example: Task rejected and stopped
                   taskId:
                     type: string
                     example: abc123
@@ -464,15 +505,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: enforcement_post_api_enforcement_reject
   /api/chat/send:
     post:
       tags:
-        - Chat
+      - Chat
       summary: Send a chat message
-      description: |
-        Send a message to an AI agent. The agent will process the message and return a response.
+      description: 'Send a message to an AI agent. The agent will process the message
+        and return a response.
+
         Supports multiple AI providers (Anthropic, OpenAI, Gemini).
+
+        '
       requestBody:
         required: true
         content:
@@ -480,13 +524,13 @@ paths:
             schema:
               type: object
               required:
-                - message
-                - userId
+              - message
+              - userId
               properties:
                 message:
                   type: string
                   minLength: 1
-                  example: "Help me implement user authentication with JWT"
+                  example: Help me implement user authentication with JWT
                 userId:
                   type: string
                   example: user123
@@ -496,7 +540,10 @@ paths:
                   default: emir
                 provider:
                   type: string
-                  enum: [anthropic, openai, gemini]
+                  enum:
+                  - anthropic
+                  - openai
+                  - gemini
                   example: anthropic
                 model:
                   type: string
@@ -520,25 +567,25 @@ paths:
                     example: emir
                   userMessage:
                     type: string
-                    example: "Help me implement user authentication with JWT"
+                    example: Help me implement user authentication with JWT
                   agentResponse:
                     type: string
-                    example: "I'll help you implement JWT authentication..."
+                    example: I'll help you implement JWT authentication...
                   timestamp:
                     type: string
                     format: date-time
-                    example: "2025-12-26T12:00:00.000Z"
+                    example: '2025-12-26T12:00:00.000Z'
         '400':
           description: Invalid request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: chat_post_api_chat_send
   /api/chat/agents:
     get:
       tags:
-        - Chat
+      - Chat
       summary: Get available agents
       description: Returns list of available AI agents with their capabilities
       responses:
@@ -556,24 +603,31 @@ paths:
                       example: emir
                     displayName:
                       type: string
-                      example: "Emir (Supervisor)"
+                      example: Emir (Supervisor)
                     description:
                       type: string
-                      example: "Lead supervisor, coordinates all agents and makes final decisions"
+                      example: Lead supervisor, coordinates all agents and makes final
+                        decisions
                     capabilities:
                       type: array
                       items:
                         type: string
-                      example: ["planning", "review", "coordination", "decision-making"]
-
+                      example:
+                      - planning
+                      - review
+                      - coordination
+                      - decision-making
+      operationId: chat_get_api_chat_agents
   /api/demo/invites:
     post:
       tags:
-        - Demo
+      - Demo
       summary: Create demo invite (Admin only)
-      description: |
-        Create a new demo invite code with specified limits.
+      description: 'Create a new demo invite code with specified limits.
+
         **Requires:** Admin authentication (future implementation)
+
+        '
       requestBody:
         required: true
         content:
@@ -581,7 +635,7 @@ paths:
             schema:
               type: object
               required:
-                - createdBy
+              - createdBy
               properties:
                 createdBy:
                   type: string
@@ -630,25 +684,27 @@ paths:
                   expiresAt:
                     type: string
                     format: date-time
-                    example: "2026-01-02T12:00:00.000Z"
+                    example: '2026-01-02T12:00:00.000Z'
                   inviteUrl:
                     type: string
-                    example: "http://localhost:3000/demo/redeem?code=DEMO8CHR"
+                    example: http://localhost:3000/demo/redeem?code=DEMO8CHR
         '400':
           description: Invalid request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: demo_post_api_demo_invites
   /api/demo/redeem:
     post:
       tags:
-        - Demo
+      - Demo
       summary: Redeem demo invite code
-      description: |
-        Redeem an invite code to create a demo user account.
+      description: 'Redeem an invite code to create a demo user account.
+
         **Rate Limited:** 5 attempts per 15 minutes per IP
+
+        '
       requestBody:
         required: true
         content:
@@ -656,9 +712,9 @@ paths:
             schema:
               type: object
               required:
-                - code
-                - username
-                - password
+              - code
+              - username
+              - password
               properties:
                 code:
                   type: string
@@ -716,23 +772,25 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Too many redemption attempts. Please try again later."
-
+                    example: Too many redemption attempts. Please try again later.
+      operationId: demo_post_api_demo_redeem
   /api/demo/stats:
     get:
       tags:
-        - Demo
+      - Demo
       summary: Get demo statistics (Admin only)
-      description: |
-        Returns statistics about demo invites and users.
+      description: 'Returns statistics about demo invites and users.
+
         **Requires:** Admin authentication (future implementation)
+
+        '
       parameters:
-        - name: X-User-ID
-          in: header
-          schema:
-            type: string
-          description: Admin user ID
-          example: admin
+      - name: X-User-ID
+        in: header
+        schema:
+          type: string
+        description: Admin user ID
+        example: admin
       responses:
         '200':
           description: Demo statistics
@@ -756,21 +814,21 @@ paths:
                   totalMessagesCreated:
                     type: integer
                     example: 500
-
+      operationId: demo_get_api_demo_stats
   /api/demo/users/{userId}:
     get:
       tags:
-        - Demo
+      - Demo
       summary: Get demo user usage stats
       description: Returns usage statistics for a specific demo user
       parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Demo user ID
-          example: user123
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Demo user ID
+        example: user123
       responses:
         '200':
           description: User usage statistics
@@ -821,15 +879,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: demo_get_api_demo_users_userid
   /api/slack/events:
     post:
       tags:
-        - Slack
+      - Slack
       summary: Slack events webhook
-      description: |
-        Receives events from Slack (messages, mentions, etc.).
+      description: 'Receives events from Slack (messages, mentions, etc.).
+
         **Requires:** Slack signature verification
+
+        '
       requestBody:
         required: true
         content:
@@ -842,7 +902,7 @@ paths:
                   example: event_callback
                 challenge:
                   type: string
-                  example: "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P"
+                  example: 3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P
                 event:
                   type: object
       responses:
@@ -855,14 +915,14 @@ paths:
                 properties:
                   challenge:
                     type: string
-                    example: "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P"
+                    example: 3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P
         '401':
           description: Invalid signature
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      operationId: slack_post_api_slack_events
 components:
   schemas:
     Task:
@@ -879,11 +939,18 @@ components:
           example: Add JWT-based authentication with login and logout endpoints
         priority:
           type: string
-          enum: [low, medium, high]
+          enum:
+          - low
+          - medium
+          - high
           example: high
         status:
           type: string
-          enum: [pending, in_progress, completed, stopped]
+          enum:
+          - pending
+          - in_progress
+          - completed
+          - stopped
           example: in_progress
         assignee:
           type: string
@@ -891,17 +958,16 @@ components:
         created_at:
           type: string
           format: date-time
-          example: "2025-12-26T12:00:00.000Z"
+          example: '2025-12-26T12:00:00.000Z'
         updated_at:
           type: string
           format: date-time
-          example: "2025-12-26T13:00:00.000Z"
+          example: '2025-12-26T13:00:00.000Z'
         stop_score:
           type: integer
           minimum: 0
           maximum: 100
           example: 15
-
     AuditEntry:
       type: object
       properties:
@@ -913,15 +979,24 @@ components:
           example: abc123
         decision:
           type: string
-          enum: [APPROVED, STOP_REQUIRED]
+          enum:
+          - APPROVED
+          - STOP_REQUIRED
           example: APPROVED
         final_status:
           type: string
-          enum: [COMPLETE, COMPLETE_WITH_GAPS, STOP_REQUIRED]
+          enum:
+          - COMPLETE
+          - COMPLETE_WITH_GAPS
+          - STOP_REQUIRED
           example: COMPLETE
         risk_level:
           type: string
-          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          - CRITICAL
           example: LOW
         stop_score:
           type: integer
@@ -936,29 +1011,28 @@ components:
           example: '[]'
         required_next_action:
           type: string
-          example: "Continue with next task"
+          example: Continue with next task
         created_at:
           type: string
           format: date-time
-          example: "2025-12-26T12:00:00.000Z"
-
+          example: '2025-12-26T12:00:00.000Z'
     Error:
       type: object
       properties:
         error:
           type: string
-          example: "Invalid request"
+          example: Invalid request
         details:
           type: object
           example: {}
-
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: |
-        JWT-based authentication (future implementation).
+      description: 'JWT-based authentication (future implementation).
+
         Currently all endpoints are open.
 
+        '
 security: []

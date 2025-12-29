@@ -51,6 +51,7 @@ export function CreateAgentDialog({ open, onOpenChange, onCreate }: CreateAgentD
               placeholder="My Automation Agent"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              data-testid="cloudagents.agent.create.name.input"
             />
           </div>
           <div className="space-y-2">
@@ -60,12 +61,13 @@ export function CreateAgentDialog({ open, onOpenChange, onCreate }: CreateAgentD
               placeholder="What does this agent do?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              data-testid="cloudagents.agent.create.description.input"
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="language">Language</Label>
             <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger>
+              <SelectTrigger data-testid="cloudagents.agent.create.language.select">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -85,14 +87,15 @@ export function CreateAgentDialog({ open, onOpenChange, onCreate }: CreateAgentD
               className="font-mono h-64"
               value={code}
               onChange={(e) => setCode(e.target.value)}
+              data-testid="cloudagents.agent.create.code.textarea"
             />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} data-testid="cloudagents.agent.create.cancel.button">
             Cancel
           </Button>
-          <Button onClick={handleCreate}>Create Agent</Button>
+          <Button onClick={handleCreate} data-testid="cloudagents.agent.create.submit.button">Create Agent</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

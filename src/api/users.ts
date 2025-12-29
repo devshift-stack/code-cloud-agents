@@ -54,7 +54,7 @@ export function createUsersRouter(db: Database): Router {
    * GET /api/users/stats
    * Get user statistics (Admin only)
    */
-  router.get("/stats", requireAdmin, async (req: Request, res: Response) => {
+  router.get("/stats", requireAdmin, async (_req: AuthenticatedRequest, res: Response) => {
     try {
       const stats = getUserStats(rawDb);
 

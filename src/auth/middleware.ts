@@ -15,6 +15,14 @@ export interface AuthenticatedRequest extends Request {
 }
 
 /**
+ * Check if userId is a system diagnostic ID
+ */
+function isSystemId(userId: string | undefined): boolean {
+  if (!userId) return false;
+  return userId.startsWith("system-") || userId === "health-check" || userId === "diagnostics";
+}
+
+/**
  * Admin role verification
  * Returns 403 Forbidden if user is not admin
  *
@@ -25,8 +33,10 @@ export function requireAdmin(req: AuthenticatedRequest, res: Response, next: Nex
   const userId = req.headers["x-user-id"] as string;
   const userRole = req.headers["x-user-role"] as string;
 
-  // Log authentication attempt
-  console.log(`[AUTH] Admin access attempt - User: ${userId || "anonymous"}, Role: ${userRole || "none"}`);
+  // Log authentication attempt (skip for system diagnostics)
+  if (!isSystemId(userId)) {
+    console.log(`[AUTH] Admin access attempt - User: ${userId || "anonymous"}, Role: ${userRole || "none"}`);
+  }
 
   // Check if user is authenticated
   if (!userId) {

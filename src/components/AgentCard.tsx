@@ -68,17 +68,17 @@ export function AgentCard({
           </div>
           <div className="flex gap-2 mt-4">
             {status === 'active' ? (
-              <Button size="sm" variant="outline" onClick={() => onPause(id)}>
+              <Button size="sm" variant="outline" onClick={() => onPause(id)} data-testid={`cloudagents.agent.${id}.pause.button`}>
                 <Pause className="w-4 h-4 mr-1" />
                 Pause
               </Button>
             ) : (
-              <Button size="sm" onClick={() => onStart(id)}>
+              <Button size="sm" onClick={() => onStart(id)} data-testid={`cloudagents.agent.${id}.start.button`}>
                 <Play className="w-4 h-4 mr-1" />
                 Start
               </Button>
             )}
-            <Button size="sm" variant="outline" onClick={() => onConfigure(id)}>
+            <Button size="sm" variant="outline" onClick={() => onConfigure(id)} data-testid={`cloudagents.agent.${id}.configure.button`}>
               <Settings className="w-4 h-4" />
             </Button>
             <Button
@@ -86,6 +86,7 @@ export function AgentCard({
               variant="outline"
               className="ml-auto text-destructive"
               onClick={() => onDelete(id)}
+              data-testid={`cloudagents.agent.${id}.delete.button`}
             >
               <Trash2 className="w-4 h-4" />
             </Button>

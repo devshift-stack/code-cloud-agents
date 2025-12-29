@@ -218,7 +218,11 @@ export function TaskBoard() {
           <CardTitle>Task Management</CardTitle>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm">
+              <Button
+                size="sm"
+                data-testid="cloudagents.task.board.create.button"
+                data-otop-id="cloudagents.task.board.create.button"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 New Task
               </Button>
@@ -240,6 +244,8 @@ export function TaskBoard() {
                     onChange={(e) =>
                       setNewTask((prev) => ({ ...prev, title: e.target.value }))
                     }
+                    data-testid="cloudagents.task.board.title.input"
+                    data-otop-id="cloudagents.task.board.title.input"
                   />
                 </div>
                 <div className="space-y-2">
@@ -251,6 +257,8 @@ export function TaskBoard() {
                     onChange={(e) =>
                       setNewTask((prev) => ({ ...prev, description: e.target.value }))
                     }
+                    data-testid="cloudagents.task.board.description.textarea"
+                    data-otop-id="cloudagents.task.board.description.textarea"
                   />
                 </div>
                 <div className="space-y-2">
@@ -261,7 +269,10 @@ export function TaskBoard() {
                       setNewTask((prev) => ({ ...prev, priority: value }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-testid="cloudagents.task.board.priority.select"
+                      data-otop-id="cloudagents.task.board.priority.select"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -281,7 +292,10 @@ export function TaskBoard() {
                       setNewTask((prev) => ({ ...prev, agent: value }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-testid="cloudagents.task.board.agent.select"
+                      data-otop-id="cloudagents.task.board.agent.select"
+                    >
                       <SelectValue placeholder="Select agent" />
                     </SelectTrigger>
                     <SelectContent>
@@ -304,6 +318,8 @@ export function TaskBoard() {
                     onChange={(e) =>
                       setNewTask((prev) => ({ ...prev, repository: e.target.value }))
                     }
+                    data-testid="cloudagents.task.board.repository.input"
+                    data-otop-id="cloudagents.task.board.repository.input"
                   />
                 </div>
 
@@ -316,7 +332,10 @@ export function TaskBoard() {
                       setNewTask((prev) => ({ ...prev, model: value }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-testid="cloudagents.task.board.model.select"
+                      data-otop-id="cloudagents.task.board.model.select"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -343,6 +362,8 @@ export function TaskBoard() {
                         .filter(Boolean);
                       setNewTask((prev) => ({ ...prev, artefacts }));
                     }}
+                    data-testid="cloudagents.task.board.artefacts.input"
+                    data-otop-id="cloudagents.task.board.artefacts.input"
                   />
                 </div>
 
@@ -350,10 +371,18 @@ export function TaskBoard() {
                   <Button
                     variant="outline"
                     onClick={() => setIsCreateDialogOpen(false)}
+                    data-testid="cloudagents.task.board.cancel.button"
+                    data-otop-id="cloudagents.task.board.cancel.button"
                   >
                     Cancel
                   </Button>
-                  <Button onClick={createTask}>Create Task</Button>
+                  <Button
+                    onClick={createTask}
+                    data-testid="cloudagents.task.board.submit.button"
+                    data-otop-id="cloudagents.task.board.submit.button"
+                  >
+                    Create Task
+                  </Button>
                 </div>
               </div>
             </DialogContent>
@@ -414,6 +443,8 @@ export function TaskBoard() {
                               size="sm"
                               variant="outline"
                               onClick={() => updateTaskStatus(task.id, 'active')}
+                              data-testid="cloudagents.task.board.task.start.button"
+                              data-otop-id="cloudagents.task.board.task.start.button"
                             >
                               Start
                             </Button>
@@ -424,6 +455,8 @@ export function TaskBoard() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => updateTaskStatus(task.id, 'finished')}
+                                data-testid="cloudagents.task.board.task.complete.button"
+                                data-otop-id="cloudagents.task.board.task.complete.button"
                               >
                                 Complete
                               </Button>
@@ -431,6 +464,8 @@ export function TaskBoard() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => updateTaskStatus(task.id, 'cancelled')}
+                                data-testid="cloudagents.task.board.task.cancel.button"
+                                data-otop-id="cloudagents.task.board.task.cancel.button"
                               >
                                 Cancel
                               </Button>
