@@ -8,7 +8,7 @@ import { createSlackClient } from "../integrations/slack/client.js";
 import { getSmartResponse, isMentioningMujo, cleanMessage } from "../integrations/slack/bot-responses.js";
 import { createMetaSupervisor } from "../meta/metaSupervisor.js";
 import { computeStopScore } from "../audit/stopScorer.js";
-import { getRandomJoke, type Language } from "../integrations/slack/humor.js";
+import { type Language } from "../integrations/slack/humor.js";
 
 const slack = createSlackClient();
 const metaSupervisor = createMetaSupervisor();

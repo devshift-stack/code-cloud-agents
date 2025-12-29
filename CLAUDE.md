@@ -421,3 +421,59 @@ ANTHROPIC_API_KEY=sk-...
 OPENAI_API_KEY=sk-...
 XAI_API_KEY=xai-...
 ```
+
+---
+
+## 🧪 TEST-AUTOMATISIERUNG (PFLICHT)
+
+### UI Test-IDs (PFLICHT für alle UI-Elemente)
+
+```tsx
+// React/TypeScript
+<Button data-testid="login_button_submit">Login</Button>
+<Input data-testid="login_input_email" />
+<div data-testid="dashboard_card_agents" />
+```
+
+**Naming Convention:** `screenName_elementType_beschreibung`
+
+Beispiele:
+- `login_button_submit`
+- `dashboard_list_agents`
+- `settings_toggle_darkmode`
+- `chat_input_message`
+
+### Test-Typen
+
+| Typ | Wann | Beispiel |
+|-----|------|----------|
+| Unit Test | Jede Utility-Funktion | `auth.test.ts` |
+| Integration Test | Jeder Screen/API | `github-api.test.ts` |
+| E2E Test | Kritische Flows | `login-flow.test.ts` |
+
+### Vor jedem Commit - Checkliste
+
+- [ ] Alle neuen UI-Elemente haben `data-testid`
+- [ ] Alle neuen Funktionen haben Unit Tests
+- [ ] Alle Tests laufen durch (`npm test`)
+- [ ] TypeScript hat keine Fehler (`npx tsc --noEmit`)
+
+### Test-Befehle
+
+```bash
+# Alle Tests ausführen
+npm test
+
+# Einzelnen Test ausführen
+npx tsx --test tests/auth-middleware.test.ts
+
+# Type Check
+npx tsc --noEmit
+```
+
+### CI/CD Integration
+
+- Tests laufen automatisch bei Push auf `main/develop`
+- Tests laufen bei Pull Requests
+- Tägliche Tests um 6:00 UTC
+- CI muss grün sein vor Merge

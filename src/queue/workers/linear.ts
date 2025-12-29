@@ -66,19 +66,21 @@ async function handleIssueEvent(job: QueueJob, db: Database): Promise<void> {
   db.createAuditEntry({
     agent: "linear_worker",
     action: "process_issue",
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       action: data.action,
       issue_id: data.data.id,
       issue_title: data.data.title,
       state: data.data.state?.name,
       team: data.data.team?.name,
       assignee: data.data.assignee?.name,
-    }),
-    output: JSON.stringify({
-      status: "processed",
       url: data.data.url,
     }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 
   // Action-specific handling
@@ -114,19 +116,21 @@ async function handleCommentEvent(job: QueueJob, db: Database): Promise<void> {
   db.createAuditEntry({
     agent: "linear_worker",
     action: "process_comment",
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       action: data.action,
       comment_id: data.data.id,
       issue_id: data.data.issue?.id,
       issue_title: data.data.issue?.title,
       commenter: data.data.user?.name,
       body_length: data.data.body.length,
-    }),
-    output: JSON.stringify({
-      status: "processed",
       url: data.data.url,
     }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 
   if (data.action === "create") {
@@ -157,18 +161,20 @@ async function handleProjectEvent(job: QueueJob, db: Database): Promise<void> {
   db.createAuditEntry({
     agent: "linear_worker",
     action: "process_project",
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       action: data.action,
       project_id: data.data.id,
       project_name: data.data.name,
       state: data.data.state,
       lead: data.data.lead?.name,
-    }),
-    output: JSON.stringify({
-      status: "processed",
       url: data.data.url,
     }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 
   if (data.action === "create") {

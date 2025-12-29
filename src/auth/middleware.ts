@@ -173,7 +173,7 @@ export function createRateLimiter(maxRequests: number, windowMs: number) {
  * Database-backed user verification (for future JWT implementation)
  * TODO: Implement when JWT auth is ready
  */
-export function createDatabaseAuth(db: Database) {
+export function createDatabaseAuth(_db: Database) {
   return {
     requireAdmin: (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       // TODO: Verify JWT token and check user role in database

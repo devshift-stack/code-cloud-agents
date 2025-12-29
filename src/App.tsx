@@ -53,7 +53,8 @@ import {
 } from './components/ui/select';
 import { StatusDashboard } from './components/StatusDashboard';
 
-interface DailyTask {
+// Reserved for future use
+export interface DailyTask {
   id: string;
   date: string;
   task: string;
@@ -80,7 +81,7 @@ interface LogEntry {
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ id: string; email: string; name: string; role: string } | null>(null);
+  const [_currentUser, setCurrentUser] = useState<{ id: string; email: string; name: string; role: string } | null>(null);
 
   // All useState hooks MUST be before any conditional returns
   const [agents, setAgents] = useState<Agent[]>([

@@ -7,7 +7,7 @@ import { createGitHubClient } from "./client.js";
 /**
  * Example 1: Create an issue
  */
-async function exampleCreateIssue() {
+export async function exampleCreateIssue() {
   const github = createGitHubClient();
 
   const result = await github.createIssue("dsactivi-2/Optimizecodecloudagents", {
@@ -28,7 +28,7 @@ async function exampleCreateIssue() {
 /**
  * Example 2: List repositories
  */
-async function exampleListRepos() {
+export async function exampleListRepos() {
   const github = createGitHubClient();
 
   const result = await github.listRepos();
@@ -46,7 +46,7 @@ async function exampleListRepos() {
 /**
  * Example 3: Check connection status
  */
-async function exampleCheckStatus() {
+export async function exampleCheckStatus() {
   const github = createGitHubClient();
 
   const result = await github.getStatus();
@@ -61,7 +61,7 @@ async function exampleCheckStatus() {
 /**
  * Example 4: Use with custom config (not from ENV)
  */
-async function exampleCustomConfig() {
+export async function exampleCustomConfig() {
   const github = createGitHubClient({
     token: "ghp_your_token_here",
     org: "your-org",

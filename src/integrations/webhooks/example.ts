@@ -114,8 +114,7 @@ function exampleVerifyIncoming(requestBody: string, signature: string, secret: s
 
   if (isValid) {
     console.log("✅ Webhook signature valid");
-    const payload = JSON.parse(requestBody);
-    // Process payload...
+    // Parse and process: JSON.parse(requestBody)
   } else {
     console.error("❌ Invalid webhook signature");
   }

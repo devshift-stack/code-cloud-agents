@@ -14,7 +14,7 @@ import {
  * Example 1: STOP Score Alert
  * When a high STOP score is detected, send alert to Slack
  */
-async function exampleStopScoreAlert() {
+export async function exampleStopScoreAlert() {
   const notifications = createSupervisorNotifications({
     channel: "#alerts",
     enabled: true,
@@ -45,7 +45,7 @@ async function exampleStopScoreAlert() {
  * Example 2: System Health Monitoring
  * Monitor system health and send alerts when degraded
  */
-async function exampleSystemHealthMonitoring() {
+export async function exampleSystemHealthMonitoring() {
   const metaSupervisor = createMetaSupervisor();
   const notifications = createSupervisorNotifications();
 
@@ -83,7 +83,7 @@ async function exampleSystemHealthMonitoring() {
  * Example 3: Task Completion Notification
  * Notify team when task completes with issues
  */
-async function exampleTaskCompletion() {
+export async function exampleTaskCompletion() {
   const assistant = createCloudAssistant();
   const notifications = createSupervisorNotifications();
 
@@ -118,7 +118,7 @@ async function exampleTaskCompletion() {
  * Example 4: Complete Workflow
  * Full supervisor workflow with Slack notifications
  */
-async function exampleCompleteWorkflow() {
+export async function exampleCompleteWorkflow() {
   console.log("🚀 Starting Supervisor Workflow with Slack Integration\n");
 
   const metaSupervisor = createMetaSupervisor();
@@ -166,7 +166,7 @@ async function exampleCompleteWorkflow() {
  * Example 5: Custom Supervisor Messages
  * Send custom formatted messages from supervisor
  */
-async function exampleCustomMessages() {
+export async function exampleCustomMessages() {
   const notifications = createSupervisorNotifications();
 
   // Info message
@@ -197,7 +197,7 @@ async function exampleCustomMessages() {
  * Example 6: Real-time Monitoring Loop
  * Continuous monitoring with periodic Slack updates
  */
-async function exampleMonitoringLoop() {
+export async function exampleMonitoringLoop() {
   const metaSupervisor = createMetaSupervisor();
   const notifications = createSupervisorNotifications();
 

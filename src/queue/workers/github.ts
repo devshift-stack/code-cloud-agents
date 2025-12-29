@@ -79,21 +79,23 @@ async function handlePushEvent(job: QueueJob, db: Database): Promise<void> {
   db.createAuditEntry({
     agent: "github_worker",
     action: "process_push",
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       repository: data.repository,
       ref: data.ref,
       commitCount: data.commits.length,
       sender: data.sender,
-    }),
-    output: JSON.stringify({
-      status: "processed",
       commits: data.commits.map((c) => ({
         id: c.id.substring(0, 7),
-        message: c.message.split("\n")[0], // First line only
+        message: c.message.split("\n")[0],
         author: c.author.name,
       })),
     }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 
   // TODO: Add your custom logic here:
@@ -116,19 +118,21 @@ async function handlePullRequestEvent(job: QueueJob, db: Database): Promise<void
   db.createAuditEntry({
     agent: "github_worker",
     action: "process_pull_request",
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       repository: data.repository,
       action: data.action,
       pr_number: data.pullRequest.number,
       pr_title: data.pullRequest.title,
       pr_state: data.pullRequest.state,
       sender: data.sender,
-    }),
-    output: JSON.stringify({
-      status: "processed",
       url: data.pullRequest.html_url,
     }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 
   // TODO: Add your custom logic here:
@@ -152,19 +156,21 @@ async function handleIssuesEvent(job: QueueJob, db: Database): Promise<void> {
   db.createAuditEntry({
     agent: "github_worker",
     action: "process_issues",
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       repository: data.repository,
       action: data.action,
       issue_number: data.issue.number,
       issue_title: data.issue.title,
       issue_state: data.issue.state,
       sender: data.sender,
-    }),
-    output: JSON.stringify({
-      status: "processed",
       url: data.issue.html_url,
     }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 
   // TODO: Add your custom logic here:
@@ -188,20 +194,22 @@ async function handleIssueCommentEvent(job: QueueJob, db: Database): Promise<voi
   db.createAuditEntry({
     agent: "github_worker",
     action: "process_issue_comment",
-    input: JSON.stringify({
+    decision: "APPROVED",
+    final_status: "COMPLETE",
+    risk_level: "LOW",
+    stop_score: 0,
+    verified_artefacts: JSON.stringify({
       repository: data.repository,
       action: data.action,
       issue_number: data.issue.number,
       comment_id: data.comment.id,
       commenter: data.comment.user.login,
       sender: data.sender,
-    }),
-    output: JSON.stringify({
-      status: "processed",
       url: data.comment.html_url,
       body_length: data.comment.body.length,
     }),
-    timestamp: new Date().toISOString(),
+    missing_invalid_parts: "",
+    required_next_action: "none",
   });
 
   // TODO: Add your custom logic here:

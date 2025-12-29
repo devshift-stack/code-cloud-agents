@@ -183,7 +183,7 @@ export class MemorySearch {
     if (keywords.length === 0) return [];
 
     // Search for messages containing these keywords
-    const keywordPattern = keywords.join("|");
+    // Future: use keywords.join("|") for regex search
     const results = this.searchMessages({
       query: keywords[0], // Use most relevant keyword
       limit,
