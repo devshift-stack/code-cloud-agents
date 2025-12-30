@@ -1,5 +1,6 @@
 /**
  * Chat Manager - Orchestrates chat sessions with agents
+ * Supports tool-calling for code analysis and file access
  */
 
 import { ChatStorage } from "./storage.ts";
@@ -11,9 +12,41 @@ import type {
 } from "./types.ts";
 import { costTracker } from "../billing/costTracker.ts";
 import { selectModel } from "../billing/modelSelector.ts";
+import { agentTools, executeTool } from "./tools.ts";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// System prompt for the code assistant
+const SYSTEM_PROMPT = `Du bist ein erfahrener Software-Entwickler und Code-Assistent für das "Code Cloud Agents" Projekt.
+
+## Deine Fähigkeiten:
+- Du kannst Dateien im Projekt lesen und analysieren
+- Du kannst nach Code-Mustern und Definitionen suchen
+- Du kannst die Projektstruktur erkunden
+- Du kannst Code erklären, Bugs finden und Lösungen vorschlagen
+
+## Das Projekt:
+Code Cloud Agents ist ein Multi-Agent-System mit:
+- Backend: Express.js + TypeScript auf Port 3000
+- Frontend: Next.js Admin-Dashboard auf Port 3001
+- Datenbank: SQLite mit better-sqlite3
+- AI-Integration: Anthropic Claude, OpenAI, Google Gemini
+- Features: Chat, Tasks, Audit-Logs, Webhooks, Memory-System
+
+## Wichtige Verzeichnisse:
+- src/api/ - API-Routen
+- src/chat/ - Chat-System
+- src/db/ - Datenbank
+- src/auth/ - Authentifizierung
+- src/memory/ - Conversation Memory
+
+## Dein Verhalten:
+1. Nutze die Tools um Code zu lesen bevor du antwortest
+2. Gib konkrete Code-Beispiele
+3. Erkläre Änderungen Schritt für Schritt
+4. Antworte auf Deutsch (Code-Kommentare auf Englisch)
+5. Sei präzise und hilfreich`;
 
 export class ChatManager {
   private storage: ChatStorage;
@@ -241,12 +274,12 @@ export class ChatManager {
   }
 
   /**
-   * Call Anthropic Claude API
+   * Call Anthropic Claude API with tool support
    */
   private async callAnthropic(
     model: string,
     prompt: string,
-    agentName: string
+    _agentName: string
   ): Promise<{
     content: string;
     tokens: { input: number; output: number; total: number };
@@ -258,40 +291,95 @@ export class ChatManager {
     }
 
     const client = new Anthropic({ apiKey });
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
 
-    const response = await client.messages.create({
-      model: model || "claude-3-5-sonnet-20241022",
-      max_tokens: 4096,
-      messages: [
-        {
+    // Build messages array for conversation
+    const messages: Anthropic.MessageParam[] = [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ];
+
+    // Tool-calling loop (max 10 iterations)
+    let finalContent = "";
+    for (let i = 0; i < 10; i++) {
+      const response = await client.messages.create({
+        model: model || "claude-sonnet-4-20250514",
+        max_tokens: 4096,
+        messages,
+        system: SYSTEM_PROMPT,
+        tools: agentTools,
+      });
+
+      totalInputTokens += response.usage.input_tokens;
+      totalOutputTokens += response.usage.output_tokens;
+
+      // Check if we need to handle tool use
+      if (response.stop_reason === "tool_use") {
+        // Find tool use blocks and execute them
+        const toolResults: Anthropic.MessageParam["content"] = [];
+        const assistantContent: Anthropic.ContentBlock[] = [];
+
+        for (const block of response.content) {
+          if (block.type === "tool_use") {
+            console.log(`[Chat] Executing tool: ${block.name}`);
+            const result = await executeTool(
+              block.name,
+              block.input as Record<string, unknown>
+            );
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: block.id,
+              content: result,
+            });
+            assistantContent.push(block);
+          } else if (block.type === "text") {
+            assistantContent.push(block);
+          }
+        }
+
+        // Add assistant message with tool use
+        messages.push({
+          role: "assistant",
+          content: assistantContent,
+        });
+
+        // Add tool results
+        messages.push({
           role: "user",
-          content: prompt,
-        },
-      ],
-      system: `You are ${agentName}, a helpful AI assistant.`,
-    });
+          content: toolResults,
+        });
 
-    const content =
-      response.content[0].type === "text" ? response.content[0].text : "";
+        // Continue the loop to get final response
+        continue;
+      }
 
-    const inputTokens = response.usage.input_tokens;
-    const outputTokens = response.usage.output_tokens;
+      // No more tool calls - extract final text
+      for (const block of response.content) {
+        if (block.type === "text") {
+          finalContent += block.text;
+        }
+      }
+      break;
+    }
 
     // Cost calculation (Claude 3.5 Sonnet pricing: $3/MTok input, $15/MTok output)
-    const inputCostUSD = (inputTokens / 1_000_000) * 3;
-    const outputCostUSD = (outputTokens / 1_000_000) * 15;
+    const inputCostUSD = (totalInputTokens / 1_000_000) * 3;
+    const outputCostUSD = (totalOutputTokens / 1_000_000) * 15;
     const totalCostUSD = inputCostUSD + outputCostUSD;
 
     return {
-      content,
+      content: finalContent,
       tokens: {
-        input: inputTokens,
-        output: outputTokens,
-        total: inputTokens + outputTokens,
+        input: totalInputTokens,
+        output: totalOutputTokens,
+        total: totalInputTokens + totalOutputTokens,
       },
       cost: {
         usd: totalCostUSD,
-        eur: totalCostUSD * 0.92, // Approximate EUR conversion
+        eur: totalCostUSD * 0.92,
       },
     };
   }

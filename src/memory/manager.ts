@@ -196,7 +196,7 @@ export class MemoryManager {
 
     // Insert message
     const msgStmt = rawDb.prepare(`
-      INSERT INTO chat_messages (id, chat_id, role, content, agent_name, tokens_input, tokens_output, tokens_total, timestamp)
+      INSERT INTO chat_messages (id, chat_id, role, content, agent_name, input_tokens, output_tokens, total_tokens, timestamp)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
@@ -260,9 +260,9 @@ export class MemoryManager {
       role: row.role,
       content: row.content,
       agentName: row.agent_name,
-      tokensInput: row.tokens_input,
-      tokensOutput: row.tokens_output,
-      tokensTotal: row.tokens_total,
+      tokensInput: row.input_tokens,
+      tokensOutput: row.output_tokens,
+      tokensTotal: row.total_tokens,
       timestamp: row.timestamp,
     }));
   }
@@ -288,9 +288,9 @@ export class MemoryManager {
       role: row.role,
       content: row.content,
       agentName: row.agent_name,
-      tokensInput: row.tokens_input,
-      tokensOutput: row.tokens_output,
-      tokensTotal: row.tokens_total,
+      tokensInput: row.input_tokens,
+      tokensOutput: row.output_tokens,
+      tokensTotal: row.total_tokens,
       timestamp: row.timestamp,
     }));
   }
@@ -312,9 +312,9 @@ export class MemoryManager {
     const rawDb = this.db.getRawDb();
     const stmt = rawDb.prepare(`
       SELECT
-        COALESCE(SUM(tokens_input), 0) as input,
-        COALESCE(SUM(tokens_output), 0) as output,
-        COALESCE(SUM(tokens_total), 0) as total
+        COALESCE(SUM(input_tokens), 0) as input,
+        COALESCE(SUM(output_tokens), 0) as output,
+        COALESCE(SUM(total_tokens), 0) as total
       FROM chat_messages
       WHERE chat_id = ?
     `);
@@ -397,7 +397,7 @@ export class MemoryManager {
     const chatRow = chatStmt.get(userId) as any;
 
     const msgStmt = rawDb.prepare(`
-      SELECT COUNT(*) as count, COALESCE(SUM(tokens_total), 0) as tokens
+      SELECT COUNT(*) as count, COALESCE(SUM(total_tokens), 0) as tokens
       FROM chat_messages
       WHERE chat_id IN (SELECT id FROM chats WHERE user_id = ?)
     `);
