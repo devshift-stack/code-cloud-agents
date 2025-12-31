@@ -223,6 +223,14 @@ export class ChatManager {
   /**
    * Update chat title
    */
+
+  /**
+   * Create new chat
+   */
+  createChat(userId: string, title: string, agentName: string) {
+    return this.storage.createChat(userId, title, agentName);
+  }
+
   updateChatTitle(chatId: string, title: string): void {
     this.storage.updateChatTitle(chatId, title);
   }

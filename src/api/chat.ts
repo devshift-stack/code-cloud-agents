@@ -188,5 +188,107 @@ export function createChatRouter(chatManager: ChatManager): Router {
     res.json({ agents });
   });
 
+
+  // ===============================
+  // Chat Threads API (for Dashboard)
+  // ===============================
+
+  /**
+   * GET /api/chat/threads
+   * List threads for current authenticated user
+   */
+  router.get("/threads", requireAuth, (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || (req as any).user?.userId || (req as any).userId;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const limit = parseInt(req.query.limit as string) || 50;
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      const result = chatManager.listChats(userId, 1, limit); const chats = result.chats || [];
+      
+      const threads = chats.map((chat: any) => ({
+        id: chat.id,
+        title: chat.title,
+        agentId: chat.agentName || chat.agent_name,
+        userId: chat.userId || chat.user_id,
+        lastMessage: chat.lastMessage || chat.last_message,
+        messageCount: chat.messageCount || chat.message_count || 0,
+        createdAt: chat.createdAt || chat.created_at,
+        updatedAt: chat.updatedAt || chat.updated_at,
+      }));
+
+      res.json({ success: true, threads });
+    } catch (error: any) {
+      console.error("Get threads error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  /**
+   * POST /api/chat/threads
+   * Create new chat thread for current user
+   */
+  router.post("/threads", requireAuth, (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || (req as any).user?.userId || (req as any).userId;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const title = req.body?.title || "New Chat";
+      const agentId = req.body?.agentId || "cloud_assistant";
+
+      const chat = chatManager.createChat(userId, title, agentId);
+
+      res.status(201).json({
+        success: true,
+        thread: {
+          id: chat.id,
+          title: chat.title,
+          agentId: chat.agentName || agentId,
+          userId: chat.userId || userId,
+          createdAt: chat.createdAt || new Date().toISOString(),
+        }
+      });
+    } catch (error: any) {
+      console.error("Create thread error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
+  /**
+   * GET /api/chat/threads/:id/messages
+   * Get messages for a specific thread
+   */
+  router.get("/threads/:id/messages", requireAuth, (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || (req as any).user?.userId || (req as any).userId;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const threadId = req.params.id;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      const history = chatManager.getChatHistory(threadId, limit, offset);
+      
+      const messages = (history.messages || []).map((msg: any) => ({
+        id: msg.id,
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp || msg.created_at || new Date().toISOString(),
+      }));
+
+      res.json({ success: true, messages });
+    } catch (error: any) {
+      console.error("Get thread messages error:", error);
+      res.status(500).json({ error: error.message || "Internal server error" });
+    }
+  });
+
   return router;
 }
