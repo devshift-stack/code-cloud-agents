@@ -219,6 +219,30 @@ export function createAgentControlRouter(): Router {
   router.use(requireAdmin);
 
   /**
+   * GET /api/agents/status
+   * Get status overview of all agents (for MCP tools / dashboard)
+   * Returns: [{ name, status, pid?, uptime?, queueDepth?, lastError? }]
+   */
+  router.get("/status", (_req, res) => {
+    const statusList = Array.from(agents.values()).map((agent) => ({
+      name: agent.name,
+      status: agent.status,
+      pid: agent.status === "online" ? process.pid : null, // In production: real worker PID
+      uptime: agent.uptime,
+      queueDepth: agent.currentTask ? 1 : 0, // Simple queue depth estimation
+      lastError: agent.status === "error" ? "Unknown error" : null,
+      lastActivity: agent.lastActivity,
+    }));
+
+    res.json({
+      success: true,
+      agents: statusList,
+      count: statusList.length,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  /**
    * GET /api/agents
    * List all agents
    */

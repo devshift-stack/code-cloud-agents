@@ -576,4 +576,104 @@ describe("Agent Control API", () => {
       assert.strictEqual(res.getStatus(), 404);
     });
   });
+
+  describe("GET /api/agents/status", () => {
+    it("returns status overview of all agents", async () => {
+      const router = createAgentControlRouter();
+      const req = createMockRequest();
+      const res = createMockResponse();
+
+      const routes = (router as any).stack;
+      const statusRoute = routes.find(
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+      );
+      const handler = statusRoute?.route?.stack[0]?.handle;
+
+      if (handler) {
+        await handler(req, res);
+      }
+
+      assert.strictEqual(res.getStatus(), 200);
+      const response = res.getJson();
+      assert.strictEqual(response.success, true);
+      assert.ok(Array.isArray(response.agents));
+      assert.strictEqual(response.count, 5);
+      assert.ok(response.timestamp);
+    });
+
+    it("returns agents with correct status structure", async () => {
+      const router = createAgentControlRouter();
+      const req = createMockRequest();
+      const res = createMockResponse();
+
+      const routes = (router as any).stack;
+      const statusRoute = routes.find(
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+      );
+      const handler = statusRoute?.route?.stack[0]?.handle;
+
+      if (handler) {
+        await handler(req, res);
+      }
+
+      const response = res.getJson();
+      const agent = response.agents[0];
+
+      // Verify required fields for MCP tools
+      assert.ok(typeof agent.name === "string");
+      assert.ok(typeof agent.status === "string");
+      assert.ok(typeof agent.uptime === "number");
+      assert.ok(typeof agent.queueDepth === "number");
+      assert.ok(typeof agent.lastActivity === "string");
+      // pid and lastError can be null
+      assert.ok(agent.pid === null || typeof agent.pid === "number");
+      assert.ok(agent.lastError === null || typeof agent.lastError === "string");
+    });
+
+    it("returns online agents with PID", async () => {
+      const router = createAgentControlRouter();
+      const req = createMockRequest();
+      const res = createMockResponse();
+
+      const routes = (router as any).stack;
+      const statusRoute = routes.find(
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+      );
+      const handler = statusRoute?.route?.stack[0]?.handle;
+
+      if (handler) {
+        await handler(req, res);
+      }
+
+      const response = res.getJson();
+      const onlineAgent = response.agents.find((a: any) => a.status === "online");
+
+      if (onlineAgent) {
+        assert.ok(typeof onlineAgent.pid === "number");
+      }
+    });
+
+    it("returns offline agents with null PID", async () => {
+      const router = createAgentControlRouter();
+      const req = createMockRequest();
+      const res = createMockResponse();
+
+      const routes = (router as any).stack;
+      const statusRoute = routes.find(
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+      );
+      const handler = statusRoute?.route?.stack[0]?.handle;
+
+      if (handler) {
+        await handler(req, res);
+      }
+
+      const response = res.getJson();
+      const offlineAgent = response.agents.find((a: any) => a.status === "offline");
+
+      if (offlineAgent) {
+        assert.strictEqual(offlineAgent.pid, null);
+      }
+    });
+  });
 });

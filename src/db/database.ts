@@ -9,6 +9,7 @@ import { initEmbeddingsTable } from "./embeddings.js";
 import { initUsersTable } from "./users.js";
 import { initEmailVerificationTable } from "./email-verification.js";
 import { initPasswordResetTable } from "./password-reset.js";
+import { initBrainTables } from "./brain.js";
 
 export interface Task {
   id: string;
@@ -37,11 +38,16 @@ export interface AuditEntry {
   created_at: string;
 }
 
+export interface ListTasksOptions {
+  state?: string;
+  limit?: number;
+}
+
 export interface Database {
   isHealthy(): boolean;
   createTask(task: Omit<Task, "id">): Task;
   getTask(id: string): Task | undefined;
-  listTasks(): Task[];
+  listTasks(options?: ListTasksOptions): Task[];
   updateTask(id: string, updates: Partial<Task>): Task | undefined;
   createAuditEntry(entry: Omit<AuditEntry, "id" | "created_at">): AuditEntry;
   getAuditEntry(id: string): AuditEntry | undefined;
@@ -132,6 +138,9 @@ export function initDatabase(): Database {
 
     // Initialize password reset table
     initPasswordResetTable(db);
+
+    // Initialize brain tables (knowledge base)
+    initBrainTables(db);
   } catch (error) {
     console.warn("SQLite unavailable, using in-memory fallback:", error);
     db = new Database(":memory:");
@@ -176,6 +185,9 @@ export function initDatabase(): Database {
 
     // Initialize password reset table in fallback
     initPasswordResetTable(db);
+
+    // Initialize brain tables in fallback
+    initBrainTables(db);
   }
 
   return {
@@ -203,9 +215,28 @@ export function initDatabase(): Database {
       return stmt.get(id) as Task | undefined;
     },
 
-    listTasks(): Task[] {
-      const stmt = db.prepare("SELECT * FROM tasks ORDER BY created_at DESC LIMIT 100");
-      return stmt.all() as Task[];
+    listTasks(options?: ListTasksOptions): Task[] {
+      const limit = options?.limit ?? 100;
+
+      if (options?.state) {
+        // Map API state names to database status values
+        const stateMap: Record<string, string> = {
+          running: "in_progress",
+          failed: "stopped",
+          done: "completed",
+          pending: "pending",
+          in_progress: "in_progress",
+          completed: "completed",
+          stopped: "stopped",
+        };
+        const dbStatus = stateMap[options.state] ?? options.state;
+
+        const stmt = db.prepare("SELECT * FROM tasks WHERE status = ? ORDER BY created_at DESC LIMIT ?");
+        return stmt.all(dbStatus, limit) as Task[];
+      }
+
+      const stmt = db.prepare("SELECT * FROM tasks ORDER BY created_at DESC LIMIT ?");
+      return stmt.all(limit) as Task[];
     },
 
     updateTask(id: string, updates: Partial<Task>): Task | undefined {

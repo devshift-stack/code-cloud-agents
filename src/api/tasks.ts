@@ -137,11 +137,27 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
     }
   });
 
-  // List tasks
-  router.get("/", (_req, res) => {
+  // List tasks with optional state filter
+  // ?state=running|failed|done|pending|in_progress|completed|stopped
+  router.get("/", (req, res) => {
     try {
-      const tasks = db.listTasks();
-      res.json({ tasks, count: tasks.length });
+      const state = req.query.state as string | undefined;
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+
+      const tasks = db.listTasks({ state, limit });
+
+      res.json({
+        success: true,
+        tasks: tasks.map((task) => ({
+          id: task.id,
+          title: task.title,
+          state: task.status, // API uses 'state', DB uses 'status'
+          createdAt: task.created_at,
+          updatedAt: task.updated_at ?? null,
+        })),
+        count: tasks.length,
+        filter: state ?? null,
+      });
     } catch (error) {
       console.error("Failed to list tasks:", error);
       res.status(500).json({ error: "Internal server error" });

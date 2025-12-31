@@ -36,6 +36,7 @@ import { createWebhookRouter } from "./api/webhooks.js";
 import { createBillingRouter } from "./api/billing.js";
 import { createModulesRouter } from "./api/modules.js";
 import { createChatRouter } from "./api/chat.js";
+import { createBrainRouter } from "./api/brain.js";
 import { handleSlackEvents } from "./api/slack-events.js";
 import { ChatStorage } from "./chat/storage.js";
 import { ChatManager } from "./chat/manager.js";
@@ -44,6 +45,7 @@ import { initializeLiveUpdates } from "./agents/live-updates.js";
 import { agentWorker } from "./agents/agent-worker.js";
 import { WebSocketManager } from "./websocket/server.js";
 import { initDatabase } from "./db/database.js";
+import { seedDefaultAdmin } from "./db/users.js";
 import { initQueue } from "./queue/queue.js";
 import { createEnforcementGate } from "./audit/enforcementGate.js";
 import { setupSwagger } from "./swagger/index.js";
@@ -63,6 +65,10 @@ async function main() {
   const db = initDatabase();
   console.log("✅ Database initialized");
   log.info("Database initialized");
+
+  // Seed default admin if users table is empty
+  await seedDefaultAdmin(db.getRawDb());
+  log.info("Admin seed check completed");
 
   // Initialize queue
   const queue = initQueue();
@@ -154,6 +160,7 @@ async function main() {
   app.use("/api/billing", createBillingRouter());
   app.use("/api/modules", createModulesRouter());
   app.use("/api/chat", createChatRouter(chatManager));
+  app.use("/api/brain", createBrainRouter(db));
   app.use("/api/agent-tasks", createAgentTasksRouter());
 
   // Slack Events (Mujo Interactive Bot)
@@ -277,6 +284,15 @@ async function main() {
     console.log("   POST   /api/memory/search                    - Full-text search");
     console.log("   POST   /api/memory/semantic/search           - Semantic search (embeddings)");
     console.log("   GET    /api/memory/trending/:userId          - Trending topics");
+    console.log("");
+    console.log("🧠 Brain (Knowledge Base):");
+    console.log("   POST  /api/brain/ingest/text   - Ingest text");
+    console.log("   POST  /api/brain/ingest/url    - Ingest URL content");
+    console.log("   POST  /api/brain/ingest/file   - Ingest file content");
+    console.log("   GET   /api/brain/search?q=     - Search knowledge base");
+    console.log("   POST  /api/brain/search        - Advanced search");
+    console.log("   GET   /api/brain/docs          - List documents");
+    console.log("   GET   /api/brain/stats         - Statistics");
     console.log("");
     console.log("🔌 WebSocket Real-time:");
     console.log("   WS   ws://localhost:" + PORT + "/ws?token=YOUR_TOKEN");

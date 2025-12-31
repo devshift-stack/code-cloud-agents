@@ -326,3 +326,40 @@ export function getUserStats(db: BetterSqlite3.Database): {
     demos: (demosStmt.get() as { count: number }).count,
   };
 }
+
+/**
+ * Seed default admin user if users table is empty
+ * Uses ENV variables:
+ *   SEED_ADMIN_EMAIL (default: admin@cloudagents.io)
+ *   SEED_ADMIN_PASSWORD (default: ChangeMe123!)
+ *   SEED_ADMIN_NAME (default: Admin)
+ */
+export async function seedDefaultAdmin(db: BetterSqlite3.Database): Promise<void> {
+  const stats = getUserStats(db);
+
+  if (stats.total > 0) {
+    console.log("ℹ️ Users exist (" + stats.total + " users), admin seed skipped");
+    return;
+  }
+
+  const email = process.env.SEED_ADMIN_EMAIL ?? "admin@cloudagents.io";
+  const password = process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!";
+  const displayName = process.env.SEED_ADMIN_NAME ?? "Admin";
+
+  try {
+    await createUser(db, {
+      email,
+      password,
+      role: "admin",
+      displayName,
+    });
+
+    console.log("✅ Default admin seeded:");
+    console.log("   Email: " + email);
+    console.log("   Role: admin");
+    console.log("   ⚠️  WICHTIG: Passwort nach erstem Login ändern!");
+  } catch (error) {
+    console.error("❌ Failed to seed default admin:", error);
+    throw error;
+  }
+}
