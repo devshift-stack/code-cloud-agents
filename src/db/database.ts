@@ -10,6 +10,7 @@ import { initUsersTable } from "./users.js";
 import { initEmailVerificationTable } from "./email-verification.js";
 import { initPasswordResetTable } from "./password-reset.js";
 import { initBrainTables } from "./brain.js";
+import { initAuditEventsTable, createAuditService, type AuditService } from "./audit-events.js";
 
 export interface Task {
   id: string;
@@ -54,6 +55,7 @@ export interface Database {
   listAuditEntries(limit?: number): AuditEntry[];
   getStopScoreStats(): { total: number; stopped: number; avgScore: number };
   getRawDb(): BetterSqlite3Database;
+  audit: AuditService;
   close(): void;
 }
 
@@ -141,6 +143,9 @@ export function initDatabase(): Database {
 
     // Initialize brain tables (knowledge base)
     initBrainTables(db);
+
+    // Initialize audit events table (centralized event logging)
+    initAuditEventsTable(db);
   } catch (error) {
     console.warn("SQLite unavailable, using in-memory fallback:", error);
     db = new Database(":memory:");
@@ -188,7 +193,13 @@ export function initDatabase(): Database {
 
     // Initialize brain tables in fallback
     initBrainTables(db);
+
+    // Initialize audit events table in fallback
+    initAuditEventsTable(db);
   }
+
+  // Create audit service instance
+  const auditService = createAuditService(db);
 
   return {
     isHealthy(): boolean {
@@ -288,6 +299,8 @@ export function initDatabase(): Database {
     getRawDb(): BetterSqlite3Database {
       return db;
     },
+
+    audit: auditService,
 
     close(): void {
       try {

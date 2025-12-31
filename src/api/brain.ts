@@ -100,6 +100,15 @@ export function createBrainRouter(db: Database): Router {
         });
       }
 
+      // Log brain ingest event
+      db.audit.log({
+        kind: "brain_ingest",
+        message: `Document "${doc.title}" ingested`,
+        userId,
+        severity: "info",
+        meta: { docId: doc.id, sourceType: doc.sourceType, contentLength: parsed.data.content.length },
+      });
+
       res.status(201).json({
         success: true,
         doc,
@@ -268,6 +277,15 @@ export function createBrainRouter(db: Database): Router {
           break;
       }
 
+      // Log brain search event (POST)
+      db.audit.log({
+        kind: "brain_search",
+        message: `Search: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`,
+        userId,
+        severity: "info",
+        meta: { query, mode, resultCount: results.length },
+      });
+
       res.json({
         success: true,
         results,
@@ -333,6 +351,15 @@ export function createBrainRouter(db: Database): Router {
           }
           break;
       }
+
+      // Log brain search event (GET)
+      db.audit.log({
+        kind: "brain_search",
+        message: `Search: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`,
+        userId,
+        severity: "info",
+        meta: { query, mode, resultCount: results.length },
+      });
 
       res.json({
         success: true,
