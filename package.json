@@ -75,6 +75,7 @@
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@sentry/node": "^10.32.1",
+    "@sentry/react": "^10.32.1",
     "@slack/web-api": "^7.13.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/express": "^5.0.6",
