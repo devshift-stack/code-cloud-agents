@@ -8,9 +8,13 @@ import { Router, type Request, type Response } from "express";
 import { MODULES, getModule, getModulesByCategory, getModulesByStatus, getCategories } from "../modules/moduleRegistry.ts";
 import { getStatusBadge } from "../modules/moduleStatus.ts";
 import type { ModuleStatusReport } from "../modules/moduleStatus.ts";
+import { requireAuth } from "../auth/middleware.js";
 
 export function createModulesRouter(): Router {
   const router = Router();
+
+  // Phase-1 Hardening: All module routes require authentication
+  router.use(requireAuth);
 
   /**
    * GET /api/modules - List all modules

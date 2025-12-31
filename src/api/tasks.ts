@@ -10,6 +10,7 @@ import { z } from "zod";
 import type { Database } from "../db/database.js";
 import type { QueueAdapter } from "../queue/queue.js";
 import type { EnforcementGate } from "../audit/enforcementGate.js";
+import { requireAuth } from "../auth/middleware.js";
 
 const CreateTaskSchema = z.object({
   title: z.string().min(1).max(200),
@@ -27,6 +28,9 @@ const SubmitWorkSchema = z.object({
 
 export function createTaskRouter(db: Database, queue: QueueAdapter, gate: EnforcementGate): Router {
   const router = Router();
+
+  // Phase-1 Hardening: All task routes require authentication
+  router.use(requireAuth);
 
   // Create task
   router.post("/", async (req, res) => {

@@ -12,7 +12,7 @@ import { Router } from "express";
 import { z } from "zod";
 import type { Database } from "../db/database.js";
 import { SettingsDB } from "../db/settings.js";
-import { requireAdmin, type AuthenticatedRequest } from "../auth/middleware.js";
+import { requireAdmin, requireAuth, type AuthenticatedRequest } from "../auth/middleware.js";
 
 // Default user settings
 const DEFAULT_USER_SETTINGS = {
@@ -87,8 +87,17 @@ export function createSettingsRouter(db: Database): Router {
   /**
    * GET /api/settings/user/:userId
    * Get user settings
+   * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.get("/user/:userId", (req, res) => {
+  router.get("/user/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
+    // Owner check: Users can only access their own settings
+    const authReq = req as AuthenticatedRequest;
+    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+      return res.status(403).json({
+        success: false,
+        error: "Forbidden: You can only access your own settings",
+      });
+    }
     try {
       const { userId } = req.params;
 
@@ -119,8 +128,17 @@ export function createSettingsRouter(db: Database): Router {
   /**
    * PUT /api/settings/user/:userId
    * Update user settings (full replace)
+   * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.put("/user/:userId", (req, res) => {
+  router.put("/user/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
+    // Owner check: Users can only update their own settings
+    const authReq = req as AuthenticatedRequest;
+    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+      return res.status(403).json({
+        success: false,
+        error: "Forbidden: You can only update your own settings",
+      });
+    }
     try {
       const { userId } = req.params;
 
@@ -176,8 +194,17 @@ export function createSettingsRouter(db: Database): Router {
   /**
    * DELETE /api/settings/user/:userId
    * Delete user settings (reset to defaults)
+   * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.delete("/user/:userId", (req, res) => {
+  router.delete("/user/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
+    // Owner check: Users can only delete their own settings
+    const authReq = req as AuthenticatedRequest;
+    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+      return res.status(403).json({
+        success: false,
+        error: "Forbidden: You can only delete your own settings",
+      });
+    }
     try {
       const { userId } = req.params;
 
@@ -199,8 +226,17 @@ export function createSettingsRouter(db: Database): Router {
   /**
    * GET /api/settings/preferences/:userId
    * Get user preferences (subset of settings)
+   * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.get("/preferences/:userId", (req, res) => {
+  router.get("/preferences/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
+    // Owner check
+    const authReq = req as AuthenticatedRequest;
+    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+      return res.status(403).json({
+        success: false,
+        error: "Forbidden: You can only access your own preferences",
+      });
+    }
     try {
       const { userId } = req.params;
 
@@ -229,8 +265,17 @@ export function createSettingsRouter(db: Database): Router {
   /**
    * PATCH /api/settings/preferences/:userId
    * Update user preferences (partial update)
+   * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.patch("/preferences/:userId", (req, res) => {
+  router.patch("/preferences/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
+    // Owner check
+    const authReq = req as AuthenticatedRequest;
+    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+      return res.status(403).json({
+        success: false,
+        error: "Forbidden: You can only update your own preferences",
+      });
+    }
     try {
       const { userId } = req.params;
 

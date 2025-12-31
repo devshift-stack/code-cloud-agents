@@ -8,14 +8,20 @@ import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import type { Request, Response, NextFunction } from "express";
 
-const SENTRY_DSN = process.env.SENTRY_DSN;
-const NODE_ENV = process.env.NODE_ENV ?? "development";
+// Note: Read env vars inside functions, not at module scope,
+// to ensure dotenv.config() has run first
+let SENTRY_DSN: string | undefined;
 
 /**
  * Initialize Sentry SDK with AI monitoring and Logs
- * Must be called before any other code runs
+ * Must be called AFTER dotenv.config() has run
  */
 export function initSentry(): boolean {
+  // Read env vars now (after dotenv has loaded)
+  SENTRY_DSN = process.env.SENTRY_DSN;
+  const NODE_ENV = process.env.NODE_ENV ?? "development";
+  const SENTRY_RELEASE = process.env.SENTRY_RELEASE || process.env.npm_package_version || "0.1.0";
+
   if (!SENTRY_DSN) {
     console.log("⚠️  Sentry: No DSN configured, error tracking disabled");
     return false;
@@ -24,6 +30,7 @@ export function initSentry(): boolean {
   Sentry.init({
     dsn: SENTRY_DSN,
     environment: NODE_ENV,
+    release: SENTRY_RELEASE,
     integrations: [
       // Profiling integration for performance analysis
       nodeProfilingIntegration(),
@@ -51,14 +58,49 @@ export function initSentry(): boolean {
     _experiments: {
       enableLogs: true,
     },
+    // Distributed Tracing - propagate trace context to connected services
+    tracePropagationTargets: [
+      "localhost",
+      /^https:\/\/.*\.activi\.dev/,
+      /^http:\/\/178\.156\.178\.70/,
+      /^http:\/\/49\.13\.158\.176/,
+    ],
+    // Enhanced Data Scrubbing
     beforeSend(event) {
-      // Redact sensitive data
+      // Redact sensitive headers
       if (event.request?.headers) {
         delete event.request.headers.authorization;
         delete event.request.headers.cookie;
+        delete event.request.headers["x-api-key"];
+      }
+      // Redact sensitive body fields
+      if (event.request?.data && typeof event.request.data === "object") {
+        const sensitiveKeys = ["password", "token", "apiKey", "secret", "api_key", "access_token"];
+        const data = event.request.data as Record<string, unknown>;
+        for (const key of sensitiveKeys) {
+          if (key in data) {
+            data[key] = "[REDACTED]";
+          }
+        }
+      }
+      // Redact from extra context
+      if (event.extra) {
+        const sensitiveKeys = ["password", "token", "apiKey", "secret"];
+        for (const key of sensitiveKeys) {
+          if (key in event.extra) {
+            event.extra[key] = "[REDACTED]";
+          }
+        }
       }
       return event;
     },
+    // Ignore common non-actionable errors
+    ignoreErrors: [
+      "ECONNRESET",
+      "ECONNREFUSED",
+      "socket hang up",
+      "ETIMEDOUT",
+    ],
   });
 
   console.log("✅ Sentry initialized with AI monitoring + Logs + Profiling (env:", NODE_ENV, ")");
@@ -350,5 +392,136 @@ export const metrics = {
       }
       throw error;
     }
+  },
+};
+
+// ============================================
+// SENTRY CRON MONITORING
+// ============================================
+
+interface CronMonitorConfig {
+  /** Unique identifier for this cron job */
+  slug: string;
+  /** Cron schedule in crontab format (e.g., "0 * * * *" for hourly) */
+  schedule: string;
+  /** Maximum runtime in minutes before considered failed */
+  maxRuntimeMinutes?: number;
+  /** Timezone for the schedule (default: UTC) */
+  timezone?: string;
+}
+
+/**
+ * Sentry Cron Monitoring - Track scheduled jobs
+ *
+ * Usage:
+ * ```typescript
+ * const checkIn = cronMonitor.start("daily-cleanup");
+ * try {
+ *   await runCleanup();
+ *   cronMonitor.success(checkIn);
+ * } catch (error) {
+ *   cronMonitor.failure(checkIn, error);
+ * }
+ * ```
+ *
+ * Or use the wrapper:
+ * ```typescript
+ * await cronMonitor.wrap("daily-cleanup", async () => {
+ *   await runCleanup();
+ * });
+ * ```
+ */
+export const cronMonitor = {
+  /**
+   * Start a cron check-in (call when job starts)
+   * @param slug - Unique identifier for this cron job
+   * @returns Check-in ID to use with success/failure
+   */
+  start: (slug: string): string | null => {
+    if (!SENTRY_DSN) return null;
+    return Sentry.captureCheckIn({
+      monitorSlug: slug,
+      status: "in_progress",
+    });
+  },
+
+  /**
+   * Mark cron job as successful
+   * @param checkInId - The ID returned from start()
+   */
+  success: (checkInId: string | null): void => {
+    if (!SENTRY_DSN || !checkInId) return;
+    Sentry.captureCheckIn({
+      checkInId,
+      monitorSlug: "",
+      status: "ok",
+    });
+  },
+
+  /**
+   * Mark cron job as failed
+   * @param checkInId - The ID returned from start()
+   * @param error - Optional error to capture
+   */
+  failure: (checkInId: string | null, error?: Error): void => {
+    if (!SENTRY_DSN || !checkInId) return;
+    if (error) {
+      Sentry.captureException(error);
+    }
+    Sentry.captureCheckIn({
+      checkInId,
+      monitorSlug: "",
+      status: "error",
+    });
+  },
+
+  /**
+   * Wrap a cron job function with automatic monitoring
+   * @param slug - Unique identifier for this cron job
+   * @param fn - The cron job function to run
+   * @param config - Optional monitor configuration
+   */
+  wrap: async <T>(
+    slug: string,
+    fn: () => Promise<T>,
+    config?: Omit<CronMonitorConfig, "slug">
+  ): Promise<T> => {
+    if (!SENTRY_DSN) {
+      return fn();
+    }
+
+    // Create or update monitor configuration
+    // Note: MonitorConfig type may not be exported in all Sentry versions
+    const monitorConfig = {
+      schedule: {
+        type: "crontab" as const,
+        value: config?.schedule || "* * * * *",
+      },
+      timezone: config?.timezone || "UTC",
+      ...(config?.maxRuntimeMinutes && {
+        maxRuntime: config.maxRuntimeMinutes * 60,
+      }),
+    };
+
+    return Sentry.withMonitor(
+      slug,
+      async () => {
+        return fn();
+      },
+      monitorConfig
+    );
+  },
+
+  /**
+   * Create a heartbeat check-in (for long-running processes)
+   * Call periodically to indicate the process is still alive
+   * @param slug - Unique identifier for this process
+   */
+  heartbeat: (slug: string): void => {
+    if (!SENTRY_DSN) return;
+    Sentry.captureCheckIn({
+      monitorSlug: slug,
+      status: "ok",
+    });
   },
 };

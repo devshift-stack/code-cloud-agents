@@ -5,9 +5,13 @@
 import { Router } from 'express';
 import { taskQueue } from '../agents/task-queue.ts';
 import { agentWorker } from '../agents/agent-worker.ts';
+import { requireAuth } from '../auth/middleware.js';
 
 export function createAgentTasksRouter(): Router {
   const router = Router();
+
+  // Phase-1 Hardening: All agent task routes require authentication
+  router.use(requireAuth);
 
   /**
    * GET /api/agent-tasks - Get all tasks

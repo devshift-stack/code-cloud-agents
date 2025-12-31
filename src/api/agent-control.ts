@@ -11,6 +11,7 @@
 
 import { Router } from "express";
 import { z } from "zod";
+import { requireAdmin } from "../auth/middleware.js";
 
 // Agent types and statuses
 export type AgentStatus = "online" | "offline" | "starting" | "stopping" | "error";
@@ -213,6 +214,9 @@ const AssignTaskSchema = z.object({
  */
 export function createAgentControlRouter(): Router {
   const router = Router();
+
+  // Phase-1 Hardening: All agent control routes require admin privileges
+  router.use(requireAdmin);
 
   /**
    * GET /api/agents

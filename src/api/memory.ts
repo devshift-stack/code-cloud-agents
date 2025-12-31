@@ -10,6 +10,7 @@ import type { Database } from "../db/database.js";
 import { MemoryManager } from "../memory/manager.js";
 import { MemorySearch } from "../memory/search.js";
 import { EmbeddingsManager } from "../memory/embeddings.js";
+import { requireAuth } from "../auth/middleware.js";
 
 // Validation schemas
 const CreateChatSchema = z.object({
@@ -47,6 +48,10 @@ const SearchSchema = z.object({
  */
 export function createMemoryRouter(db: Database): Router {
   const router = Router();
+
+  // Phase-1 Hardening: All memory routes require authentication
+  router.use(requireAuth);
+
   const memoryManager = new MemoryManager(db);
   const memorySearch = new MemorySearch(db);
   const embeddingsManager = new EmbeddingsManager(db);
