@@ -61,6 +61,16 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
         // Task is BLOCKED - do NOT queue, require human approval
         db.updateTask(task.id, { status: "stopped", stop_score: gateDecision.stopScore });
 
+        // Log blocked task event
+        db.audit.log({
+          kind: "task_failed",
+          message: `Task "${task.title}" blocked by enforcement gate`,
+          taskId: task.id,
+          userId: (req as any).userId,
+          severity: "warn",
+          meta: { stopScore: gateDecision.stopScore, reasons: gateDecision.reasons },
+        });
+
         return res.status(202).json({
           id: task.id,
           status: "BLOCKED",
@@ -73,6 +83,16 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
 
       // Task passed gate - queue for processing
       await queue.add("process_task", { taskId: task.id });
+
+      // Log task created event
+      db.audit.log({
+        kind: "task_created",
+        message: `Task "${task.title}" created`,
+        taskId: task.id,
+        userId: (req as any).userId,
+        severity: "info",
+        meta: { priority: task.priority, assignee: task.assignee },
+      });
 
       res.status(201).json({
         id: task.id,
@@ -111,6 +131,16 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
         // Work is BLOCKED - cannot complete task
         db.updateTask(task.id, { status: "stopped", stop_score: gateDecision.stopScore });
 
+        // Log blocked submission event
+        db.audit.log({
+          kind: "task_failed",
+          message: `Task "${task.title}" submission blocked`,
+          taskId: task.id,
+          userId: (req as any).userId,
+          severity: "warn",
+          meta: { stopScore: gateDecision.stopScore, reasons: gateDecision.reasons },
+        });
+
         return res.status(202).json({
           id: task.id,
           status: "BLOCKED",
@@ -123,6 +153,16 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
 
       // Work passed gate - mark as completed
       db.updateTask(task.id, { status: "completed", stop_score: gateDecision.stopScore });
+
+      // Log task completed event
+      db.audit.log({
+        kind: "task_finished",
+        message: `Task "${task.title}" completed`,
+        taskId: task.id,
+        userId: (req as any).userId,
+        severity: "info",
+        meta: { stopScore: gateDecision.stopScore },
+      });
 
       res.json({
         id: task.id,
