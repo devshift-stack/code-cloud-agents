@@ -71,15 +71,15 @@ if (result.success && result.issue) {
 ```typescript
 // 1. Teams auflisten
 const teams = await linear.listTeams();
-const myTeam = teams.teams?.find(t => t.key === "ENG");
+const myTeam = teams.teams?.find((t) => t.key === "ENG");
 
 // 2. Workflow States holen
 const states = await linear.listWorkflowStates(myTeam.id);
-const todoState = states.states?.find(s => s.type === "unstarted");
+const todoState = states.states?.find((s) => s.type === "unstarted");
 
 // 3. Labels holen
 const labels = await linear.listLabels(myTeam.id);
-const bugLabel = labels.labels?.find(l => l.name === "Bug");
+const bugLabel = labels.labels?.find((l) => l.name === "Bug");
 
 // 4. Issue erstellen
 const result = await linear.createIssue({
@@ -115,7 +115,7 @@ if (status.connected) {
 const result = await linear.listTeams();
 
 if (result.success && result.teams) {
-  result.teams.forEach(team => {
+  result.teams.forEach((team) => {
     console.log(`${team.name} (${team.key})`);
   });
 }
@@ -130,6 +130,7 @@ if (result.success && result.teams) {
 Erstellt Linear Client Instanz.
 
 **Parameters:**
+
 - `config?` (optional)
   - `apiKey: string` - Linear API Key
 
@@ -142,6 +143,7 @@ Erstellt Linear Client Instanz.
 Erstellt Issue in Linear.
 
 **Parameters:**
+
 - `issue: LinearIssue`
   - `title: string` - Issue Titel (required)
   - `description?: string` - Beschreibung (Markdown)
@@ -155,6 +157,7 @@ Erstellt Issue in Linear.
 **Returns:** `Promise<{ success: boolean; issue?: LinearIssueResult; error?: string }>`
 
 **LinearIssueResult:**
+
 - `id: string` - Issue ID
 - `identifier: string` - z.B. "ENG-123"
 - `title: string` - Issue Titel
@@ -169,6 +172,7 @@ Listet alle Teams auf.
 **Returns:** `Promise<{ success: boolean; teams?: LinearTeam[]; error?: string }>`
 
 **LinearTeam:**
+
 - `id: string` - Team ID
 - `name: string` - Team Name
 - `key: string` - Team Key (z.B. "ENG")
@@ -180,11 +184,13 @@ Listet alle Teams auf.
 Listet Workflow States für Team auf.
 
 **Parameters:**
+
 - `teamId: string` - Team ID
 
 **Returns:** `Promise<{ success: boolean; states?: LinearWorkflowState[]; error?: string }>`
 
 **LinearWorkflowState:**
+
 - `id: string` - State ID
 - `name: string` - State Name
 - `type: string` - "triage", "backlog", "unstarted", "started", "completed", "canceled"
@@ -196,11 +202,13 @@ Listet Workflow States für Team auf.
 Listet alle Labels auf.
 
 **Parameters:**
+
 - `teamId?: string` - Optional: Filter nach Team
 
 **Returns:** `Promise<{ success: boolean; labels?: LinearLabel[]; error?: string }>`
 
 **LinearLabel:**
+
 - `id: string` - Label ID
 - `name: string` - Label Name
 - `color: string` - Hex Color
@@ -217,13 +225,13 @@ Prüft Verbindung und gibt User Info zurück.
 
 ## Priority Levels
 
-| Priority | Value | Verwendung |
-|----------|-------|------------|
-| Urgent | 1 | Kritische Bugs, Blocker |
-| High | 2 | Wichtige Features |
-| Medium | 3 | Standard Tasks |
-| Low | 4 | Nice-to-have |
-| No priority | 0 | Backlog |
+| Priority    | Value | Verwendung              |
+| ----------- | ----- | ----------------------- |
+| Urgent      | 1     | Kritische Bugs, Blocker |
+| High        | 2     | Wichtige Features       |
+| Medium      | 3     | Standard Tasks          |
+| Low         | 4     | Nice-to-have            |
+| No priority | 0     | Backlog                 |
 
 ---
 
@@ -339,6 +347,7 @@ GitHub Issue → Slack Alert → Linear Issue → Assigned → In Progress → P
 ```
 
 **Automatischer Flow:**
+
 1. GitHub Issue erstellt
 2. Slack Notification an Team
 3. Linear Issue auto-created
@@ -371,15 +380,19 @@ if (!result.success) {
 ## Troubleshooting
 
 ### Error: "Linear integration disabled"
+
 → Setze `LINEAR_ENABLED=true` in `.env`
 
 ### Error: "Linear API key not configured"
+
 → Setze `LINEAR_API_KEY=lin_api_...` in `.env`
 
 ### Error: "No teams found"
+
 → Erstelle mindestens ein Team in Linear
 
 ### Error: "Invalid API key"
+
 → Key abgelaufen oder falsch. Neu generieren.
 
 ---

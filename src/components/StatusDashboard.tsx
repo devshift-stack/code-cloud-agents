@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 interface Stats {
-  serverStatus: 'online' | 'offline';
+  serverStatus: "online" | "offline";
   userCount: number;
   agentCount: number;
   chatCount: number;
@@ -12,7 +12,7 @@ interface Stats {
  */
 function getStoredUser(): { id: string; role: string } | null {
   try {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem("user");
     if (!userStr) return null;
     return JSON.parse(userStr);
   } catch {
@@ -27,14 +27,14 @@ function getAuthHeaders(): Record<string, string> {
   const user = getStoredUser();
   if (!user) return {};
   return {
-    'x-user-id': user.id,
-    'x-user-role': user.role,
+    "x-user-id": user.id,
+    "x-user-role": user.role,
   };
 }
 
 export function StatusDashboard() {
   const [stats, setStats] = useState<Stats>({
-    serverStatus: 'offline',
+    serverStatus: "offline",
     userCount: 0,
     agentCount: 5, // Fixed: 5 agents available
     chatCount: 0,
@@ -46,26 +46,26 @@ export function StatusDashboard() {
     const headers = getAuthHeaders();
 
     // 1. Health Check
-    fetch('/api/health')
-      .then(res => res.json())
+    fetch("/api/health")
+      .then((res) => res.json())
       .then(() => {
         if (!cancelled) {
-          setStats(prev => ({ ...prev, serverStatus: 'online' }));
+          setStats((prev) => ({ ...prev, serverStatus: "online" }));
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setStats(prev => ({ ...prev, serverStatus: 'offline' }));
+          setStats((prev) => ({ ...prev, serverStatus: "offline" }));
         }
       });
 
     // 2. User Count (from /api/users/stats - requires admin)
-    if (headers['x-user-role'] === 'admin') {
-      fetch('/api/users/stats', { headers })
-        .then(res => res.json())
-        .then(data => {
+    if (headers["x-user-role"] === "admin") {
+      fetch("/api/users/stats", { headers })
+        .then((res) => res.json())
+        .then((data) => {
           if (!cancelled && data.stats) {
-            setStats(prev => ({ ...prev, userCount: data.stats.total || 0 }));
+            setStats((prev) => ({ ...prev, userCount: data.stats.total || 0 }));
           }
         })
         .catch(() => {
@@ -75,12 +75,12 @@ export function StatusDashboard() {
 
     // 3. Memory Stats
     const user = getStoredUser();
-    const userId = user?.id || 'test-user';
+    const userId = user?.id || "test-user";
     fetch(`/api/memory/stats/${userId}`, { headers })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (!cancelled) {
-          setStats(prev => ({ ...prev, chatCount: data.totalChats || 0 }));
+          setStats((prev) => ({ ...prev, chatCount: data.totalChats || 0 }));
           setLoading(false);
         }
       })
@@ -113,7 +113,9 @@ export function StatusDashboard() {
       {/* Server Status Card */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-gray-500 text-sm">Server Status</h3>
-        <p className={`text-2xl font-bold ${stats.serverStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>
+        <p
+          className={`text-2xl font-bold ${stats.serverStatus === "online" ? "text-green-600" : "text-red-600"}`}
+        >
           {stats.serverStatus}
         </p>
       </div>

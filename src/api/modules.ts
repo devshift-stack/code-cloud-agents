@@ -5,7 +5,13 @@
  */
 
 import { Router, type Request, type Response } from "express";
-import { MODULES, getModule, getModulesByCategory, getModulesByStatus, getCategories } from "../modules/moduleRegistry.ts";
+import {
+  MODULES,
+  getModule,
+  getModulesByCategory,
+  getModulesByStatus,
+  getCategories,
+} from "../modules/moduleRegistry.ts";
 import { getStatusBadge } from "../modules/moduleStatus.ts";
 import type { ModuleStatusReport } from "../modules/moduleStatus.ts";
 import { requireAuth } from "../auth/middleware.js";

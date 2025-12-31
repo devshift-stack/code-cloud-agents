@@ -5,12 +5,12 @@
  * generated from swagger.yaml
  */
 
-import { useEffect, useState } from 'react';
-import api from './api-client';
-import type { components } from '@/generated/api-types';
+import { useEffect, useState } from "react";
+import api from "./api-client";
+import type { components } from "@/generated/api-types";
 
 // Type-safe types from OpenAPI
-type Task = components['schemas']['Task'];
+type Task = components["schemas"]["Task"];
 
 // ============================================
 // EXAMPLE 1: GET /api/tasks (List all tasks)
@@ -31,16 +31,16 @@ export function TasksList() {
       setError(null);
 
       // Type-safe API call with operationId: tasks_get_api_tasks
-      const { data, error: apiError } = await api.GET('/api/tasks');
+      const { data, error: apiError } = await api.GET("/api/tasks");
 
       if (apiError) {
-        setError('Failed to load tasks');
+        setError("Failed to load tasks");
         return;
       }
 
       setTasks(data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export function TasksList() {
 // ============================================
 
 export function CreateTaskForm() {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,23 +80,23 @@ export function CreateTaskForm() {
       setError(null);
 
       // Type-safe API call with operationId: tasks_post_api_tasks
-      const { data, error: apiError } = await api.POST('/api/tasks', {
+      const { data, error: apiError } = await api.POST("/api/tasks", {
         body: {
           title,
-          description: 'Created from UI',
-          status: 'pending',
+          description: "Created from UI",
+          status: "pending",
         },
       });
 
       if (apiError) {
-        setError('Failed to create task');
+        setError("Failed to create task");
         return;
       }
 
-      console.log('Task created:', data);
-      setTitle('');
+      console.log("Task created:", data);
+      setTitle("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -118,9 +118,9 @@ export function CreateTaskForm() {
         data-testid="tasks.task.form.submit.button"
         data-otop-id="tasks.task.form.submit.button"
       >
-        {loading ? 'Creating...' : 'Create Task'}
+        {loading ? "Creating..." : "Create Task"}
       </button>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && <div style={{ color: "red" }}>{error}</div>}
     </form>
   );
 }
@@ -131,10 +131,10 @@ export function CreateTaskForm() {
 
 export async function checkBackendHealth() {
   // Type-safe API call with operationId: health_get_health
-  const { data, error } = await api.GET('/health');
+  const { data, error } = await api.GET("/health");
 
   if (error) {
-    return { healthy: false, error: 'Backend unreachable' };
+    return { healthy: false, error: "Backend unreachable" };
   }
 
   return { healthy: true, data };
@@ -146,16 +146,16 @@ export async function checkBackendHealth() {
 
 export async function approveTask(taskId: string, reason: string) {
   // Type-safe API call with operationId: enforcement_post_api_enforcement_approve
-  const { data, error } = await api.POST('/api/enforcement/approve', {
+  const { data, error } = await api.POST("/api/enforcement/approve", {
     body: {
       taskId,
-      approvedBy: 'current-user',
+      approvedBy: "current-user",
       reason,
     },
   });
 
   if (error) {
-    throw new Error('Failed to approve task');
+    throw new Error("Failed to approve task");
   }
 
   return data;

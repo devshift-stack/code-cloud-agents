@@ -71,7 +71,9 @@ export class SettingsDB {
   // User Settings Operations
 
   getUserSettings(userId: string): UserSettings | null {
-    const stmt = this.db.prepare("SELECT * FROM user_settings WHERE user_id = ?");
+    const stmt = this.db.prepare(
+      "SELECT * FROM user_settings WHERE user_id = ?",
+    );
     return stmt.get(userId) as UserSettings | null;
   }
 
@@ -95,7 +97,11 @@ export class SettingsDB {
     };
   }
 
-  updateUserSettings(userId: string, settings: object, updatedBy?: string): boolean {
+  updateUserSettings(
+    userId: string,
+    settings: object,
+    updatedBy?: string,
+  ): boolean {
     // Get old settings for history
     const oldSettings = this.getUserSettings(userId);
 
@@ -115,7 +121,7 @@ export class SettingsDB {
         userId,
         oldSettings ? JSON.parse(oldSettings.settings) : null,
         settings,
-        updatedBy || userId
+        updatedBy || userId,
       );
     }
 
@@ -140,7 +146,12 @@ export class SettingsDB {
     return stmt.all() as SystemSettings[];
   }
 
-  setSystemSetting(key: string, value: unknown, description?: string, updatedBy?: string): SystemSettings {
+  setSystemSetting(
+    key: string,
+    value: unknown,
+    description?: string,
+    updatedBy?: string,
+  ): SystemSettings {
     // Get old value for history
     const oldSetting = this.getSystemSetting(key);
 
@@ -164,7 +175,13 @@ export class SettingsDB {
     }
 
     // Log to history
-    this.logHistory("system", key, oldSetting ? JSON.parse(oldSetting.value) : null, value, updatedBy);
+    this.logHistory(
+      "system",
+      key,
+      oldSetting ? JSON.parse(oldSetting.value) : null,
+      value,
+      updatedBy,
+    );
 
     return {
       key,
@@ -188,7 +205,7 @@ export class SettingsDB {
     referenceId: string,
     oldValue: unknown,
     newValue: unknown,
-    changedBy?: string
+    changedBy?: string,
   ): void {
     const stmt = this.db.prepare(`
       INSERT INTO settings_history (type, reference_id, old_value, new_value, changed_by, changed_at)
@@ -201,11 +218,15 @@ export class SettingsDB {
       oldValue ? JSON.stringify(oldValue) : null,
       JSON.stringify(newValue),
       changedBy,
-      new Date().toISOString()
+      new Date().toISOString(),
     );
   }
 
-  getHistory(type: "user" | "system", referenceId: string, limit: number = 50): unknown[] {
+  getHistory(
+    type: "user" | "system",
+    referenceId: string,
+    limit: number = 50,
+  ): unknown[] {
     const stmt = this.db.prepare(`
       SELECT * FROM settings_history
       WHERE type = ? AND reference_id = ?

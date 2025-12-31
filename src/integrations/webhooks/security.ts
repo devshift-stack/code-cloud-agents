@@ -8,7 +8,8 @@ import { createHmac } from "crypto";
  * Generate HMAC-SHA256 signature for webhook payload
  */
 export function signPayload(payload: unknown, secret: string): string {
-  const payloadString = typeof payload === "string" ? payload : JSON.stringify(payload);
+  const payloadString =
+    typeof payload === "string" ? payload : JSON.stringify(payload);
   const hmac = createHmac("sha256", secret);
   hmac.update(payloadString);
   return `sha256=${hmac.digest("hex")}`;
@@ -17,7 +18,11 @@ export function signPayload(payload: unknown, secret: string): string {
 /**
  * Verify webhook signature
  */
-export function verifySignature(payload: string, signature: string, secret: string): boolean {
+export function verifySignature(
+  payload: string,
+  signature: string,
+  secret: string,
+): boolean {
   const expectedSignature = signPayload(payload, secret);
   return signature === expectedSignature;
 }
@@ -26,7 +31,8 @@ export function verifySignature(payload: string, signature: string, secret: stri
  * Generate a secure random webhook secret
  */
 export function generateSecret(length = 32): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let secret = "";
 
   // Use Node.js crypto in Node environment, Web Crypto API in browser

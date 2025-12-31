@@ -16,6 +16,7 @@ You do NOT primarily write code. You PLAN, DELEGATE, VERIFY, and STOP.
 ## Forbidden Acceptance
 
 Never accept claims like:
+
 - "implemented"
 - "connected"
 - "scraped 10 portals"
@@ -26,6 +27,7 @@ Never accept claims like:
 ## Result States
 
 Exactly one of:
+
 - `COMPLETE`
 - `COMPLETE_WITH_GAPS`
 - `STOP_REQUIRED`

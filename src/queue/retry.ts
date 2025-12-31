@@ -31,7 +31,8 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
  * Calculates delay before next retry using exponential backoff
  */
 function calculateRetryDelay(retryCount: number, config: RetryConfig): number {
-  const delay = config.initialDelayMs * Math.pow(config.backoffMultiplier, retryCount);
+  const delay =
+    config.initialDelayMs * Math.pow(config.backoffMultiplier, retryCount);
   return Math.min(delay, config.maxDelayMs);
 }
 
@@ -45,7 +46,7 @@ function calculateRetryDelay(retryCount: number, config: RetryConfig): number {
 export function withRetry(
   handler: (job: QueueJob) => Promise<void>,
   queue: QueueAdapter,
-  config: RetryConfig = DEFAULT_RETRY_CONFIG
+  config: RetryConfig = DEFAULT_RETRY_CONFIG,
 ): (job: QueueJob) => Promise<void> {
   return async (job: QueueJob) => {
     const retryableJob = job as RetryableJob;
@@ -57,10 +58,13 @@ export function withRetry(
 
       // Success! Clear retry metadata
       if (currentRetryCount > 0) {
-        console.log(`✅ Job ${job.id} succeeded after ${currentRetryCount} retries`);
+        console.log(
+          `✅ Job ${job.id} succeeded after ${currentRetryCount} retries`,
+        );
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
 
       // Check if we should retry
       if (currentRetryCount < config.maxRetries) {
@@ -68,9 +72,13 @@ export function withRetry(
         const retryDelay = calculateRetryDelay(currentRetryCount, config);
         const nextRetryAt = new Date(Date.now() + retryDelay).toISOString();
 
-        console.log(`⚠️  Job ${job.id} failed (attempt ${nextRetryCount}/${config.maxRetries})`);
+        console.log(
+          `⚠️  Job ${job.id} failed (attempt ${nextRetryCount}/${config.maxRetries})`,
+        );
         console.log(`   Error: ${errorMessage}`);
-        console.log(`   Retrying in ${retryDelay}ms (${new Date(nextRetryAt).toLocaleTimeString()})...`);
+        console.log(
+          `   Retrying in ${retryDelay}ms (${new Date(nextRetryAt).toLocaleTimeString()})...`,
+        );
 
         // Schedule retry after delay
         setTimeout(async () => {
@@ -90,7 +98,9 @@ export function withRetry(
         retryableJob.nextRetryAt = nextRetryAt;
       } else {
         // Max retries exceeded - give up
-        console.error(`❌ Job ${job.id} failed permanently after ${config.maxRetries} retries`);
+        console.error(
+          `❌ Job ${job.id} failed permanently after ${config.maxRetries} retries`,
+        );
         console.error(`   Final error: ${errorMessage}`);
         console.error(`   Job data:`, JSON.stringify(job.data, null, 2));
 
@@ -112,7 +122,9 @@ export function getRetryMetadata(job: QueueJob): {
   lastError?: string;
   previousJobId?: string;
 } | null {
-  const data = job.data as { _retry?: { count: number; lastError: string; previousJobId: string } };
+  const data = job.data as {
+    _retry?: { count: number; lastError: string; previousJobId: string };
+  };
   if (data._retry) {
     return {
       retryCount: data._retry.count,

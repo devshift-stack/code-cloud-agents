@@ -37,6 +37,7 @@ Das Memory System bietet vollständiges Conversation Memory Management mit drei 
 ## Database Schema
 
 ### Chats Table
+
 ```sql
 CREATE TABLE chats (
   id TEXT PRIMARY KEY,
@@ -53,6 +54,7 @@ CREATE INDEX idx_chats_user_id ON chats(user_id);
 ```
 
 ### Chat Messages Table
+
 ```sql
 CREATE TABLE chat_messages (
   id TEXT PRIMARY KEY,
@@ -71,6 +73,7 @@ CREATE INDEX idx_messages_chat_id ON chat_messages(chat_id);
 ```
 
 ### Message Embeddings Table
+
 ```sql
 CREATE TABLE message_embeddings (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -92,6 +95,7 @@ CREATE INDEX idx_embeddings_created_at ON message_embeddings(created_at);
 Verwaltet Chats und Messages mit vollständigem CRUD-Support.
 
 **Key Features:**
+
 - Chat Lifecycle Management (create, read, update, delete)
 - Message Storage mit Token Tracking
 - Context Retrieval (last N messages)
@@ -99,26 +103,27 @@ Verwaltet Chats und Messages mit vollständigem CRUD-Support.
 - User Statistics
 
 **Example Usage:**
+
 ```typescript
-import { MemoryManager } from './memory/manager.js';
+import { MemoryManager } from "./memory/manager.js";
 
 const memory = new MemoryManager(db);
 
 // Create chat
 const chat = memory.createChat({
-  userId: 'user-123',
-  title: 'My Conversation',
-  agentName: 'Claude',
-  initialMessage: 'Hello!'
+  userId: "user-123",
+  title: "My Conversation",
+  agentName: "Claude",
+  initialMessage: "Hello!",
 });
 
 // Add messages
 memory.addMessage({
   chatId: chat.id,
-  role: 'assistant',
-  content: 'Hi! How can I help you?',
+  role: "assistant",
+  content: "Hi! How can I help you?",
   tokensInput: 10,
-  tokensOutput: 15
+  tokensOutput: 15,
 });
 
 // Get recent context
@@ -130,6 +135,7 @@ const context = memory.getRecentMessages(chat.id, 10);
 Full-text und keyword-basierte Suche mit Snippet-Generierung.
 
 **Key Features:**
+
 - Message Search mit SQL LIKE
 - Chat Search nach Titel
 - Similar Messages (keyword overlap)
@@ -137,20 +143,21 @@ Full-text und keyword-basierte Suche mit Snippet-Generierung.
 - Trending Topics (häufigste Keywords)
 
 **Example Usage:**
+
 ```typescript
-import { MemorySearch } from './memory/search.js';
+import { MemorySearch } from "./memory/search.js";
 
 const search = new MemorySearch(db);
 
 // Full-text search
 const results = search.searchMessages({
-  userId: 'user-123',
-  query: 'machine learning',
-  limit: 20
+  userId: "user-123",
+  query: "machine learning",
+  limit: 20,
 });
 
 // Get trending topics
-const trending = search.getTrendingTopics('user-123', 10, 7);
+const trending = search.getTrendingTopics("user-123", 10, 7);
 ```
 
 ### 3. EmbeddingsManager
@@ -158,6 +165,7 @@ const trending = search.getTrendingTopics('user-123', 10, 7);
 Semantic Search mit OpenAI Embeddings und Cosine Similarity.
 
 **Key Features:**
+
 - Auto-Embedding bei Message Creation (optional)
 - Batch Embedding Generation für existing chats
 - Semantic Search mit Cosine Similarity
@@ -165,14 +173,16 @@ Semantic Search mit OpenAI Embeddings und Cosine Similarity.
 - Model: `text-embedding-3-small` (1536 dimensions)
 
 **Setup:**
+
 ```bash
 # Required environment variable
 export OPENAI_API_KEY="sk-..."
 ```
 
 **Example Usage:**
+
 ```typescript
-import { EmbeddingsManager } from './memory/embeddings.js';
+import { EmbeddingsManager } from "./memory/embeddings.js";
 
 const embeddings = new EmbeddingsManager(db);
 
@@ -183,9 +193,9 @@ if (embeddings.isEnabled()) {
 
   // Semantic search
   const results = await embeddings.semanticSearch(
-    'How do I deploy to production?',
-    'user-123',
-    10
+    "How do I deploy to production?",
+    "user-123",
+    10,
   );
 
   // Find similar messages
@@ -198,13 +208,16 @@ if (embeddings.isEnabled()) {
 ### Chat Management
 
 #### `GET /api/memory/chats/:userId`
+
 List all chats for a user.
 
 **Query Parameters:**
+
 - `limit` (default: 50) - Max chats to return
 - `offset` (default: 0) - Pagination offset
 
 **Response:**
+
 ```json
 {
   "chats": [
@@ -223,9 +236,11 @@ List all chats for a user.
 ```
 
 #### `POST /api/memory/chats`
+
 Create a new chat.
 
 **Body:**
+
 ```json
 {
   "userId": "user-123",
@@ -236,12 +251,15 @@ Create a new chat.
 ```
 
 #### `GET /api/memory/chats/:chatId/details`
+
 Get chat details.
 
 #### `PATCH /api/memory/chats/:chatId`
+
 Update chat metadata.
 
 **Body:**
+
 ```json
 {
   "title": "Updated Title",
@@ -250,18 +268,22 @@ Update chat metadata.
 ```
 
 #### `DELETE /api/memory/chats/:chatId`
+
 Delete a chat and all its messages.
 
 ### Message Management
 
 #### `GET /api/memory/chats/:chatId/messages`
+
 Get messages from a chat.
 
 **Query Parameters:**
+
 - `limit` (default: 100)
 - `offset` (default: 0)
 
 **Response:**
+
 ```json
 {
   "messages": [
@@ -281,9 +303,11 @@ Get messages from a chat.
 ```
 
 #### `POST /api/memory/chats/:chatId/messages`
+
 Add a message to a chat.
 
 **Body:**
+
 ```json
 {
   "role": "user",
@@ -298,23 +322,29 @@ Add a message to a chat.
 If `OPENAI_API_KEY` is set, embeddings are automatically generated for new messages.
 
 #### `GET /api/memory/chats/:chatId/recent`
+
 Get recent messages (for context).
 
 **Query Parameters:**
+
 - `count` (default: 10)
 
 #### `DELETE /api/memory/chats/:chatId/messages/old`
+
 Clear old messages, keeping only the last N.
 
 **Query Parameters:**
+
 - `keepLast` (default: 100)
 
 ### Search
 
 #### `POST /api/memory/search`
+
 Full-text search across messages.
 
 **Body:**
+
 ```json
 {
   "userId": "user-123",
@@ -325,6 +355,7 @@ Full-text search across messages.
 ```
 
 **Response:**
+
 ```json
 {
   "results": [
@@ -343,19 +374,24 @@ Full-text search across messages.
 ```
 
 #### `GET /api/memory/search/chats/:userId`
+
 Search chats by title.
 
 **Query Parameters:**
+
 - `query` - Search term
 - `limit` (default: 20)
 
 #### `GET /api/memory/messages/:messageId/context`
+
 Get context around a message.
 
 **Query Parameters:**
+
 - `contextSize` (default: 5) - Messages before/after
 
 **Response:**
+
 ```json
 {
   "before": [...],
@@ -365,19 +401,24 @@ Get context around a message.
 ```
 
 #### `GET /api/memory/messages/:messageId/similar`
+
 Find similar messages (keyword-based).
 
 **Query Parameters:**
+
 - `limit` (default: 10)
 
 #### `GET /api/memory/trending/:userId`
+
 Get trending topics.
 
 **Query Parameters:**
+
 - `limit` (default: 10)
 - `days` (default: 7)
 
 **Response:**
+
 ```json
 {
   "topics": [
@@ -390,11 +431,13 @@ Get trending topics.
 ### Semantic Search (Embeddings)
 
 #### `POST /api/memory/semantic/search`
+
 Semantic search using embeddings.
 
 **Requirements:** `OPENAI_API_KEY` must be set
 
 **Body:**
+
 ```json
 {
   "query": "How do I deploy?",
@@ -404,6 +447,7 @@ Semantic search using embeddings.
 ```
 
 **Response:**
+
 ```json
 {
   "results": [
@@ -421,9 +465,11 @@ Semantic search using embeddings.
 ```
 
 #### `POST /api/memory/chats/:chatId/embeddings/generate`
+
 Generate embeddings for all messages in a chat.
 
 **Response:**
+
 ```json
 {
   "generated": 42,
@@ -432,9 +478,11 @@ Generate embeddings for all messages in a chat.
 ```
 
 #### `GET /api/memory/embeddings/stats`
+
 Get embedding statistics.
 
 **Response:**
+
 ```json
 {
   "totalEmbeddings": 1234,
@@ -448,9 +496,11 @@ Get embedding statistics.
 ### Export & Stats
 
 #### `GET /api/memory/chats/:chatId/export`
+
 Export complete chat with all messages.
 
 **Response:**
+
 ```json
 {
   "chat": {...},
@@ -459,9 +509,11 @@ Export complete chat with all messages.
 ```
 
 #### `GET /api/memory/stats/:userId`
+
 Get user statistics.
 
 **Response:**
+
 ```json
 {
   "totalChats": 25,
@@ -473,21 +525,27 @@ Get user statistics.
 ## Performance Considerations
 
 ### Indexing
+
 Alle wichtigen Spalten sind indexiert:
+
 - `chats.user_id` - für User-Queries
 - `chat_messages.chat_id` - für Message-Retrieval
 - `message_embeddings.message_id` - für Embedding-Lookup
 
 ### Pagination
+
 Alle List-Endpoints unterstützen `limit` und `offset` für Pagination.
 
 ### Token Tracking
+
 Token-Counts werden optional gespeichert für:
+
 - Cost Analysis
 - Usage Monitoring
 - Quota Enforcement
 
 ### Embedding Generation
+
 - Embeddings werden asynchron generiert
 - Batch-Processing für existing chats
 - Cache in Database (kein Re-Generate)
@@ -503,6 +561,7 @@ Alle Endpoints verwenden standard HTTP Status Codes:
 - `500 Internal Server Error` - Server-Fehler
 
 **Error Response Format:**
+
 ```json
 {
   "error": "Error message"
@@ -512,16 +571,19 @@ Alle Endpoints verwenden standard HTTP Status Codes:
 ## Security Considerations
 
 ### Input Validation
+
 - Alle Inputs werden mit Zod validiert
 - SQL Injection Prevention durch Prepared Statements
 - XSS Prevention durch Content Sanitization
 
 ### Data Privacy
+
 - User Isolation (alle Queries filtern nach `userId`)
 - CASCADE DELETE (Messages werden mit Chat gelöscht)
 - Embeddings werden mit Messages gelöscht (ON DELETE CASCADE)
 
 ### API Key Security
+
 - `OPENAI_API_KEY` nur server-side
 - Niemals im Frontend exponiert
 - Environment Variable statt Hardcoding
@@ -529,12 +591,14 @@ Alle Endpoints verwenden standard HTTP Status Codes:
 ## Cost Management
 
 ### OpenAI Embedding Costs
+
 - Model: `text-embedding-3-small`
 - Cost: ~$0.02 per 1M tokens
 - Durchschnitt: ~150 tokens pro Message
 - 1000 Messages ≈ $0.003
 
 ### Database Storage
+
 - Messages: ~1KB pro Message
 - Embeddings: ~6KB pro Message (1536 floats als JSON)
 - 10,000 Messages ≈ 70MB
@@ -583,8 +647,9 @@ curl -X POST http://localhost:3000/api/memory/semantic/search \
 ## Integration Examples
 
 ### React Hook
+
 ```typescript
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function useChat(chatId: string) {
   const [messages, setMessages] = useState([]);
@@ -592,8 +657,8 @@ function useChat(chatId: string) {
 
   useEffect(() => {
     fetch(`/api/memory/chats/${chatId}/messages`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setMessages(data.messages);
         setLoading(false);
       });
@@ -601,9 +666,9 @@ function useChat(chatId: string) {
 
   const addMessage = async (content: string, role: string) => {
     const res = await fetch(`/api/memory/chats/${chatId}/messages`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, role })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content, role }),
     });
     const newMessage = await res.json();
     setMessages([...messages, newMessage]);
@@ -614,24 +679,25 @@ function useChat(chatId: string) {
 ```
 
 ### Node.js Client
+
 ```typescript
 class MemoryClient {
   constructor(private baseUrl: string) {}
 
   async createChat(userId: string, title: string) {
     const res = await fetch(`${this.baseUrl}/api/memory/chats`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, title })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, title }),
     });
     return res.json();
   }
 
   async semanticSearch(userId: string, query: string) {
     const res = await fetch(`${this.baseUrl}/api/memory/semantic/search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, query, limit: 10 })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, query, limit: 10 }),
     });
     return res.json();
   }
@@ -654,6 +720,7 @@ Mögliche zukünftige Features:
 ## Support
 
 Bei Fragen oder Problemen:
+
 - Dokumentation: `/docs/MEMORY.md`
 - API Reference: Siehe REST API Section
 - Examples: Siehe Integration Examples Section

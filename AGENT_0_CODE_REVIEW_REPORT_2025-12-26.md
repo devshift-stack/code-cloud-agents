@@ -14,16 +14,17 @@
 ### Aktuelle Situation (Stand: 1a626d8)
 
 **Repository Status:**
+
 - Main Branch: `1a626d8` - feat(agent-3): Implement webhook event workers with retry logic (#11)
 - Letzte Merges: Agent 3 PR #9 + #11, Agent 2 PR #12 (reverted), Agent 4 Swagger/Postman
 
 **Agent Status:**
 
-| Agent | Tasks | PRs | Status | Rating |
-|-------|-------|-----|--------|--------|
-| **Agent 3** | 5/7 (71%) | #9 ✅ #11 ✅ | Merged & Live | ⭐⭐⭐⭐⭐ 5/5 |
-| **Agent 2** | Setup ✅ | #12 Reverted | Dependencies fehlen | ⭐⭐⭐☆☆ 3/5 |
-| **Agent 4** | 2/2 (100%) | Docs ✅ | Complete | ⭐⭐⭐⭐⭐ 5/5 |
+| Agent       | Tasks      | PRs          | Status              | Rating         |
+| ----------- | ---------- | ------------ | ------------------- | -------------- |
+| **Agent 3** | 5/7 (71%)  | #9 ✅ #11 ✅ | Merged & Live       | ⭐⭐⭐⭐⭐ 5/5 |
+| **Agent 2** | Setup ✅   | #12 Reverted | Dependencies fehlen | ⭐⭐⭐☆☆ 3/5   |
+| **Agent 4** | 2/2 (100%) | Docs ✅      | Complete            | ⭐⭐⭐⭐⭐ 5/5 |
 
 ---
 
@@ -32,6 +33,7 @@
 ### Status: ✅ **EXCELLENT - IN PRODUCTION**
 
 **Commits auf Main:**
+
 - `3a54591` - feat(agent-3): Complete all 3 PRIO 1 API implementations (#9)
 - `1a626d8` - feat(agent-3): Implement webhook event workers with retry logic (#11)
 
@@ -40,17 +42,20 @@
 #### 1. REST APIs - 27 Endpoints ✅
 
 **GitHub API (9 Endpoints):**
+
 - GET /api/github/status, /repos, /repos/:owner/:repo
 - GET /api/github/issues, /pulls, /comments
 - POST /api/github/issues, /pulls, /comments
 
 **Linear API (10 Endpoints):**
+
 - GET /api/linear/status, /teams, /issues, /projects
 - GET /api/linear/states, /labels, /users
 - POST /api/linear/issues, /projects, /comments
 - PATCH /api/linear/issues/:id (Bonus!)
 
 **Agent Control API (8 Endpoints):**
+
 - GET /api/agents, /api/agents/:id
 - POST /api/agents/:id/start, /stop
 - PATCH /api/agents/:id/state
@@ -60,16 +65,19 @@
 #### 2. Webhooks - Production Ready ✅
 
 **GitHub Webhook:**
+
 - POST /api/webhooks/github
 - Events: ping, push, pull_request, issues, issue_comment
 - HMAC SHA-256 Signature Verification ✅
 
 **Linear Webhook:**
+
 - POST /api/webhooks/linear
-- Events: Issue.*, Comment.*, Project.*
+- Events: Issue._, Comment._, Project.\*
 - HMAC SHA-256 Signature Verification ✅
 
 **NEW: Event Workers (#11) ✅**
+
 - GitHub Event Workers (push, PR, issues, comments)
 - Linear Event Workers (issues, comments, projects)
 - Retry Logic mit Exponential Backoff
@@ -93,6 +101,7 @@
 ### 📊 Statistics
 
 **Code:**
+
 - ~4,302 Zeilen Production Code
 - ~1,690 Zeilen Dokumentation
 - 30 REST/Webhook Endpoints
@@ -100,6 +109,7 @@
 - 5 Branches merged
 
 **Quality:** ⭐⭐⭐⭐⭐ (5/5)
+
 - Code Quality: Excellent
 - Security: Production-ready
 - Documentation: Comprehensive
@@ -119,12 +129,14 @@
 ### Status: ⚠️ **DEPENDENCIES FEHLEN**
 
 **Commits:**
+
 - `8c9c074` - feat(agent-2): Implement User Management API with RBAC (#12) - MERGED
 - `aa3a636` - Revert PR #12 - REVERTED
 
 ### ✅ Erfolge
 
 **Setup Tasks (6/6) komplett:**
+
 - ✅ .env aus .env.example erstellt
 - ✅ data/ Ordner für SQLite DB
 - ✅ API Keys gesetzt
@@ -133,6 +145,7 @@
 - ✅ Dokumentation erstellt
 
 **User Management (vor Revert):**
+
 - ✅ JWT Authentication System
 - ✅ User Management API mit RBAC
 - ✅ bcrypt Password Hashing
@@ -142,6 +155,7 @@
 ### ❌ Critical Issues
 
 **1. Missing Dependencies:**
+
 ```
 ❌ better-sqlite3 fehlt
 ❌ @types/better-sqlite3 fehlt
@@ -149,12 +163,14 @@
 ```
 
 **Impact:**
+
 - Backend startet nicht
 - Database funktioniert nicht
 - Build schlägt fehl
 - Tests schlagen fehl
 
 **Solution:**
+
 ```bash
 npm install better-sqlite3
 npm install --save-dev @types/better-sqlite3 @types/express
@@ -163,10 +179,12 @@ npm test
 ```
 
 **2. TypeScript Build Errors:**
+
 - 100+ TypeScript strict mode Fehler
 - Backend Build schlägt fehl
 
 **3. Tests schlagen fehl:**
+
 - ERR_MODULE_NOT_FOUND
 - Keine kompilierten JS-Dateien
 
@@ -181,6 +199,7 @@ npm test
 ### 🎯 Empfehlung
 
 **Action Items:**
+
 1. 🔴 CRITICAL: Dependencies installieren
 2. 🔴 HIGH: TypeScript Build fixen
 3. 🔴 HIGH: Tests zum Laufen bringen
@@ -193,6 +212,7 @@ npm test
 ### Status: ✅ **COMPLETE & EXCELLENT**
 
 **Commits:**
+
 - `02324db` - feat(agent-4): implement OpenAPI/Swagger documentation
 - `0c09d9e` - feat(agent-4): implement Postman Collection Export
 
@@ -201,11 +221,13 @@ npm test
 #### 1. OpenAPI/Swagger
 
 **Files:**
+
 - swagger.yaml (~800 lines)
 - src/swagger/index.ts (Integration)
 - docs/API.md (~350 lines)
 
 **Features:**
+
 - ✅ OpenAPI 3.0.3 Specification
 - ✅ 60+ API Endpoints dokumentiert
 - ✅ Request/Response Schemas
@@ -219,12 +241,14 @@ npm test
 #### 2. Postman Collection
 
 **Files:**
+
 - postman/collection.json (~400 lines, 25+ requests)
 - postman/environment.json (Production)
 - postman/local-environment.json (Local)
 - docs/POSTMAN.md (~450 lines)
 
 **Features:**
+
 - ✅ Postman Collection v2.1.0
 - ✅ 25+ Requests in 9 Folders
 - ✅ Bearer Token Auth
@@ -249,11 +273,13 @@ npm test
 ### Overall Progress
 
 **Completed:**
+
 - ✅ Agent 3: 5/7 Tasks (71%)
 - ✅ Agent 4: 2/2 Tasks (100%)
 - ✅ Agent 2: Setup 6/6 (100%)
 
 **In Progress:**
+
 - ⏳ Agent 3: Tasks 6-7 remaining
 - ⚠️ Agent 2: Dependency fixes needed
 - ⏳ Agent 1: Not started
@@ -263,6 +289,7 @@ npm test
 ### Production Status
 
 **Live auf http://178.156.178.70:3000:**
+
 - ✅ GitHub REST API (9 endpoints)
 - ✅ Linear REST API (10 endpoints)
 - ✅ Agent Control API (8 endpoints)
@@ -280,15 +307,18 @@ npm test
 ### Immediate (PRIO 1)
 
 #### 1. Fix Agent 2 Dependencies
+
 ```bash
 npm install better-sqlite3 @types/better-sqlite3 @types/express
 npm run backend:build
 npm test
 ```
+
 **Priority:** 🔴 CRITICAL
 **Time:** ~30min
 
 #### 2. Verify Production Deployment
+
 ```bash
 ssh root@178.156.178.70
 cd /root/cloud-agents
@@ -296,6 +326,7 @@ git pull origin main
 npm install --legacy-peer-deps
 pm2 restart all
 ```
+
 **Priority:** 🔴 HIGH
 **Time:** ~20min
 
@@ -318,6 +349,7 @@ pm2 restart all
 ### Project Health: ⭐⭐⭐⭐☆ (4/5)
 
 **Strengths:**
+
 - ✅ Agent 3's excellent API work (5/5)
 - ✅ Agent 4's comprehensive docs (5/5)
 - ✅ Security production-ready
@@ -325,12 +357,14 @@ pm2 restart all
 - ✅ Good progress (55-60%)
 
 **Weaknesses:**
+
 - ⚠️ Agent 2 dependency issues
 - ⚠️ Missing test coverage
 - ⏳ Agent 1 not started
 - ⏳ Agent 3 still 29% to go
 
 **Recommendation:**
+
 1. Fix Agent 2 dependencies immediately
 2. Continue Agent 3's remaining tasks
 3. Start Agent 1 frontend work

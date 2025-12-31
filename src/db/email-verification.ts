@@ -46,12 +46,14 @@ export function initEmailVerificationTable(db: BetterSqlite3.Database): void {
 export function generateVerificationToken(
   db: BetterSqlite3.Database,
   userId: string,
-  email: string
+  email: string,
 ): string {
   // Generate secure random token
   const token = randomBytes(32).toString("hex");
   const createdAt = new Date().toISOString();
-  const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_HOURS * 60 * 60 * 1000).toISOString();
+  const expiresAt = new Date(
+    Date.now() + TOKEN_EXPIRY_HOURS * 60 * 60 * 1000,
+  ).toISOString();
 
   // Invalidate old tokens for this user
   const invalidateStmt = db.prepare(`
@@ -76,7 +78,7 @@ export function generateVerificationToken(
  */
 export function verifyEmailToken(
   db: BetterSqlite3.Database,
-  token: string
+  token: string,
 ): { success: boolean; userId?: string; error?: string } {
   const stmt = db.prepare(`
     SELECT * FROM email_verification_tokens
@@ -113,7 +115,7 @@ export function verifyEmailToken(
  */
 export function getVerificationToken(
   db: BetterSqlite3.Database,
-  userId: string
+  userId: string,
 ): EmailVerificationToken | null {
   const stmt = db.prepare(`
     SELECT * FROM email_verification_tokens
@@ -140,7 +142,7 @@ export function getVerificationToken(
  */
 export function isEmailVerified(
   db: BetterSqlite3.Database,
-  userId: string
+  userId: string,
 ): boolean {
   const stmt = db.prepare(`
     SELECT COUNT(*) as count FROM email_verification_tokens
@@ -157,7 +159,7 @@ export function isEmailVerified(
 export function resendVerificationToken(
   db: BetterSqlite3.Database,
   userId: string,
-  email: string
+  email: string,
 ): string {
   return generateVerificationToken(db, userId, email);
 }

@@ -31,8 +31,10 @@ function setupTestDatabase(): Database {
 function cleanupTestDatabase() {
   try {
     if (fs.existsSync(TEST_DB_PATH)) fs.unlinkSync(TEST_DB_PATH);
-    if (fs.existsSync(TEST_DB_PATH + "-shm")) fs.unlinkSync(TEST_DB_PATH + "-shm");
-    if (fs.existsSync(TEST_DB_PATH + "-wal")) fs.unlinkSync(TEST_DB_PATH + "-wal");
+    if (fs.existsSync(TEST_DB_PATH + "-shm"))
+      fs.unlinkSync(TEST_DB_PATH + "-shm");
+    if (fs.existsSync(TEST_DB_PATH + "-wal"))
+      fs.unlinkSync(TEST_DB_PATH + "-wal");
   } catch {
     // Ignore cleanup errors
   }
@@ -40,10 +42,14 @@ function cleanupTestDatabase() {
 
 function insertTestUser(db: Database) {
   const rawDb = db.getRawDb();
-  rawDb.prepare(`
+  rawDb
+    .prepare(
+      `
     INSERT OR IGNORE INTO users (id, email, password_hash, role, created_at)
     VALUES ('user-1', 'test@example.com', 'hash', 'user', datetime('now'))
-  `).run();
+  `,
+    )
+    .run();
 }
 
 describe("BrainManager", () => {
@@ -83,7 +89,10 @@ describe("BrainManager", () => {
         content: longContent,
       });
 
-      assert.ok(doc.chunkCount >= 2, "Should have multiple chunks for long content");
+      assert.ok(
+        doc.chunkCount >= 2,
+        "Should have multiple chunks for long content",
+      );
     });
 
     it("should store metadata", () => {
@@ -122,8 +131,16 @@ describe("BrainManager", () => {
 
   describe("listDocs()", () => {
     it("should list documents for a user", () => {
-      manager.ingestText({ userId: "user-1", title: "Doc 1", content: "Content 1" });
-      manager.ingestText({ userId: "user-1", title: "Doc 2", content: "Content 2" });
+      manager.ingestText({
+        userId: "user-1",
+        title: "Doc 1",
+        content: "Content 1",
+      });
+      manager.ingestText({
+        userId: "user-1",
+        title: "Doc 2",
+        content: "Content 2",
+      });
 
       const docs = manager.listDocs("user-1");
 
@@ -131,7 +148,11 @@ describe("BrainManager", () => {
     });
 
     it("should filter by sourceType", () => {
-      manager.ingestText({ userId: "user-1", title: "Text Doc", content: "Content" });
+      manager.ingestText({
+        userId: "user-1",
+        title: "Text Doc",
+        content: "Content",
+      });
 
       const docs = manager.listDocs("user-1", { sourceType: "text" });
 
@@ -247,7 +268,8 @@ describe("BrainManager", () => {
     });
 
     it("should order chunks by index", () => {
-      const longContent = "First paragraph. ".repeat(100) + "Second paragraph. ".repeat(100);
+      const longContent =
+        "First paragraph. ".repeat(100) + "Second paragraph. ".repeat(100);
       const doc = manager.ingestText({
         userId: "user-1",
         title: "Long Doc",
@@ -264,8 +286,16 @@ describe("BrainManager", () => {
 
   describe("getUserStats()", () => {
     it("should return statistics for a user", () => {
-      manager.ingestText({ userId: "user-1", title: "Doc 1", content: "Content 1" });
-      manager.ingestText({ userId: "user-1", title: "Doc 2", content: "Content 2" });
+      manager.ingestText({
+        userId: "user-1",
+        title: "Doc 1",
+        content: "Content 1",
+      });
+      manager.ingestText({
+        userId: "user-1",
+        title: "Doc 2",
+        content: "Content 2",
+      });
 
       const stats = manager.getUserStats("user-1");
 
@@ -291,7 +321,7 @@ describe("BrainManager", () => {
           title: "Web Article",
           url: "https://example.com/article",
         },
-        "This is the fetched content from the URL."
+        "This is the fetched content from the URL.",
       );
 
       assert.ok(doc.id);
@@ -325,10 +355,14 @@ describe("BrainManager", () => {
     it("should link document to chat", () => {
       // First create a chat
       const rawDb = db.getRawDb();
-      rawDb.prepare(`
+      rawDb
+        .prepare(
+          `
         INSERT INTO chats (id, user_id, title, message_count, created_at, updated_at)
         VALUES ('chat-1', 'user-1', 'Test Chat', 0, datetime('now'), datetime('now'))
-      `).run();
+      `,
+        )
+        .run();
 
       const doc = manager.ingestText({
         userId: "user-1",
@@ -345,13 +379,25 @@ describe("BrainManager", () => {
 
     it("should get linked documents for a chat", () => {
       const rawDb = db.getRawDb();
-      rawDb.prepare(`
+      rawDb
+        .prepare(
+          `
         INSERT INTO chats (id, user_id, title, message_count, created_at, updated_at)
         VALUES ('chat-2', 'user-1', 'Test Chat 2', 0, datetime('now'), datetime('now'))
-      `).run();
+      `,
+        )
+        .run();
 
-      const doc1 = manager.ingestText({ userId: "user-1", title: "Doc 1", content: "C1" });
-      const doc2 = manager.ingestText({ userId: "user-1", title: "Doc 2", content: "C2" });
+      const doc1 = manager.ingestText({
+        userId: "user-1",
+        title: "Doc 1",
+        content: "C1",
+      });
+      const doc2 = manager.ingestText({
+        userId: "user-1",
+        title: "Doc 2",
+        content: "C2",
+      });
 
       manager.linkToChat("chat-2", doc1.id);
       manager.linkToChat("chat-2", doc2.id);
@@ -363,12 +409,20 @@ describe("BrainManager", () => {
 
     it("should unlink document from chat", () => {
       const rawDb = db.getRawDb();
-      rawDb.prepare(`
+      rawDb
+        .prepare(
+          `
         INSERT INTO chats (id, user_id, title, message_count, created_at, updated_at)
         VALUES ('chat-3', 'user-1', 'Test Chat 3', 0, datetime('now'), datetime('now'))
-      `).run();
+      `,
+        )
+        .run();
 
-      const doc = manager.ingestText({ userId: "user-1", title: "Doc", content: "C" });
+      const doc = manager.ingestText({
+        userId: "user-1",
+        title: "Doc",
+        content: "C",
+      });
       manager.linkToChat("chat-3", doc.id);
 
       const success = manager.unlinkFromChat("chat-3", doc.id);

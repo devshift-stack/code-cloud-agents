@@ -75,7 +75,7 @@ export function selectModel(
     preferLocal?: boolean;
     maxCostUSD?: number;
     forceModel?: string;
-  } = {}
+  } = {},
 ): ModelRecommendation {
   const complexity = analyzeTaskComplexity(taskDescription);
 
@@ -121,8 +121,10 @@ export function selectModel(
           model: "claude-haiku-3-5",
           provider: "anthropic",
           reasoning: "Budget constrained - using Haiku for medium task",
-          estimatedCostUSD: estimateCost("claude-haiku-3-5", 2000, 1000).costUSD,
-          estimatedCostEUR: estimateCost("claude-haiku-3-5", 2000, 1000).costEUR,
+          estimatedCostUSD: estimateCost("claude-haiku-3-5", 2000, 1000)
+            .costUSD,
+          estimatedCostEUR: estimateCost("claude-haiku-3-5", 2000, 1000)
+            .costEUR,
         };
       }
 
@@ -142,8 +144,10 @@ export function selectModel(
           model: "claude-sonnet-4-5",
           provider: "anthropic",
           reasoning: "High complexity but budget constrained - using Sonnet",
-          estimatedCostUSD: estimateCost("claude-sonnet-4-5", 5000, 2000).costUSD,
-          estimatedCostEUR: estimateCost("claude-sonnet-4-5", 5000, 2000).costEUR,
+          estimatedCostUSD: estimateCost("claude-sonnet-4-5", 5000, 2000)
+            .costUSD,
+          estimatedCostEUR: estimateCost("claude-sonnet-4-5", 5000, 2000)
+            .costEUR,
         };
       }
 
@@ -160,7 +164,9 @@ export function selectModel(
 /**
  * Get provider for a specific model
  */
-function getProviderForModel(model: string): "anthropic" | "openai" | "xai" | "ollama" {
+function getProviderForModel(
+  model: string,
+): "anthropic" | "openai" | "xai" | "ollama" {
   if (model.startsWith("claude")) return "anthropic";
   if (model.startsWith("gpt")) return "openai";
   if (model.startsWith("grok")) return "xai";
@@ -173,7 +179,7 @@ function getProviderForModel(model: string): "anthropic" | "openai" | "xai" | "o
 function estimateCost(
   model: string,
   inputTokens: number,
-  outputTokens: number
+  outputTokens: number,
 ): { costUSD: number; costEUR: number } {
   const pricing: Record<string, { input: number; output: number }> = {
     "claude-opus-4-5": { input: 15.0, output: 75.0 },
@@ -188,7 +194,8 @@ function estimateCost(
   const price = pricing[model] || { input: 3.0, output: 15.0 };
 
   const costUSD =
-    (inputTokens / 1_000_000) * price.input + (outputTokens / 1_000_000) * price.output;
+    (inputTokens / 1_000_000) * price.input +
+    (outputTokens / 1_000_000) * price.output;
   const costEUR = costUSD * 0.92;
 
   return {
@@ -202,7 +209,7 @@ function estimateCost(
  */
 export function compareCosts(
   taskDescription: string,
-  models: string[]
+  models: string[],
 ): ModelRecommendation[] {
   return models.map((model) => {
     const complexity = analyzeTaskComplexity(taskDescription);

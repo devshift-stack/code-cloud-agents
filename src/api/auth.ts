@@ -24,73 +24,78 @@ export function createAuthRouter(): Router {
    * Login with email and password
    * Rate limited: 5 attempts per 15 minutes
    */
-  router.post("/login", loginRateLimiter, async (req: Request, res: Response) => {
-    try {
-      const { email, password } = req.body;
+  router.post(
+    "/login",
+    loginRateLimiter,
+    async (req: Request, res: Response) => {
+      try {
+        const { email, password } = req.body;
 
-      // Validation
-      if (!email || !password) {
-        return res.status(400).json({
-          error: "Email and password required",
-        });
-      }
+        // Validation
+        if (!email || !password) {
+          return res.status(400).json({
+            error: "Email and password required",
+          });
+        }
 
-      // Verify user credentials against database
-      const rawDb = db.getRawDb();
-      const user = await verifyUserPassword(rawDb, email, password);
+        // Verify user credentials against database
+        const rawDb = db.getRawDb();
+        const user = await verifyUserPassword(rawDb, email, password);
 
-      if (!user) {
-        return res.status(401).json({
-          error: "Invalid credentials",
-        });
-      }
+        if (!user) {
+          return res.status(401).json({
+            error: "Invalid credentials",
+          });
+        }
 
-      // Check if user is active
-      if (!user.isActive) {
-        return res.status(403).json({
-          error: "Account deactivated",
-          message: "Your account has been deactivated. Please contact support.",
-        });
-      }
+        // Check if user is active
+        if (!user.isActive) {
+          return res.status(403).json({
+            error: "Account deactivated",
+            message:
+              "Your account has been deactivated. Please contact support.",
+          });
+        }
 
-      // Generate tokens
-      const tokens = generateTokenPair({
-        userId: user.id,
-        role: user.role,
-        email: user.email,
-      });
-
-      // Log login event
-      db.audit.log({
-        kind: "user_login",
-        message: `User ${user.email} logged in`,
-        userId: user.id,
-        severity: "info",
-        meta: { email: user.email, role: user.role },
-      });
-
-      // Return tokens
-      res.json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
+        // Generate tokens
+        const tokens = generateTokenPair({
+          userId: user.id,
           role: user.role,
-          displayName: user.displayName,
-        },
-        tokens: {
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken,
-          expiresIn: tokens.expiresIn,
-        },
-      });
-    } catch (error) {
-      console.error("Login error:", error);
-      res.status(500).json({
-        error: "Internal server error",
-      });
-    }
-  });
+          email: user.email,
+        });
+
+        // Log login event
+        db.audit.log({
+          kind: "user_login",
+          message: `User ${user.email} logged in`,
+          userId: user.id,
+          severity: "info",
+          meta: { email: user.email, role: user.role },
+        });
+
+        // Return tokens
+        res.json({
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            displayName: user.displayName,
+          },
+          tokens: {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            expiresIn: tokens.expiresIn,
+          },
+        });
+      } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({
+          error: "Internal server error",
+        });
+      }
+    },
+  );
 
   /**
    * POST /api/auth/logout

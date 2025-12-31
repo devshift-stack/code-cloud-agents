@@ -7,14 +7,17 @@ The Code Cloud Agents system includes a WebSocket server for real-time bidirecti
 ## Connection
 
 ### URL
+
 ```
 ws://localhost:3000/ws?token=YOUR_AUTH_TOKEN
 ```
 
 ### Authentication
+
 Include your authentication token as a query parameter:
+
 ```javascript
-const ws = new WebSocket('ws://localhost:3000/ws?token=abc123');
+const ws = new WebSocket("ws://localhost:3000/ws?token=abc123");
 ```
 
 **Note:** In production, use proper JWT tokens. The current implementation uses simplified token-based auth for development.
@@ -27,9 +30,9 @@ All messages are JSON objects with the following structure:
 
 ```typescript
 interface WSMessage {
-  type: string;           // Message type
-  data?: any;            // Message payload
-  timestamp?: string;    // ISO 8601 timestamp (added by server)
+  type: string; // Message type
+  data?: any; // Message payload
+  timestamp?: string; // ISO 8601 timestamp (added by server)
 }
 ```
 
@@ -63,6 +66,7 @@ Sent immediately after connection to confirm authentication status.
 Keep-alive mechanism to maintain connection.
 
 **Client sends:**
+
 ```json
 {
   "type": "ping"
@@ -70,6 +74,7 @@ Keep-alive mechanism to maintain connection.
 ```
 
 **Server responds:**
+
 ```json
 {
   "type": "pong",
@@ -78,6 +83,7 @@ Keep-alive mechanism to maintain connection.
 ```
 
 **Auto-Heartbeat:**
+
 - Server sends `ping` every 30 seconds
 - Client should respond with `pong` or send own `ping`
 - Clients that don't respond within 60 seconds are disconnected
@@ -104,6 +110,7 @@ Real-time updates about agent state and progress.
 ```
 
 **Agent States:**
+
 - `idle` - Agent is ready for work
 - `working` - Agent is processing a task
 - `stopped` - Agent has stopped (e.g., STOP decision)
@@ -150,6 +157,7 @@ System notifications (info, success, warning, error).
 ```
 
 **Notification Levels:**
+
 - `info` - Informational message
 - `success` - Success message
 - `warning` - Warning message
@@ -164,6 +172,7 @@ System notifications (info, success, warning, error).
 Track user online/offline status.
 
 **Client sends:**
+
 ```json
 {
   "type": "user_presence",
@@ -172,6 +181,7 @@ Track user online/offline status.
 ```
 
 **Server broadcasts:**
+
 ```json
 {
   "type": "user_presence",
@@ -184,6 +194,7 @@ Track user online/offline status.
 ```
 
 **Presence Status:**
+
 - `online` - User is active
 - `away` - User is idle
 - `busy` - User is busy (do not disturb)
@@ -226,7 +237,7 @@ class CloudAgentsWebSocket {
     this.ws = new WebSocket(`ws://localhost:3000/ws?token=${this.token}`);
 
     this.ws.onopen = () => {
-      console.log('✅ WebSocket connected');
+      console.log("✅ WebSocket connected");
       this.startHeartbeat();
     };
 
@@ -236,27 +247,27 @@ class CloudAgentsWebSocket {
     };
 
     this.ws.onclose = () => {
-      console.log('🔌 WebSocket disconnected');
+      console.log("🔌 WebSocket disconnected");
       this.reconnect();
     };
 
     this.ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("WebSocket error:", error);
     };
   }
 
   handleMessage(message) {
     switch (message.type) {
-      case 'agent_status':
+      case "agent_status":
         this.onAgentStatus(message.data);
         break;
-      case 'chat_message':
+      case "chat_message":
         this.onChatMessage(message.data);
         break;
-      case 'notification':
+      case "notification":
         this.onNotification(message.data);
         break;
-      case 'user_presence':
+      case "user_presence":
         this.onUserPresence(message.data);
         break;
     }
@@ -264,14 +275,14 @@ class CloudAgentsWebSocket {
 
   startHeartbeat() {
     this.heartbeatInterval = setInterval(() => {
-      this.send({ type: 'ping' });
+      this.send({ type: "ping" });
     }, 30000);
   }
 
   reconnect() {
     clearInterval(this.heartbeatInterval);
     setTimeout(() => {
-      console.log('🔄 Reconnecting...');
+      console.log("🔄 Reconnecting...");
       this.connect();
     }, this.reconnectDelay);
   }
@@ -284,16 +295,24 @@ class CloudAgentsWebSocket {
 
   setPresence(status) {
     this.send({
-      type: 'user_presence',
-      data: status
+      type: "user_presence",
+      data: status,
     });
   }
 
   // Override these in your app
-  onAgentStatus(data) { console.log('Agent status:', data); }
-  onChatMessage(data) { console.log('Chat message:', data); }
-  onNotification(data) { console.log('Notification:', data); }
-  onUserPresence(data) { console.log('User presence:', data); }
+  onAgentStatus(data) {
+    console.log("Agent status:", data);
+  }
+  onChatMessage(data) {
+    console.log("Chat message:", data);
+  }
+  onNotification(data) {
+    console.log("Notification:", data);
+  }
+  onUserPresence(data) {
+    console.log("User presence:", data);
+  }
 
   close() {
     clearInterval(this.heartbeatInterval);
@@ -302,11 +321,11 @@ class CloudAgentsWebSocket {
 }
 
 // Usage
-const client = new CloudAgentsWebSocket('your-token-here');
+const client = new CloudAgentsWebSocket("your-token-here");
 
 // Custom handlers
 client.onAgentStatus = (data) => {
-  document.getElementById('agent-status').innerText = data.state;
+  document.getElementById("agent-status").innerText = data.state;
 };
 
 client.onNotification = (data) => {
@@ -405,27 +424,29 @@ function Dashboard() {
 ### Node.js Client
 
 ```javascript
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 
-const ws = new WebSocket('ws://localhost:3000/ws?token=test-token');
+const ws = new WebSocket("ws://localhost:3000/ws?token=test-token");
 
-ws.on('open', () => {
-  console.log('✅ Connected');
+ws.on("open", () => {
+  console.log("✅ Connected");
 
   // Send presence
-  ws.send(JSON.stringify({
-    type: 'user_presence',
-    data: 'online'
-  }));
+  ws.send(
+    JSON.stringify({
+      type: "user_presence",
+      data: "online",
+    }),
+  );
 });
 
-ws.on('message', (data) => {
+ws.on("message", (data) => {
   const message = JSON.parse(data);
-  console.log('📨', message);
+  console.log("📨", message);
 });
 
-ws.on('close', () => {
-  console.log('🔌 Disconnected');
+ws.on("close", () => {
+  console.log("🔌 Disconnected");
 });
 ```
 
@@ -441,26 +462,26 @@ const wsManager = (global as any).wsManager;
 
 // Broadcast agent status to all authenticated clients
 wsManager.broadcastAgentStatus({
-  agentName: 'CLOUD_ASSISTANT',
-  state: 'working',
-  currentTask: 'Analyzing code',
-  progress: 50
+  agentName: "CLOUD_ASSISTANT",
+  state: "working",
+  currentTask: "Analyzing code",
+  progress: 50,
 });
 
 // Broadcast chat message
 wsManager.broadcastChatMessage({
-  conversationId: 'conv-123',
-  messageId: 'msg-456',
-  content: 'Analysis complete!',
-  sender: 'CLOUD_ASSISTANT',
-  timestamp: new Date().toISOString()
+  conversationId: "conv-123",
+  messageId: "msg-456",
+  content: "Analysis complete!",
+  sender: "CLOUD_ASSISTANT",
+  timestamp: new Date().toISOString(),
 });
 
 // Send notification to all users
-wsManager.sendNotification('success', 'All tests passed!');
+wsManager.sendNotification("success", "All tests passed!");
 
 // Send notification to specific user
-wsManager.sendNotification('error', 'Task failed', 'user-123');
+wsManager.sendNotification("error", "Task failed", "user-123");
 ```
 
 ---
@@ -468,13 +489,16 @@ wsManager.sendNotification('error', 'Task failed', 'user-123');
 ## Security
 
 ### Authentication
+
 - Tokens should be JWT in production
 - Current implementation uses simplified token auth for development
 - Token is validated on connection
 - Unauthenticated clients can connect but won't receive sensitive updates
 
 ### Best Practices
+
 1. **Always use WSS (WebSocket Secure) in production**
+
    ```
    wss://your-domain.com/ws?token=...
    ```
@@ -499,11 +523,13 @@ wsManager.sendNotification('error', 'Task failed', 'user-123');
 ### Connection Issues
 
 **Problem:** "Connection failed"
+
 ```
 Solution: Check that the server is running and WebSocket port is open
 ```
 
 **Problem:** "Disconnects frequently"
+
 ```
 Solution: Ensure ping/pong heartbeat is working. Check network stability.
 ```
@@ -511,6 +537,7 @@ Solution: Ensure ping/pong heartbeat is working. Check network stability.
 ### Authentication Issues
 
 **Problem:** "Auth failed"
+
 ```
 Solution: Check token format and validity. Verify token is passed in URL query.
 ```
@@ -518,6 +545,7 @@ Solution: Check token format and validity. Verify token is passed in URL query.
 ### Message Delivery
 
 **Problem:** "Not receiving messages"
+
 ```
 Solution: Check that client is authenticated. Verify message filters.
 ```
@@ -533,7 +561,9 @@ Solution: Check that client is authenticated. Verify message filters.
 const totalClients = wsManager.getClientsCount();
 const authenticatedClients = wsManager.getAuthenticatedClientsCount();
 
-console.log(`Connected: ${totalClients}, Authenticated: ${authenticatedClients}`);
+console.log(
+  `Connected: ${totalClients}, Authenticated: ${authenticatedClients}`,
+);
 ```
 
 ---
@@ -543,11 +573,13 @@ console.log(`Connected: ${totalClients}, Authenticated: ${authenticatedClients}`
 ### Manual Testing with wscat
 
 Install wscat:
+
 ```bash
 npm install -g wscat
 ```
 
 Connect and test:
+
 ```bash
 # Connect
 wscat -c "ws://localhost:3000/ws?token=test-123"

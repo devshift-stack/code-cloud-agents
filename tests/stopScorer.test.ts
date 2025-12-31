@@ -4,7 +4,11 @@
 
 import { test } from "node:test";
 import assert from "node:assert";
-import { computeStopScore, analyzeContent, type StopReason } from "../src/audit/stopScorer.ts";
+import {
+  computeStopScore,
+  analyzeContent,
+  type StopReason,
+} from "../src/audit/stopScorer.ts";
 
 test("computeStopScore returns LOW severity for empty reasons", () => {
   const result = computeStopScore([]);

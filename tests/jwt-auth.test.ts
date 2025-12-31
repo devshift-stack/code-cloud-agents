@@ -49,7 +49,7 @@ describe("JWT Token Generation", () => {
   it("should generate different tokens each time", async () => {
     const token1 = generateAccessToken(mockPayload);
     // Wait 1 second to ensure different iat timestamp
-    await new Promise(resolve => setTimeout(resolve, 1100));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
     const token2 = generateAccessToken(mockPayload);
     assert.notStrictEqual(token1, token2); // Different iat timestamps
   });
@@ -138,8 +138,14 @@ describe("JWT Token Revocation", () => {
 
   it("should blacklist multiple tokens", () => {
     const timestamp = Date.now();
-    const token1 = generateAccessToken({ userId: "multi-1-" + timestamp, role: "user" });
-    const token2 = generateAccessToken({ userId: "multi-2-" + timestamp, role: "user" });
+    const token1 = generateAccessToken({
+      userId: "multi-1-" + timestamp,
+      role: "user",
+    });
+    const token2 = generateAccessToken({
+      userId: "multi-2-" + timestamp,
+      role: "user",
+    });
 
     revokeToken(token1);
     revokeToken(token2);
@@ -181,7 +187,7 @@ describe("JWT Token Refresh", () => {
     const oldTokens = generateTokenPair(uniquePayload);
 
     // Wait to ensure different timestamp
-    await new Promise(resolve => setTimeout(resolve, 1100));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
     const newTokens = refreshAccessToken(oldTokens.refreshToken);
 
     assert.ok(newTokens);

@@ -99,7 +99,9 @@ export function determineStatus(module: {
 
   // Not started: no tests, no issues reported
   if (testsPassing === undefined && testsTotal === undefined) {
-    return knownIssues && knownIssues.length > 0 ? "in-progress" : "not-started";
+    return knownIssues && knownIssues.length > 0
+      ? "in-progress"
+      : "not-started";
   }
 
   // Ready: all tests passing, no known issues
@@ -123,7 +125,10 @@ export function determineStatus(module: {
   }
 
   // Buggy: has known issues or failing tests
-  if ((knownIssues && knownIssues.length > 0) || (testsPassing !== undefined && testsPassing < testsTotal!)) {
+  if (
+    (knownIssues && knownIssues.length > 0) ||
+    (testsPassing !== undefined && testsPassing < testsTotal!)
+  ) {
     return "buggy";
   }
 

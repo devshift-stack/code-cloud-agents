@@ -3,7 +3,12 @@
  * Controls truth, completeness, and cross-layer consistency
  */
 
-import { computeStopScore, analyzeContent, type StopReason, type StopScoreResult } from "../audit/stopScorer.js";
+import {
+  computeStopScore,
+  analyzeContent,
+  type StopReason,
+  type StopScoreResult,
+} from "../audit/stopScorer.js";
 
 export interface SupervisorDecision {
   decision: "APPROVED" | "STOP_REQUIRED";
@@ -81,7 +86,10 @@ export class EngineeringLeadSupervisor {
     return decision;
   }
 
-  private makeDecision(scoreResult: StopScoreResult, submission: WorkSubmission): SupervisorDecision {
+  private makeDecision(
+    scoreResult: StopScoreResult,
+    submission: WorkSubmission,
+  ): SupervisorDecision {
     const stopRequired = scoreResult.stopRequired;
 
     let finalStatus: "COMPLETE" | "COMPLETE_WITH_GAPS" | "STOP_REQUIRED";
@@ -97,7 +105,8 @@ export class EngineeringLeadSupervisor {
     if (!submission.hasTests) missingParts.push("Tests");
     if (!submission.hasSchema) missingParts.push("Schema/SQL");
     if (!submission.hasDeployConfig) missingParts.push("Deploy config");
-    if (submission.artefacts.length === 0) missingParts.push("Verifiable artefacts");
+    if (submission.artefacts.length === 0)
+      missingParts.push("Verifiable artefacts");
 
     let nextAction: string;
     if (stopRequired) {
@@ -131,7 +140,10 @@ export class EngineeringLeadSupervisor {
       }
     }
 
-    if (content.toLowerCase().includes("legal") || content.toLowerCase().includes("warranty")) {
+    if (
+      content.toLowerCase().includes("legal") ||
+      content.toLowerCase().includes("warranty")
+    ) {
       issues.push("Legal statement detected");
     }
 

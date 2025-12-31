@@ -40,7 +40,9 @@ for (const message of testMessages) {
   console.log(`   Trigger: ${triggers ? "✅ YES" : "❌ NO"}`);
 
   if (triggers) {
-    console.log(`   Action: 📨 DM to Arnel: "Hocemo na kafu nas dvoje dok Denis bude na putu? ☕😏"`);
+    console.log(
+      `   Action: 📨 DM to Arnel: "Hocemo na kafu nas dvoje dok Denis bude na putu? ☕😏"`,
+    );
     console.log(`   Action: 📢 Channel: "✈️ Bon voyage!"`);
   }
 }
@@ -71,7 +73,9 @@ for (const message of negativeMessages) {
     messageLower.includes("nach paris");
 
   console.log(`\n📩 Message: "${message}"`);
-  console.log(`   Trigger: ${triggers ? "❌ FALSE POSITIVE!" : "✅ Correctly ignored"}`);
+  console.log(
+    `   Trigger: ${triggers ? "❌ FALSE POSITIVE!" : "✅ Correctly ignored"}`,
+  );
 }
 
 console.log("\n" + "─".repeat(60));

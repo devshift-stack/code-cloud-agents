@@ -4,7 +4,10 @@
 
 import { test } from "node:test";
 import assert from "node:assert";
-import { verifyClaims, generateVerificationReport } from "../src/audit/claimVerifier.ts";
+import {
+  verifyClaims,
+  generateVerificationReport,
+} from "../src/audit/claimVerifier.ts";
 
 test("verifyClaims detects unproven scraping claims", () => {
   const content = "Successfully scraped 10 portals and stored the data";

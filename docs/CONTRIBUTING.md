@@ -92,10 +92,12 @@ git merge upstream/main
 ### Branch Strategy
 
 **Main Branches:**
+
 - `main`: Production-ready Code
 - `develop`: Development Branch (optional)
 
 **Feature Branches:**
+
 ```bash
 # Agent-spezifische Branches
 agent-a2-<feature-name>
@@ -109,6 +111,7 @@ docs/<doc-name>
 ```
 
 **Beispiele:**
+
 ```bash
 git checkout -b feature/websocket-realtime
 git checkout -b fix/database-lock
@@ -152,6 +155,7 @@ git push origin feature/my-feature
 ### TypeScript
 
 **Strict Mode:**
+
 ```json
 {
   "compilerOptions": {
@@ -164,6 +168,7 @@ git push origin feature/my-feature
 ```
 
 **Keine `any` Types:**
+
 ```typescript
 // ❌ Schlecht
 function processData(data: any) {
@@ -180,29 +185,31 @@ function processData(data: { value: string }) {
 
 ### Naming Conventions
 
-| Element | Convention | Beispiel |
-|---------|------------|----------|
-| Variables | camelCase | `userName`, `isActive` |
-| Functions | camelCase | `getUserData()`, `calculateScore()` |
-| Classes | PascalCase | `TaskManager`, `EnforcementGate` |
-| Components | PascalCase | `AgentCard`, `TaskList` |
-| Constants | SCREAMING_SNAKE_CASE | `MAX_RETRIES`, `API_URL` |
-| Files | kebab-case | `task-manager.ts`, `user-api.ts` |
-| Interfaces | PascalCase | `Task`, `AuditEntry` |
-| Types | PascalCase | `GateStatus`, `StopReason` |
+| Element    | Convention           | Beispiel                            |
+| ---------- | -------------------- | ----------------------------------- |
+| Variables  | camelCase            | `userName`, `isActive`              |
+| Functions  | camelCase            | `getUserData()`, `calculateScore()` |
+| Classes    | PascalCase           | `TaskManager`, `EnforcementGate`    |
+| Components | PascalCase           | `AgentCard`, `TaskList`             |
+| Constants  | SCREAMING_SNAKE_CASE | `MAX_RETRIES`, `API_URL`            |
+| Files      | kebab-case           | `task-manager.ts`, `user-api.ts`    |
+| Interfaces | PascalCase           | `Task`, `AuditEntry`                |
+| Types      | PascalCase           | `GateStatus`, `StopReason`          |
 
 ---
 
 ### JSDoc Comments
 
 **Pflicht für:**
+
 - Alle exported Functions
 - Alle exported Classes
 - Alle public Methods
 - Komplexe Logic
 
 **Format:**
-```typescript
+
+````typescript
 /**
  * Creates a new task and assigns it to an agent
  *
@@ -221,17 +228,18 @@ function processData(data: { value: string }) {
  */
 async function createTask(
   taskData: Omit<Task, "id">,
-  agentId: string
+  agentId: string,
 ): Promise<Task> {
   // Implementation
 }
-```
+````
 
 ---
 
 ### Code Style
 
 **Früh returnen:**
+
 ```typescript
 // ✅ Gut - Early Return
 function validateTask(task: Task): boolean {
@@ -256,6 +264,7 @@ function validateTask(task: Task): boolean {
 ```
 
 **Destructuring:**
+
 ```typescript
 // ✅ Gut
 const { title, priority, assignee } = task;
@@ -267,6 +276,7 @@ const assignee = task.assignee;
 ```
 
 **Async/Await:**
+
 ```typescript
 // ✅ Gut
 async function fetchData() {
@@ -283,9 +293,9 @@ async function fetchData() {
 // ❌ Schlecht - Promises ohne async/await
 function fetchData() {
   return fetch("/api/tasks")
-    .then(response => response.json())
-    .then(data => data)
-    .catch(error => {
+    .then((response) => response.json())
+    .then((data) => data)
+    .catch((error) => {
       console.error("Fetch failed:", error);
       throw error;
     });
@@ -297,6 +307,7 @@ function fetchData() {
 ### File Organization
 
 **Import Order:**
+
 ```typescript
 // 1. External Libraries
 import express from "express";
@@ -318,6 +329,7 @@ const PORT = 3000;
 ### Error Handling
 
 **Always use try/catch:**
+
 ```typescript
 // ✅ Gut
 async function createTask(taskData: TaskData): Promise<Task> {
@@ -338,6 +350,7 @@ async function createTask(taskData: TaskData): Promise<Task> {
 ```
 
 **Custom Errors:**
+
 ```typescript
 class ValidationError extends Error {
   constructor(message: string) {
@@ -360,6 +373,7 @@ function validateInput(data: unknown) {
 ### Test Requirements
 
 **Alle PRs müssen:**
+
 - [ ] Bestehende Tests bestehen
 - [ ] Neue Tests für neue Features
 - [ ] Code Coverage ≥ 80%
@@ -369,6 +383,7 @@ function validateInput(data: unknown) {
 ### Writing Tests
 
 **Test Structure:**
+
 ```typescript
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert";
@@ -400,14 +415,14 @@ describe("TaskManager", () => {
 
   it("should throw error with invalid data", async () => {
     const taskData = {
-      title: "",  // Invalid: empty title
+      title: "", // Invalid: empty title
       priority: "high" as const,
       assignee: "agent-1",
     };
 
     await assert.rejects(
       async () => await createTask(db, taskData),
-      /Title is required/
+      /Title is required/,
     );
   });
 });
@@ -446,6 +461,7 @@ npm test -- --coverage
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation
@@ -455,6 +471,7 @@ npm test -- --coverage
 - `chore`: Maintenance
 
 **Scopes:**
+
 - `api`: API endpoints
 - `db`: Database
 - `ui`: Frontend
@@ -506,6 +523,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ### PR Guidelines
 
 **Vor dem PR:**
+
 - [ ] Code follows coding standards
 - [ ] All tests pass
 - [ ] Build successful
@@ -519,28 +537,34 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Changes Made
+
 - Change 1
 - Change 2
 - Change 3
 
 ## Testing
+
 - [ ] Tests added/updated
 - [ ] All tests passing
 - [ ] Manual testing completed
 
 ## Screenshots (if applicable)
+
 [Add screenshots here]
 
 ## Related Issues
+
 Closes #123
 ```
 
@@ -553,6 +577,7 @@ Closes #123
 ```
 
 **Examples:**
+
 ```
 feat(api): add WebSocket real-time updates
 fix(db): resolve database locking issue
@@ -566,6 +591,7 @@ docs(readme): update installation instructions
 ### For Contributors
 
 **Nach PR-Erstellung:**
+
 1. Wait for CI/CD checks to pass
 2. Wait for review comments
 3. Address feedback promptly
@@ -573,6 +599,7 @@ docs(readme): update installation instructions
 5. Be patient and respectful
 
 **Wenn Änderungen gefordert:**
+
 ```bash
 # Make changes
 git add .
@@ -585,6 +612,7 @@ git push origin feature/my-feature
 ### For Reviewers
 
 **Review Checkliste:**
+
 - [ ] Code follows coding standards
 - [ ] Tests are adequate
 - [ ] No security issues
@@ -593,6 +621,7 @@ git push origin feature/my-feature
 - [ ] Breaking changes noted
 
 **Review Comments:**
+
 - Be constructive and respectful
 - Explain why changes are needed
 - Suggest alternatives
@@ -603,6 +632,7 @@ git push origin feature/my-feature
 ## 🎯 PR Merge Criteria
 
 **Erforderlich:**
+
 - [ ] Mindestens 1 Approval
 - [ ] Alle CI Checks grün
 - [ ] Keine merge conflicts
@@ -610,6 +640,7 @@ git push origin feature/my-feature
 - [ ] Commit-Messages sauber
 
 **Merge Strategie:**
+
 - **Squash Merge**: Default für Feature Branches
 - **Merge Commit**: Für größere Features
 - **Rebase**: Für kleine Fixes
@@ -627,6 +658,7 @@ git push origin feature/my-feature
 - **PATCH**: Bug fixes
 
 **Examples:**
+
 - `0.1.0` → `0.2.0`: New feature added
 - `0.2.0` → `0.2.1`: Bug fix
 - `0.2.1` → `1.0.0`: Breaking change
@@ -648,6 +680,7 @@ git push origin feature/my-feature
 ## 📞 Questions?
 
 **Hilfe gesucht?**
+
 - 📖 Lese die [Developer Guide](./DEVELOPER_GUIDE.md)
 - 🏗️ Verstehe die [Architecture](./ARCHITECTURE.md)
 - 💬 Frage im GitHub Discussions
@@ -660,6 +693,7 @@ git push origin feature/my-feature
 Danke für deinen Beitrag zu Code Cloud Agents!
 
 Jede Contribution, egal wie klein, wird geschätzt:
+
 - Code
 - Dokumentation
 - Bug Reports

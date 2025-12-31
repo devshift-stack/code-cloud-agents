@@ -19,29 +19,29 @@ const result = await slack.sendMessage({
       type: "header",
       text: {
         type: "plain_text",
-        text: "✅ Integration Test erfolgreich"
-      }
+        text: "✅ Integration Test erfolgreich",
+      },
     },
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "*Mujo* ist jetzt verbunden und bereit!\n\n*Features:*\n• GitHub Issues erstellen\n• Linear Issues erstellen\n• Team Notifications\n• STOP Score Alerts"
-      }
+        text: "*Mujo* ist jetzt verbunden und bereit!\n\n*Features:*\n• GitHub Issues erstellen\n• Linear Issues erstellen\n• Team Notifications\n• STOP Score Alerts",
+      },
     },
     {
-      type: "divider"
+      type: "divider",
     },
     {
       type: "context",
       elements: [
         {
           type: "mrkdwn",
-          text: "🤖 Gesendet von Cloud Agents System"
-        }
-      ]
-    }
-  ]
+          text: "🤖 Gesendet von Cloud Agents System",
+        },
+      ],
+    },
+  ],
 });
 
 if (result.success && result.message) {

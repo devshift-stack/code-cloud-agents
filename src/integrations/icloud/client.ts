@@ -11,9 +11,21 @@ export interface ICloudConfig {
 export interface ICloudClient {
   isEnabled(): boolean;
   authenticate(): Promise<{ success: boolean; error?: string }>;
-  getContacts(): Promise<{ success: boolean; contacts?: unknown[]; error?: string }>;
-  getCalendarEvents(): Promise<{ success: boolean; events?: unknown[]; error?: string }>;
-  getReminders(): Promise<{ success: boolean; reminders?: unknown[]; error?: string }>;
+  getContacts(): Promise<{
+    success: boolean;
+    contacts?: unknown[];
+    error?: string;
+  }>;
+  getCalendarEvents(): Promise<{
+    success: boolean;
+    events?: unknown[];
+    error?: string;
+  }>;
+  getReminders(): Promise<{
+    success: boolean;
+    reminders?: unknown[];
+    error?: string;
+  }>;
   getStatus(): Promise<{ connected: boolean; error?: string }>;
 }
 
@@ -33,7 +45,8 @@ export function createICloudClient(_config?: ICloudConfig): ICloudClient {
       if (!enabled) {
         return {
           success: false,
-          error: "STUB: iCloud integration is disabled. Set ICLOUD_ENABLED=true to enable.",
+          error:
+            "STUB: iCloud integration is disabled. Set ICLOUD_ENABLED=true to enable.",
         };
       }
 
@@ -43,7 +56,11 @@ export function createICloudClient(_config?: ICloudConfig): ICloudClient {
       };
     },
 
-    async getContacts(): Promise<{ success: boolean; contacts?: unknown[]; error?: string }> {
+    async getContacts(): Promise<{
+      success: boolean;
+      contacts?: unknown[];
+      error?: string;
+    }> {
       if (!enabled) {
         return {
           success: false,
@@ -58,7 +75,11 @@ export function createICloudClient(_config?: ICloudConfig): ICloudClient {
       };
     },
 
-    async getCalendarEvents(): Promise<{ success: boolean; events?: unknown[]; error?: string }> {
+    async getCalendarEvents(): Promise<{
+      success: boolean;
+      events?: unknown[];
+      error?: string;
+    }> {
       return {
         success: false,
         events: [],
@@ -66,7 +87,11 @@ export function createICloudClient(_config?: ICloudConfig): ICloudClient {
       };
     },
 
-    async getReminders(): Promise<{ success: boolean; reminders?: unknown[]; error?: string }> {
+    async getReminders(): Promise<{
+      success: boolean;
+      reminders?: unknown[];
+      error?: string;
+    }> {
       return {
         success: false,
         reminders: [],

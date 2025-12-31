@@ -74,7 +74,7 @@ export class BrainManager {
       "processing",
       0,
       now,
-      now
+      now,
     );
 
     // Chunk and store
@@ -118,7 +118,7 @@ export class BrainManager {
       "processing",
       0,
       now,
-      now
+      now,
     );
 
     // Chunk and store
@@ -166,7 +166,7 @@ export class BrainManager {
       "processing",
       0,
       now,
-      now
+      now,
     );
 
     // Chunk and store
@@ -201,7 +201,12 @@ export class BrainManager {
    */
   listDocs(
     userId: string,
-    options: { limit?: number; offset?: number; sourceType?: string; status?: string } = {}
+    options: {
+      limit?: number;
+      offset?: number;
+      sourceType?: string;
+      status?: string;
+    } = {},
   ): BrainDoc[] {
     const rawDb = this.db.getRawDb();
     const { limit = 50, offset = 0, sourceType, status } = options;
@@ -387,7 +392,9 @@ export class BrainManager {
   } {
     const rawDb = this.db.getRawDb();
 
-    const docsStmt = rawDb.prepare("SELECT COUNT(*) as count FROM brain_docs WHERE user_id = ?");
+    const docsStmt = rawDb.prepare(
+      "SELECT COUNT(*) as count FROM brain_docs WHERE user_id = ?",
+    );
     const docsRow = docsStmt.get(userId) as any;
 
     const chunksStmt = rawDb.prepare(`
@@ -413,7 +420,9 @@ export class BrainManager {
     return {
       totalDocs: docsRow.count,
       totalChunks: chunksRow.count,
-      bySourceType: Object.fromEntries(typeRows.map((r) => [r.source_type, r.count])),
+      bySourceType: Object.fromEntries(
+        typeRows.map((r) => [r.source_type, r.count]),
+      ),
       byStatus: Object.fromEntries(statusRows.map((r) => [r.status, r.count])),
     };
   }
@@ -423,7 +432,9 @@ export class BrainManager {
   /**
    * Split text into overlapping chunks
    */
-  private chunkText(text: string): { content: string; start: number; end: number }[] {
+  private chunkText(
+    text: string,
+  ): { content: string; start: number; end: number }[] {
     const chunks: { content: string; start: number; end: number }[] = [];
 
     if (text.length <= CHUNK_SIZE) {
@@ -462,7 +473,10 @@ export class BrainManager {
   /**
    * Store chunks in database
    */
-  private storeChunks(docId: string, chunks: { content: string; start: number; end: number }[]): void {
+  private storeChunks(
+    docId: string,
+    chunks: { content: string; start: number; end: number }[],
+  ): void {
     const rawDb = this.db.getRawDb();
     const now = new Date().toISOString();
 
@@ -475,7 +489,16 @@ export class BrainManager {
       for (let i = 0; i < chunkList.length; i++) {
         const chunk = chunkList[i];
         const tokenCount = Math.ceil(chunk.content.length / 4); // rough estimate
-        stmt.run(randomUUID(), docId, i, chunk.content, tokenCount, chunk.start, chunk.end, now);
+        stmt.run(
+          randomUUID(),
+          docId,
+          i,
+          chunk.content,
+          tokenCount,
+          chunk.start,
+          chunk.end,
+          now,
+        );
       }
     });
 

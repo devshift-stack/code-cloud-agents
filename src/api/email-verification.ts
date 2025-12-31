@@ -24,49 +24,54 @@ export function createEmailVerificationRouter(db: Database): Router {
    * Send verification email (authenticated users only)
    * Rate limited: 3 attempts per hour
    */
-  router.post("/send", emailVerificationRateLimiter, requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const userId = req.userId!;
-      const user = getUserById(rawDb, userId);
+  router.post(
+    "/send",
+    emailVerificationRateLimiter,
+    requireAuth,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const userId = req.userId!;
+        const user = getUserById(rawDb, userId);
 
-      if (!user) {
-        return res.status(404).json({
-          error: "User not found",
+        if (!user) {
+          return res.status(404).json({
+            error: "User not found",
+          });
+        }
+
+        if (user.emailVerified) {
+          return res.status(400).json({
+            error: "Email already verified",
+          });
+        }
+
+        // Generate new verification token
+        const token = generateVerificationToken(rawDb, userId, user.email);
+
+        // Send verification email
+        const emailResult = await sendVerificationEmail(user.email, token);
+
+        if (!emailResult.success) {
+          return res.status(500).json({
+            error: "Failed to send verification email",
+            details: emailResult.error,
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "Verification email sent successfully",
+          // Include preview URL for development (Ethereal)
+          ...(emailResult.previewUrl && { previewUrl: emailResult.previewUrl }),
         });
-      }
-
-      if (user.emailVerified) {
-        return res.status(400).json({
-          error: "Email already verified",
-        });
-      }
-
-      // Generate new verification token
-      const token = generateVerificationToken(rawDb, userId, user.email);
-
-      // Send verification email
-      const emailResult = await sendVerificationEmail(user.email, token);
-
-      if (!emailResult.success) {
-        return res.status(500).json({
+      } catch (error) {
+        console.error("[Email Verification] Send error:", error);
+        res.status(500).json({
           error: "Failed to send verification email",
-          details: emailResult.error,
         });
       }
-
-      res.json({
-        success: true,
-        message: "Verification email sent successfully",
-        // Include preview URL for development (Ethereal)
-        ...(emailResult.previewUrl && { previewUrl: emailResult.previewUrl }),
-      });
-    } catch (error) {
-      console.error("[Email Verification] Send error:", error);
-      res.status(500).json({
-        error: "Failed to send verification email",
-      });
-    }
-  });
+    },
+  );
 
   /**
    * POST /api/email-verification/verify
@@ -110,33 +115,37 @@ export function createEmailVerificationRouter(db: Database): Router {
    * GET /api/email-verification/status
    * Check verification status
    */
-  router.get("/status", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const userId = req.userId!;
-      const user = getUserById(rawDb, userId);
+  router.get(
+    "/status",
+    requireAuth,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const userId = req.userId!;
+        const user = getUserById(rawDb, userId);
 
-      if (!user) {
-        return res.status(404).json({
-          error: "User not found",
+        if (!user) {
+          return res.status(404).json({
+            error: "User not found",
+          });
+        }
+
+        const pendingToken = getVerificationToken(rawDb, userId);
+
+        res.json({
+          success: true,
+          emailVerified: user.emailVerified,
+          email: user.email,
+          hasPendingToken: !!pendingToken,
+          tokenExpiresAt: pendingToken?.expiresAt,
+        });
+      } catch (error) {
+        console.error("[Email Verification] Status error:", error);
+        res.status(500).json({
+          error: "Failed to get verification status",
         });
       }
-
-      const pendingToken = getVerificationToken(rawDb, userId);
-
-      res.json({
-        success: true,
-        emailVerified: user.emailVerified,
-        email: user.email,
-        hasPendingToken: !!pendingToken,
-        tokenExpiresAt: pendingToken?.expiresAt,
-      });
-    } catch (error) {
-      console.error("[Email Verification] Status error:", error);
-      res.status(500).json({
-        error: "Failed to get verification status",
-      });
-    }
-  });
+    },
+  );
 
   return router;
 }

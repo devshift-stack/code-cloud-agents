@@ -3,7 +3,11 @@
  * Single source of truth for all system events
  */
 
-import type { AuditService, AuditEventKind, AuditSeverity } from "../db/audit-events.js";
+import type {
+  AuditService,
+  AuditEventKind,
+  AuditSeverity,
+} from "../db/audit-events.js";
 
 let auditService: AuditService | null = null;
 
@@ -29,13 +33,17 @@ export function recordEvent(
     userId?: string;
     severity?: AuditSeverity;
     meta?: Record<string, unknown>;
-  }
+  },
 ): void {
   const severity = options?.severity ?? "info";
-  const prefix = severity === "error" ? "❌" : severity === "warn" ? "⚠️" : "📝";
+  const prefix =
+    severity === "error" ? "❌" : severity === "warn" ? "⚠️" : "📝";
 
   // Always log to console for visibility
-  console.log(`${prefix} [${kind}] ${message}`, options?.meta ? JSON.stringify(options.meta) : "");
+  console.log(
+    `${prefix} [${kind}] ${message}`,
+    options?.meta ? JSON.stringify(options.meta) : "",
+  );
 
   // Persist to database if available
   if (auditService) {
@@ -69,7 +77,11 @@ export const events = {
     recordEvent("task_finished", `Task completed`, { taskId, agentId }),
 
   taskFailed: (taskId: string, error: string, agentId?: string) =>
-    recordEvent("task_failed", `Task failed: ${error}`, { taskId, agentId, severity: "error" }),
+    recordEvent("task_failed", `Task failed: ${error}`, {
+      taskId,
+      agentId,
+      severity: "error",
+    }),
 
   // Chat
   chatSent: (userId: string, agentId: string, messagePreview: string) =>
@@ -99,6 +111,10 @@ export const events = {
     recordEvent("deploy", message, { meta }),
 
   // API calls (for monitoring)
-  apiCall: (endpoint: string, method: string, userId?: string, meta?: Record<string, unknown>) =>
-    recordEvent("api_call", `${method} ${endpoint}`, { userId, meta }),
+  apiCall: (
+    endpoint: string,
+    method: string,
+    userId?: string,
+    meta?: Record<string, unknown>,
+  ) => recordEvent("api_call", `${method} ${endpoint}`, { userId, meta }),
 };

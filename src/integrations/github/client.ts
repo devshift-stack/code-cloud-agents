@@ -24,8 +24,15 @@ export interface GitHubIssueResult {
 
 export interface GitHubClient {
   isEnabled(): boolean;
-  createIssue(repo: string, issue: GitHubIssue): Promise<{ success: boolean; issue?: GitHubIssueResult; error?: string }>;
-  listRepos(): Promise<{ success: boolean; repos?: Array<{ name: string; fullName: string; private: boolean }>; error?: string }>;
+  createIssue(
+    repo: string,
+    issue: GitHubIssue,
+  ): Promise<{ success: boolean; issue?: GitHubIssueResult; error?: string }>;
+  listRepos(): Promise<{
+    success: boolean;
+    repos?: Array<{ name: string; fullName: string; private: boolean }>;
+    error?: string;
+  }>;
   getStatus(): Promise<{ connected: boolean; user?: string; error?: string }>;
 }
 
@@ -59,7 +66,14 @@ export function createGitHubClient(config?: GitHubConfig): GitHubClient {
      * @param issue - Issue details
      * @returns Promise with created issue details
      */
-    async createIssue(repo: string, issue: GitHubIssue): Promise<{ success: boolean; issue?: GitHubIssueResult; error?: string }> {
+    async createIssue(
+      repo: string,
+      issue: GitHubIssue,
+    ): Promise<{
+      success: boolean;
+      issue?: GitHubIssueResult;
+      error?: string;
+    }> {
       if (!enabled) {
         return { success: false, error: "GitHub integration disabled" };
       }
@@ -71,7 +85,10 @@ export function createGitHubClient(config?: GitHubConfig): GitHubClient {
       try {
         const [owner, repoName] = repo.split("/");
         if (!owner || !repoName) {
-          return { success: false, error: "Invalid repo format. Use 'owner/repo'" };
+          return {
+            success: false,
+            error: "Invalid repo format. Use 'owner/repo'",
+          };
         }
 
         const response = await octokit.rest.issues.create({
@@ -92,7 +109,8 @@ export function createGitHubClient(config?: GitHubConfig): GitHubClient {
           },
         };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { success: false, error: `GitHub API error: ${errorMessage}` };
       }
     },
@@ -101,7 +119,11 @@ export function createGitHubClient(config?: GitHubConfig): GitHubClient {
      * List repositories for authenticated user or org
      * @returns Promise with repository list
      */
-    async listRepos(): Promise<{ success: boolean; repos?: Array<{ name: string; fullName: string; private: boolean }>; error?: string }> {
+    async listRepos(): Promise<{
+      success: boolean;
+      repos?: Array<{ name: string; fullName: string; private: boolean }>;
+      error?: string;
+    }> {
       if (!enabled) {
         return { success: false, error: "GitHub integration disabled" };
       }
@@ -132,7 +154,8 @@ export function createGitHubClient(config?: GitHubConfig): GitHubClient {
 
         return { success: true, repos };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { success: false, error: `GitHub API error: ${errorMessage}` };
       }
     },
@@ -141,7 +164,11 @@ export function createGitHubClient(config?: GitHubConfig): GitHubClient {
      * Get connection status and authenticated user info
      * @returns Promise with connection status
      */
-    async getStatus(): Promise<{ connected: boolean; user?: string; error?: string }> {
+    async getStatus(): Promise<{
+      connected: boolean;
+      user?: string;
+      error?: string;
+    }> {
       if (!enabled) {
         return { connected: false, error: "GitHub integration disabled" };
       }
@@ -157,7 +184,8 @@ export function createGitHubClient(config?: GitHubConfig): GitHubClient {
           user: response.data.login,
         };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { connected: false, error: `GitHub API error: ${errorMessage}` };
       }
     },

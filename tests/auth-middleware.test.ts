@@ -52,7 +52,9 @@ function createMockNext() {
 }
 
 // Mock Request
-function createMockRequest(headers: Record<string, string> = {}): AuthenticatedRequest {
+function createMockRequest(
+  headers: Record<string, string> = {},
+): AuthenticatedRequest {
   return {
     headers,
   } as AuthenticatedRequest;

@@ -10,22 +10,26 @@ Schreibe/Führe Tests aus für: $ARGUMENTS
 ## Test-Typen
 
 ### 1. Unit Tests
+
 - Einzelne Funktionen testen
 - Mocking für Dependencies
 - Edge Cases abdecken
 - 80%+ Coverage Ziel
 
 ### 2. Integration Tests
+
 - API Endpoints testen
 - Database Operations
 - External Services (mocked)
 
 ### 3. E2E Tests
+
 - User Flows testen
 - Critical Paths
 - Cross-Browser (wenn relevant)
 
 ### 4. Component Tests (Frontend)
+
 - React Component Rendering
 - User Interactions
 - State Changes

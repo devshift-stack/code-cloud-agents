@@ -23,10 +23,12 @@ Komplette Anleitung für die Verwendung der Postman Collection zur Interaktion m
 ### 1. Postman installieren
 
 **Desktop App (empfohlen):**
+
 - Download: https://www.postman.com/downloads/
 - macOS, Windows, Linux verfügbar
 
 **Web Version:**
+
 - URL: https://web.postman.com/
 - Erfordert Login
 
@@ -119,12 +121,14 @@ Code Cloud Agents API
 ### Example 1: Complete Task Workflow
 
 **Schritt 1: Health Check**
+
 ```
 GET /health
 → Verify system is running
 ```
 
 **Schritt 2: Create Task**
+
 ```
 POST /api/tasks
 Body:
@@ -137,12 +141,14 @@ Body:
 ```
 
 **Schritt 3: Get Task Details**
+
 ```
 GET /api/tasks/{{taskId}}
 → Uses saved taskId from previous request
 ```
 
 **Schritt 4: Submit Work**
+
 ```
 POST /api/tasks/{{taskId}}
 Body:
@@ -155,12 +161,14 @@ Body:
 ```
 
 **Schritt 5: Check Blocked Tasks (if blocked)**
+
 ```
 GET /api/enforcement/blocked
 → Shows all blocked tasks
 ```
 
 **Schritt 6: Approve Task (if blocked)**
+
 ```
 POST /api/enforcement/approve
 Body:
@@ -177,6 +185,7 @@ Body:
 ### Example 2: Demo User Creation
 
 **Schritt 1: Create Invite (Admin)**
+
 ```
 POST /api/demo/invites
 Body:
@@ -190,6 +199,7 @@ Body:
 ```
 
 **Schritt 2: Redeem Invite**
+
 ```
 POST /api/demo/redeem
 Body:
@@ -203,6 +213,7 @@ Body:
 ```
 
 **Schritt 3: Check User Usage**
+
 ```
 GET /api/demo/users/{{demoUserId}}
 → Shows usage stats (tasks, messages, credits)
@@ -213,12 +224,14 @@ GET /api/demo/users/{{demoUserId}}
 ### Example 3: AI Chat Workflow
 
 **Schritt 1: Get Available Agents**
+
 ```
 GET /api/chat/agents
 → List of AI agents (emir, mujo, etc.)
 ```
 
 **Schritt 2: Send Chat Message**
+
 ```
 POST /api/chat/send
 Body:
@@ -240,10 +253,12 @@ Body:
 Jeder Request hat eingebaute Tests:
 
 **Global Tests (auf alle Requests):**
+
 - ✅ Response time < 5000ms
 - ✅ Content-Type is application/json
 
 **Request-spezifische Tests:**
+
 - ✅ Status Code Checks
 - ✅ Response Structure Validation
 - ✅ Data Type Checks
@@ -251,17 +266,20 @@ Jeder Request hat eingebaute Tests:
 ### Tests ausführen:
 
 **Einzelner Request:**
+
 1. Request auswählen
 2. "Send" klicken
 3. "Test Results" Tab anzeigen
 
 **Ganzer Ordner:**
+
 1. Ordner auswählen (z.B. "Tasks")
 2. "..." klicken → "Run folder"
 3. "Run" klicken
 4. Test Results anzeigen
 
 **Gesamte Collection:**
+
 1. Collection auswählen
 2. "..." klicken → "Run collection"
 3. Environment wählen
@@ -291,24 +309,26 @@ Jeder Request hat eingebaute Tests:
 
 ### Environment Variables
 
-| Variable | Type | Beschreibung |
-|----------|------|--------------|
-| `baseUrl` | Static | API Base URL |
-| `taskId` | Dynamic | Zuletzt erstellte Task ID |
-| `auditId` | Dynamic | Zuletzt erstellte Audit Entry ID |
-| `inviteCode` | Dynamic | Zuletzt erstellter Invite Code |
-| `demoUserId` | Dynamic | Zuletzt erstellte Demo User ID |
-| `userId` | Static | Standard User ID |
-| `adminEmail` | Static | Admin Email |
+| Variable     | Type    | Beschreibung                     |
+| ------------ | ------- | -------------------------------- |
+| `baseUrl`    | Static  | API Base URL                     |
+| `taskId`     | Dynamic | Zuletzt erstellte Task ID        |
+| `auditId`    | Dynamic | Zuletzt erstellte Audit Entry ID |
+| `inviteCode` | Dynamic | Zuletzt erstellter Invite Code   |
+| `demoUserId` | Dynamic | Zuletzt erstellte Demo User ID   |
+| `userId`     | Static  | Standard User ID                 |
+| `adminEmail` | Static  | Admin Email                      |
 
 ### Variables verwenden:
 
 **In URL:**
+
 ```
 {{baseUrl}}/api/tasks/{{taskId}}
 ```
 
 **In Request Body:**
+
 ```json
 {
   "userId": "{{userId}}",
@@ -317,6 +337,7 @@ Jeder Request hat eingebaute Tests:
 ```
 
 **In Headers:**
+
 ```
 X-User-ID: {{userId}}
 ```
@@ -324,14 +345,16 @@ X-User-ID: {{userId}}
 ### Variables setzen:
 
 **Manuell:**
+
 1. Environment auswählen (rechts oben)
 2. "..." klicken → "Edit"
 3. Variable ändern
 4. "Save" klicken
 
 **Automatisch via Tests:**
+
 ```javascript
-pm.environment.set('taskId', jsonData.id);
+pm.environment.set("taskId", jsonData.id);
 ```
 
 ---
@@ -343,13 +366,14 @@ pm.environment.set('taskId', jsonData.id);
 Läuft vor **jedem** Request:
 
 ```javascript
-console.log('=== Request Details ===');
-console.log('Method:', pm.request.method);
-console.log('URL:', pm.request.url.toString());
-console.log('Timestamp:', new Date().toISOString());
+console.log("=== Request Details ===");
+console.log("Method:", pm.request.method);
+console.log("URL:", pm.request.url.toString());
+console.log("Timestamp:", new Date().toISOString());
 ```
 
 **Nützlich für:**
+
 - Logging
 - Token Refresh (zukünftig)
 - Request Timing
@@ -359,11 +383,13 @@ console.log('Timestamp:', new Date().toISOString());
 ### Request-spezifische Pre-request Scripts
 
 **Beispiel: Dynamic Timestamp**
+
 ```javascript
-pm.environment.set('timestamp', new Date().toISOString());
+pm.environment.set("timestamp", new Date().toISOString());
 ```
 
 Dann in Body verwenden:
+
 ```json
 {
   "createdAt": "{{timestamp}}"
@@ -379,6 +405,7 @@ Dann in Body verwenden:
 **Ursache:** Server läuft nicht
 
 **Lösung:**
+
 ```bash
 # Check if server is running
 curl http://localhost:3000/health
@@ -394,6 +421,7 @@ npm run backend:dev
 **Ursache:** Endpoint existiert nicht oder falsche URL
 
 **Lösung:**
+
 1. Check baseUrl in Environment
 2. Check Endpoint URL
 3. Verify server routes: http://localhost:3000/api
@@ -405,6 +433,7 @@ npm run backend:dev
 **Ursache:** Variable nicht gesetzt
 
 **Lösung:**
+
 1. Check Environment ist aktiv (rechts oben)
 2. Run "Create Task" Request zuerst (setzt taskId)
 3. Oder setze Variable manuell
@@ -416,6 +445,7 @@ npm run backend:dev
 **Ursache:** Server returned error (4xx/5xx)
 
 **Lösung:**
+
 1. Check Response Body für Error-Details
 2. Check Request Body format
 3. Check Server Logs:
@@ -430,6 +460,7 @@ npm run backend:dev
 **Ursache:** Demo Redeem Endpoint ist rate-limited
 
 **Lösung:**
+
 - Warte 15 Minuten
 - Oder use different IP/User
 
@@ -448,16 +479,19 @@ npm run backend:dev
 ### 2. Request Order
 
 **Empfohlene Reihenfolge:**
+
 1. Health Check (verify server)
 2. Get API Info (verify version)
 3. Functionality Tests (Tasks, Chat, etc.)
 
 **Task Workflow:**
+
 ```
 Create Task → Get Task → Submit Work → Check Blocked → Approve/Reject
 ```
 
 **Demo Workflow:**
+
 ```
 Create Invite → Redeem Invite → Check User Stats
 ```
@@ -467,11 +501,13 @@ Create Invite → Redeem Invite → Check User Stats
 ### 3. Testing Strategy
 
 **Development:**
+
 - Run einzelne Requests
 - Verify Response manually
 - Iterate quickly
 
 **Pre-Deployment:**
+
 - Run gesamte Collection
 - Verify all Tests pass
 - Check Performance (response times)
@@ -491,6 +527,7 @@ Create Invite → Redeem Invite → Check User Stats
 ### Collection Runner
 
 **Automatisierte Test-Suites:**
+
 1. "Runner" klicken (links unten)
 2. Collection wählen
 3. Environment wählen
@@ -498,6 +535,7 @@ Create Invite → Redeem Invite → Check User Stats
 5. "Run Code Cloud Agents API"
 
 **Export Results:**
+
 - JSON Export
 - HTML Export (via Newman CLI)
 
@@ -527,6 +565,7 @@ newman run postman/Cloud-Agents.postman_collection.json \
 ### CI/CD Integration
 
 **GitHub Actions Example:**
+
 ```yaml
 - name: Run Postman Tests
   run: |
@@ -541,12 +580,14 @@ newman run postman/Cloud-Agents.postman_collection.json \
 ## 📚 Weitere Ressourcen
 
 ### Dokumentation:
+
 - **[README.md](../README.md)**: Projekt-Overview
 - **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)**: Entwickler-Setup
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)**: System-Design
 - **[OpenAPI Spec](../swagger.yaml)**: API Specification
 
 ### Postman Learning:
+
 - https://learning.postman.com/
 - https://www.postman.com/postman/workspace/postman-answers
 
@@ -555,6 +596,7 @@ newman run postman/Cloud-Agents.postman_collection.json \
 ## 🆘 Support
 
 **Bei Problemen:**
+
 1. Check Troubleshooting Section oben
 2. Check Server Logs: `pm2 logs cloud-agents-backend`
 3. Check API Docs: http://localhost:3000/api/docs

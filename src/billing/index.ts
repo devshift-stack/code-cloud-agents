@@ -39,8 +39,17 @@
  */
 
 export { costTracker } from "./costTracker.ts";
-export { selectModel, analyzeTaskComplexity, compareCosts } from "./modelSelector.ts";
-export { MODEL_PRICING, getModelPricing, calculateCost, formatCost } from "./pricing.ts";
+export {
+  selectModel,
+  analyzeTaskComplexity,
+  compareCosts,
+} from "./modelSelector.ts";
+export {
+  MODEL_PRICING,
+  getModelPricing,
+  calculateCost,
+  formatCost,
+} from "./pricing.ts";
 export type {
   ModelPricing,
   CostEntry,

@@ -74,15 +74,11 @@ export function generateRefreshToken(payload: TokenPayload): string {
   // Add random jti (JWT ID) for token rotation
   const jti = randomBytes(16).toString("hex");
 
-  return jwt.sign(
-    { ...payload, jti },
-    secret,
-    {
-      expiresIn: REFRESH_TOKEN_EXPIRY,
-      issuer: "code-cloud-agents",
-      audience: "cloud-agents-api",
-    }
-  );
+  return jwt.sign({ ...payload, jti }, secret, {
+    expiresIn: REFRESH_TOKEN_EXPIRY,
+    issuer: "code-cloud-agents",
+    audience: "cloud-agents-api",
+  });
 }
 
 /**

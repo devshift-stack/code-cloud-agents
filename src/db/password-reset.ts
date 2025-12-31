@@ -38,11 +38,13 @@ export function initPasswordResetTable(db: BetterSqlite3.Database): void {
 export function generatePasswordResetToken(
   db: BetterSqlite3.Database,
   userId: string,
-  email: string
+  email: string,
 ): string {
   const token = randomBytes(32).toString("hex");
   const createdAt = new Date().toISOString();
-  const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_HOURS * 60 * 60 * 1000).toISOString();
+  const expiresAt = new Date(
+    Date.now() + TOKEN_EXPIRY_HOURS * 60 * 60 * 1000,
+  ).toISOString();
 
   // Invalidate old tokens
   const invalidateStmt = db.prepare(`
@@ -67,7 +69,7 @@ export function generatePasswordResetToken(
  */
 export function verifyPasswordResetToken(
   db: BetterSqlite3.Database,
-  token: string
+  token: string,
 ): { valid: boolean; userId?: string; error?: string } {
   const stmt = db.prepare(`
     SELECT * FROM password_reset_tokens
@@ -96,7 +98,7 @@ export function verifyPasswordResetToken(
 export async function resetPassword(
   db: BetterSqlite3.Database,
   token: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<{ success: boolean; error?: string }> {
   // Verify token
   const verification = verifyPasswordResetToken(db, token);

@@ -8,13 +8,18 @@
 import { Router } from "express";
 import { z } from "zod";
 import type { EnforcementGate } from "../audit/enforcementGate.js";
-import { verifyClaims, generateVerificationReport } from "../audit/claimVerifier.js";
+import {
+  verifyClaims,
+  generateVerificationReport,
+} from "../audit/claimVerifier.js";
 import { requireAdmin } from "../auth/middleware.ts";
 
 const ApproveSchema = z.object({
   approver: z.string().min(1, "Approver identity required"),
   reason: z.string().min(10, "Reason must be at least 10 characters"),
-  acknowledged_risks: z.array(z.string()).min(1, "Must acknowledge at least one risk"),
+  acknowledged_risks: z
+    .array(z.string())
+    .min(1, "Must acknowledge at least one risk"),
 });
 
 const RejectSchema = z.object({
@@ -40,9 +45,10 @@ export function createEnforcementRouter(gate: EnforcementGate): Router {
     res.json({
       blocked_count: pending.length,
       tasks: pending,
-      message: pending.length > 0
-        ? "⚠️ Tasks blocked. Human approval required."
-        : "✅ No blocked tasks.",
+      message:
+        pending.length > 0
+          ? "⚠️ Tasks blocked. Human approval required."
+          : "✅ No blocked tasks.",
     });
   });
 
@@ -96,13 +102,14 @@ export function createEnforcementRouter(gate: EnforcementGate): Router {
         req.params.taskId,
         parsed.data.approver,
         parsed.data.reason,
-        parsed.data.acknowledged_risks
+        parsed.data.acknowledged_risks,
       );
 
       res.json({
         status: "APPROVED",
         decision,
-        warning: "⚠️ Task approved despite STOP condition. This has been logged.",
+        warning:
+          "⚠️ Task approved despite STOP condition. This has been logged.",
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";

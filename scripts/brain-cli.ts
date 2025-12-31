@@ -32,7 +32,7 @@ interface SearchResult {
 async function request(
   endpoint: string,
   method: string = "GET",
-  body?: Record<string, unknown>
+  body?: Record<string, unknown>,
 ): Promise<unknown> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -57,7 +57,11 @@ async function request(
   return data;
 }
 
-async function search(query: string, mode: string = "hybrid", limit: number = 10): Promise<void> {
+async function search(
+  query: string,
+  mode: string = "hybrid",
+  limit: number = 10,
+): Promise<void> {
   console.log(`🔍 Searching: "${query}" (mode: ${mode})...\n`);
 
   const result = (await request("/search", "POST", { query, mode, limit })) as {
@@ -80,10 +84,18 @@ async function search(query: string, mode: string = "hybrid", limit: number = 10
   }
 }
 
-async function ingest(title: string, content: string, metadata?: Record<string, unknown>): Promise<void> {
+async function ingest(
+  title: string,
+  content: string,
+  metadata?: Record<string, unknown>,
+): Promise<void> {
   console.log(`📥 Ingesting: "${title}"...\n`);
 
-  const result = (await request("/ingest/text", "POST", { title, content, metadata })) as {
+  const result = (await request("/ingest/text", "POST", {
+    title,
+    content,
+    metadata,
+  })) as {
     doc: BrainDoc;
   };
 
@@ -106,7 +118,9 @@ async function list(limit: number = 20, sourceType?: string): Promise<void> {
   console.log(`📚 Documents (${result.count}):\n`);
 
   for (const doc of result.docs) {
-    console.log(`  ${doc.id.slice(0, 8)}  ${doc.sourceType.padEnd(5)}  ${doc.title}`);
+    console.log(
+      `  ${doc.id.slice(0, 8)}  ${doc.sourceType.padEnd(5)}  ${doc.title}`,
+    );
   }
 }
 
@@ -122,7 +136,9 @@ async function stats(): Promise<void> {
   };
 
   console.log(`📊 Brain Statistics:\n`);
-  console.log(`   Semantic Search: ${result.enabled ? "✅ Enabled" : "❌ Disabled"}`);
+  console.log(
+    `   Semantic Search: ${result.enabled ? "✅ Enabled" : "❌ Disabled"}`,
+  );
   console.log(`   Documents: ${result.stats.totalDocs}`);
   console.log(`   Chunks: ${result.stats.totalChunks}`);
   console.log(`   Embeddings: ${result.stats.totalEmbeddings}`);
@@ -217,7 +233,9 @@ Environment:
         process.exit(1);
     }
   } catch (error) {
-    console.error(`❌ Error: ${error instanceof Error ? error.message : error}`);
+    console.error(
+      `❌ Error: ${error instanceof Error ? error.message : error}`,
+    );
     process.exit(1);
   }
 }

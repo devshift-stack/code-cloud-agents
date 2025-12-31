@@ -17,7 +17,12 @@ export interface QueueAdapter {
   add(name: string, data: Record<string, unknown>): Promise<string>;
   process(name: string, handler: (job: QueueJob) => Promise<void>): void;
   getJob(id: string): QueueJob | undefined;
-  getStats(): { pending: number; processing: number; completed: number; failed: number };
+  getStats(): {
+    pending: number;
+    processing: number;
+    completed: number;
+    failed: number;
+  };
 }
 
 /**
@@ -73,7 +78,12 @@ function createInMemoryQueue(): QueueAdapter {
       return jobs.get(id);
     },
 
-    getStats(): { pending: number; processing: number; completed: number; failed: number } {
+    getStats(): {
+      pending: number;
+      processing: number;
+      completed: number;
+      failed: number;
+    } {
       let pending = 0;
       let processing = 0;
       let completed = 0;
@@ -111,7 +121,9 @@ export function initQueue(): QueueAdapter {
 
   if (redisUrl && queueEnabled) {
     // TODO: Implement Redis/BullMQ adapter when needed
-    console.log("Redis URL provided but BullMQ not implemented. Using in-memory queue.");
+    console.log(
+      "Redis URL provided but BullMQ not implemented. Using in-memory queue.",
+    );
   }
 
   return createInMemoryQueue();

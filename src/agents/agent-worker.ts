@@ -4,12 +4,12 @@
  * Automatic fallback: Claude → OpenAI when rate limited
  */
 
-import { EventEmitter } from 'events';
-import { taskQueue, type AgentTask, type CodeFile } from './task-queue.ts';
-import Anthropic from '@anthropic-ai/sdk';
-import OpenAI from 'openai';
-import * as fs from 'fs';
-import * as path from 'path';
+import { EventEmitter } from "events";
+import { taskQueue, type AgentTask, type CodeFile } from "./task-queue.ts";
+import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
+import * as fs from "fs";
+import * as path from "path";
 
 interface AgentConfig {
   name: string;
@@ -22,10 +22,10 @@ interface AgentConfig {
 
 const AGENT_CONFIGS: Record<string, AgentConfig> = {
   emir: {
-    name: 'Emir (Supervisor)',
-    role: 'Lead Supervisor',
-    model: 'claude-sonnet-4-20250514',
-    openaiModel: 'gpt-4o',
+    name: "Emir (Supervisor)",
+    role: "Lead Supervisor",
+    model: "claude-sonnet-4-20250514",
+    openaiModel: "gpt-4o",
     systemPrompt: `Du bist Emir, der Lead Supervisor des Cloud Agents Teams.
 
 Deine Aufgaben:
@@ -41,13 +41,13 @@ Du hast folgende Agenten zur Verfügung:
 - Docs: Schreibt Dokumentation
 
 Antworte strukturiert mit klaren Aktionspunkten.`,
-    capabilities: ['delegate', 'plan', 'review', 'communicate']
+    capabilities: ["delegate", "plan", "review", "communicate"],
   },
   coder: {
-    name: 'Coder',
-    role: 'Developer',
-    model: 'claude-sonnet-4-20250514',
-    openaiModel: 'gpt-4o',
+    name: "Coder",
+    role: "Developer",
+    model: "claude-sonnet-4-20250514",
+    openaiModel: "gpt-4o",
     systemPrompt: `Du bist der Coder Agent, ein erfahrener Full-Stack Entwickler.
 
 Deine Aufgaben:
@@ -69,13 +69,13 @@ export function formatDate(date: Date): string {
 \`\`\`
 
 Gib immer den vollständigen Dateipfad an.`,
-    capabilities: ['code', 'debug', 'implement', 'refactor']
+    capabilities: ["code", "debug", "implement", "refactor"],
   },
   tester: {
-    name: 'Tester',
-    role: 'QA Engineer',
-    model: 'claude-sonnet-4-20250514',
-    openaiModel: 'gpt-4o',
+    name: "Tester",
+    role: "QA Engineer",
+    model: "claude-sonnet-4-20250514",
+    openaiModel: "gpt-4o",
     systemPrompt: `Du bist der Tester Agent, spezialisiert auf Qualitätssicherung.
 
 Deine Aufgaben:
@@ -85,13 +85,13 @@ Deine Aufgaben:
 - Dokumentiere Testergebnisse
 
 Nutze die gleiche Code-Formatierung wie der Coder Agent.`,
-    capabilities: ['test', 'qa', 'coverage', 'debug']
+    capabilities: ["test", "qa", "coverage", "debug"],
   },
   security: {
-    name: 'Security',
-    role: 'Security Analyst',
-    model: 'claude-sonnet-4-20250514',
-    openaiModel: 'gpt-4o',
+    name: "Security",
+    role: "Security Analyst",
+    model: "claude-sonnet-4-20250514",
+    openaiModel: "gpt-4o",
     systemPrompt: `Du bist der Security Agent, spezialisiert auf Sicherheit.
 
 Deine Aufgaben:
@@ -101,13 +101,13 @@ Deine Aufgaben:
 - Dokumentiere Sicherheitsrisiken
 
 Kategorisiere Findings: CRITICAL, HIGH, MEDIUM, LOW`,
-    capabilities: ['security', 'audit', 'scan', 'report']
+    capabilities: ["security", "audit", "scan", "report"],
   },
   docs: {
-    name: 'Docs',
-    role: 'Technical Writer',
-    model: 'claude-sonnet-4-20250514',
-    openaiModel: 'gpt-4o',
+    name: "Docs",
+    role: "Technical Writer",
+    model: "claude-sonnet-4-20250514",
+    openaiModel: "gpt-4o",
     systemPrompt: `Du bist der Docs Agent, spezialisiert auf Dokumentation.
 
 Deine Aufgaben:
@@ -117,8 +117,8 @@ Deine Aufgaben:
 - Schreibe Benutzeranleitungen
 
 Formatiere Dokumentation als Markdown.`,
-    capabilities: ['documentation', 'readme', 'api-docs', 'comments']
-  }
+    capabilities: ["documentation", "readme", "api-docs", "comments"],
+  },
 };
 
 class AgentWorker extends EventEmitter {
@@ -126,8 +126,8 @@ class AgentWorker extends EventEmitter {
   private currentTask: AgentTask | null = null;
   private anthropicClient: Anthropic | null = null;
   private openaiClient: OpenAI | null = null;
-  private projectRoot = '/root/cloud-agents';
-  private currentProvider: 'anthropic' | 'openai' = 'anthropic';
+  private projectRoot = "/root/cloud-agents";
+  private currentProvider: "anthropic" | "openai" = "anthropic";
   private clientsInitialized = false;
 
   constructor() {
@@ -146,18 +146,18 @@ class AgentWorker extends EventEmitter {
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
     if (anthropicKey) {
       this.anthropicClient = new Anthropic({ apiKey: anthropicKey });
-      console.log('[AgentWorker] Anthropic client initialized');
+      console.log("[AgentWorker] Anthropic client initialized");
     } else {
-      console.warn('[AgentWorker] ANTHROPIC_API_KEY not set');
+      console.warn("[AgentWorker] ANTHROPIC_API_KEY not set");
     }
 
     // Initialize OpenAI client
     const openaiKey = process.env.OPENAI_API_KEY;
     if (openaiKey) {
       this.openaiClient = new OpenAI({ apiKey: openaiKey });
-      console.log('[AgentWorker] OpenAI client initialized (fallback)');
+      console.log("[AgentWorker] OpenAI client initialized (fallback)");
     } else {
-      console.warn('[AgentWorker] OPENAI_API_KEY not set');
+      console.warn("[AgentWorker] OPENAI_API_KEY not set");
     }
 
     this.clientsInitialized = true;
@@ -173,8 +173,8 @@ class AgentWorker extends EventEmitter {
     this.initClients();
 
     this.isRunning = true;
-    console.log('[AgentWorker] Started');
-    this.emit('worker:started');
+    console.log("[AgentWorker] Started");
+    this.emit("worker:started");
     this.processLoop();
   }
 
@@ -183,8 +183,8 @@ class AgentWorker extends EventEmitter {
    */
   stop() {
     this.isRunning = false;
-    console.log('[AgentWorker] Stopped');
-    this.emit('worker:stopped');
+    console.log("[AgentWorker] Stopped");
+    this.emit("worker:stopped");
   }
 
   /**
@@ -201,8 +201,8 @@ class AgentWorker extends EventEmitter {
         id,
         name: config.name,
         role: config.role,
-        status: this.currentTask?.assignedAgent === id ? 'working' : 'idle'
-      }))
+        status: this.currentTask?.assignedAgent === id ? "working" : "idle",
+      })),
     };
   }
 
@@ -223,7 +223,7 @@ class AgentWorker extends EventEmitter {
           await this.sleep(2000);
         }
       } catch (error) {
-        console.error('[AgentWorker] Loop error:', error);
+        console.error("[AgentWorker] Loop error:", error);
         await this.sleep(5000);
       }
     }
@@ -242,11 +242,11 @@ class AgentWorker extends EventEmitter {
 
       // Assign task
       taskQueue.assignTask(task.id, agentId);
-      this.emit('task:assigned', { task, agent: agentConfig.name });
+      this.emit("task:assigned", { task, agent: agentConfig.name });
 
       // Start task
       taskQueue.startTask(task.id);
-      this.emit('task:started', { task, agent: agentConfig.name });
+      this.emit("task:started", { task, agent: agentConfig.name });
 
       // Call AI with automatic fallback
       const result = await this.callAgentWithFallback(agentConfig, task);
@@ -256,17 +256,16 @@ class AgentWorker extends EventEmitter {
       for (const file of codeFiles) {
         await this.writeCodeFile(file);
         taskQueue.addCodeFile(task.id, file);
-        this.emit('task:code', { task, file });
+        this.emit("task:code", { task, file });
       }
 
       // Complete task
       taskQueue.completeTask(task.id, result);
-      this.emit('task:completed', { task, result, codeFiles });
-
+      this.emit("task:completed", { task, result, codeFiles });
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
       taskQueue.failTask(task.id, errorMsg);
-      this.emit('task:failed', { task, error: errorMsg });
+      this.emit("task:failed", { task, error: errorMsg });
     } finally {
       this.currentTask = null;
     }
@@ -277,25 +276,28 @@ class AgentWorker extends EventEmitter {
    */
   private selectAgent(task: AgentTask): string {
     switch (task.type) {
-      case 'code':
-      case 'refactor':
-        return 'coder';
-      case 'test':
-        return 'tester';
-      case 'review':
-        return 'security';
-      case 'docs':
-        return 'docs';
+      case "code":
+      case "refactor":
+        return "coder";
+      case "test":
+        return "tester";
+      case "review":
+        return "security";
+      case "docs":
+        return "docs";
       default:
         // Default to Emir for general tasks
-        return 'emir';
+        return "emir";
     }
   }
 
   /**
    * Call agent with automatic fallback from Claude to OpenAI
    */
-  private async callAgentWithFallback(config: AgentConfig, task: AgentTask): Promise<string> {
+  private async callAgentWithFallback(
+    config: AgentConfig,
+    task: AgentTask,
+  ): Promise<string> {
     // Ensure clients are initialized
     this.initClients();
 
@@ -303,18 +305,26 @@ class AgentWorker extends EventEmitter {
     if (this.anthropicClient) {
       try {
         console.log(`[AgentWorker] Trying Anthropic for ${config.name}...`);
-        this.currentProvider = 'anthropic';
+        this.currentProvider = "anthropic";
         return await this.callAnthropic(config, task);
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
         console.warn(`[AgentWorker] Anthropic failed: ${errorMsg}`);
 
         // Check if it's a rate limit or quota error
-        if (errorMsg.includes('rate_limit') || errorMsg.includes('429') || errorMsg.includes('quota')) {
-          console.log('[AgentWorker] Anthropic rate limited, switching to OpenAI fallback...');
+        if (
+          errorMsg.includes("rate_limit") ||
+          errorMsg.includes("429") ||
+          errorMsg.includes("quota")
+        ) {
+          console.log(
+            "[AgentWorker] Anthropic rate limited, switching to OpenAI fallback...",
+          );
         } else {
           // For other errors, still try OpenAI but log the error
-          console.log('[AgentWorker] Anthropic error, trying OpenAI as fallback...');
+          console.log(
+            "[AgentWorker] Anthropic error, trying OpenAI as fallback...",
+          );
         }
       }
     }
@@ -323,7 +333,7 @@ class AgentWorker extends EventEmitter {
     if (this.openaiClient) {
       try {
         console.log(`[AgentWorker] Using OpenAI for ${config.name}...`);
-        this.currentProvider = 'openai';
+        this.currentProvider = "openai";
         return await this.callOpenAI(config, task);
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
@@ -332,22 +342,37 @@ class AgentWorker extends EventEmitter {
       }
     }
 
-    throw new Error('No AI provider available. Configure ANTHROPIC_API_KEY or OPENAI_API_KEY');
+    throw new Error(
+      "No AI provider available. Configure ANTHROPIC_API_KEY or OPENAI_API_KEY",
+    );
   }
 
   /**
    * Call Anthropic Claude API
    */
-  private async callAnthropic(config: AgentConfig, task: AgentTask): Promise<string> {
+  private async callAnthropic(
+    config: AgentConfig,
+    task: AgentTask,
+  ): Promise<string> {
     if (!this.anthropicClient) {
-      throw new Error('Anthropic client not initialized');
+      throw new Error("Anthropic client not initialized");
     }
 
-    console.log(`[AgentWorker] Calling Claude ${config.model} for task: ${task.title}`);
+    console.log(
+      `[AgentWorker] Calling Claude ${config.model} for task: ${task.title}`,
+    );
 
     // Update progress
-    taskQueue.updateProgress(task.id, 10, `${config.name} analysiert Aufgabe (Claude)...`);
-    this.emit('progress', { task, progress: 10, message: `${config.name} analysiert Aufgabe (Claude)...` });
+    taskQueue.updateProgress(
+      task.id,
+      10,
+      `${config.name} analysiert Aufgabe (Claude)...`,
+    );
+    this.emit("progress", {
+      task,
+      progress: 10,
+      message: `${config.name} analysiert Aufgabe (Claude)...`,
+    });
 
     const response = await this.anthropicClient.messages.create({
       model: config.model,
@@ -355,7 +380,7 @@ class AgentWorker extends EventEmitter {
       system: config.systemPrompt,
       messages: [
         {
-          role: 'user',
+          role: "user",
           content: `Aufgabe: ${task.title}
 
 Beschreibung:
@@ -364,19 +389,27 @@ ${task.description}
 Bitte bearbeite diese Aufgabe vollständig. Wenn Code geschrieben werden soll, formatiere ihn als:
 \`\`\`language:pfad/zur/datei.ext
 // Code
-\`\`\``
-        }
-      ]
+\`\`\``,
+        },
+      ],
     });
 
     // Update progress
-    taskQueue.updateProgress(task.id, 80, `${config.name} hat Lösung erstellt (Claude)`);
-    this.emit('progress', { task, progress: 80, message: `${config.name} hat Lösung erstellt (Claude)` });
+    taskQueue.updateProgress(
+      task.id,
+      80,
+      `${config.name} hat Lösung erstellt (Claude)`,
+    );
+    this.emit("progress", {
+      task,
+      progress: 80,
+      message: `${config.name} hat Lösung erstellt (Claude)`,
+    });
 
     // Extract text from response
-    let result = '';
+    let result = "";
     for (const block of response.content) {
-      if (block.type === 'text') {
+      if (block.type === "text") {
         result += block.text;
       }
     }
@@ -387,27 +420,40 @@ Bitte bearbeite diese Aufgabe vollständig. Wenn Code geschrieben werden soll, f
   /**
    * Call OpenAI GPT API (fallback)
    */
-  private async callOpenAI(config: AgentConfig, task: AgentTask): Promise<string> {
+  private async callOpenAI(
+    config: AgentConfig,
+    task: AgentTask,
+  ): Promise<string> {
     if (!this.openaiClient) {
-      throw new Error('OpenAI client not initialized');
+      throw new Error("OpenAI client not initialized");
     }
 
-    console.log(`[AgentWorker] Calling OpenAI ${config.openaiModel} for task: ${task.title}`);
+    console.log(
+      `[AgentWorker] Calling OpenAI ${config.openaiModel} for task: ${task.title}`,
+    );
 
     // Update progress
-    taskQueue.updateProgress(task.id, 10, `${config.name} analysiert Aufgabe (OpenAI)...`);
-    this.emit('progress', { task, progress: 10, message: `${config.name} analysiert Aufgabe (OpenAI)...` });
+    taskQueue.updateProgress(
+      task.id,
+      10,
+      `${config.name} analysiert Aufgabe (OpenAI)...`,
+    );
+    this.emit("progress", {
+      task,
+      progress: 10,
+      message: `${config.name} analysiert Aufgabe (OpenAI)...`,
+    });
 
     const response = await this.openaiClient.chat.completions.create({
       model: config.openaiModel,
       max_tokens: 4096,
       messages: [
         {
-          role: 'system',
-          content: config.systemPrompt
+          role: "system",
+          content: config.systemPrompt,
         },
         {
-          role: 'user',
+          role: "user",
           content: `Aufgabe: ${task.title}
 
 Beschreibung:
@@ -416,16 +462,24 @@ ${task.description}
 Bitte bearbeite diese Aufgabe vollständig. Wenn Code geschrieben werden soll, formatiere ihn als:
 \`\`\`language:pfad/zur/datei.ext
 // Code
-\`\`\``
-        }
-      ]
+\`\`\``,
+        },
+      ],
     });
 
     // Update progress
-    taskQueue.updateProgress(task.id, 80, `${config.name} hat Lösung erstellt (OpenAI)`);
-    this.emit('progress', { task, progress: 80, message: `${config.name} hat Lösung erstellt (OpenAI)` });
+    taskQueue.updateProgress(
+      task.id,
+      80,
+      `${config.name} hat Lösung erstellt (OpenAI)`,
+    );
+    this.emit("progress", {
+      task,
+      progress: 80,
+      message: `${config.name} hat Lösung erstellt (OpenAI)`,
+    });
 
-    return response.choices[0]?.message?.content || '';
+    return response.choices[0]?.message?.content || "";
   }
 
   /**
@@ -447,7 +501,7 @@ Bitte bearbeite diese Aufgabe vollständig. Wenn Code geschrieben werden soll, f
         path: filePath,
         content: code,
         language,
-        action: 'create'
+        action: "create",
       });
     }
 
@@ -467,12 +521,12 @@ Bitte bearbeite diese Aufgabe vollständig. Wenn Code geschrieben werden soll, f
     }
 
     // Write file
-    fs.writeFileSync(fullPath, file.content, 'utf-8');
+    fs.writeFileSync(fullPath, file.content, "utf-8");
     console.log(`[AgentWorker] Wrote file: ${fullPath}`);
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 

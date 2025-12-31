@@ -32,6 +32,7 @@ Monitoring Notes: [health/cost/status observations]
 ## Health Aggregation
 
 Track and report:
+
 - Task completion rates
 - STOP frequency and reasons
 - Cost accumulation

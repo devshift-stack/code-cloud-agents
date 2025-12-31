@@ -10,7 +10,12 @@ export type RiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 /**
  * Task/Agent status
  */
-export type Status = "pending" | "in_progress" | "completed" | "failed" | "stopped";
+export type Status =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "failed"
+  | "stopped";
 
 /**
  * Agent status
@@ -20,7 +25,12 @@ export type AgentStatus = "online" | "offline" | "paused" | "review" | "error";
 /**
  * Model provider types
  */
-export type ModelProvider = "anthropic" | "openai" | "gemini" | "xai" | "ollama";
+export type ModelProvider =
+  | "anthropic"
+  | "openai"
+  | "gemini"
+  | "xai"
+  | "ollama";
 
 /**
  * Currency types

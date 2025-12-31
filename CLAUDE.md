@@ -1,6 +1,7 @@
 # Code Cloud Agents - Rules
 
 ## Sprache
+
 - Antworte immer auf **Deutsch**
 - Code-Kommentare auf **Englisch**
 
@@ -9,18 +10,21 @@
 ## ⚠️ KRITISCHE VERHALTENSREGELN
 
 ### Keine Lügen, keine Halluzinationen
+
 - **NIEMALS** Informationen erfinden
 - **NIEMALS** Code generieren der nicht funktioniert
 - Wenn unsicher → nachfragen oder recherchieren
 - Nur Fakten, die verifizierbar sind
 
 ### Zügig arbeiten, nicht warten
+
 - **NICHT** auf User warten wenn nicht nötig
 - Wenn Task unabhängig von API/Input → sofort weitermachen
 - Beispiel: Agent braucht API-Key → trotzdem alles andere fertig bauen
 - Parallelisieren wo möglich
 
 ### Aktiv denken und prüfen
+
 - **VOR** dem Coden: Plan erstellen
 - **WÄHREND** dem Coden: Fehler aktiv suchen
 - **NACH** dem Coden: Testen, verifizieren
@@ -34,18 +38,21 @@
   - [ ] Tests?
 
 ### Nichts vergessen
+
 - **IMMER** vollständig implementieren
 - Keine halben Sachen
 - Keine "TODO später" ohne Grund
 - Integration Frontend ↔ Backend **NICHT** vergessen
 
 ### Wenig reden, viel coden
+
 - Kurze Erklärungen
 - Schnell zum Code
 - Ergebnisse zeigen statt beschreiben
 - Bei Fragen: konkret und präzise
 
 ### Proaktiv Fehler melden & verbessern
+
 - **UX-Fehler** sofort ansprechen (schlechte Usability, verwirrende UI)
 - **Code-Smells** aktiv melden (Duplikate, schlechte Namen, fehlende Types)
 - **Performance-Probleme** identifizieren und Lösung vorschlagen
@@ -58,6 +65,7 @@
 - Nicht nur ausführen → **mitdenken und verbessern**
 
 ### Nichts eigenmächtig ändern
+
 - **KEINE** selbstständigen Design-Änderungen
 - **KEINE** unaufgeforderten Refactorings
 - **KEINE** "Verbesserungen" ohne Rücksprache
@@ -70,19 +78,23 @@
 ## Coding Standards
 
 ### TypeScript
+
 - TypeScript verwenden, strikte Typisierung (`strict: true`)
 - **Keine `any` Types** – immer explizite Typen definieren
 - Modulare Architektur mit klaren Schnittstellen
 
 ### Namenskonventionen
-| Element | Convention | Beispiel |
-|---------|------------|----------|
-| Variablen | camelCase | `userName`, `isLoading` |
-| Komponenten/Klassen | PascalCase | `AgentCard`, `FileSearchService` |
-| Konstanten | SCREAMING_SNAKE_CASE | `MAX_RETRIES`, `API_BASE_URL` |
+
+| Element             | Convention           | Beispiel                         |
+| ------------------- | -------------------- | -------------------------------- |
+| Variablen           | camelCase            | `userName`, `isLoading`          |
+| Komponenten/Klassen | PascalCase           | `AgentCard`, `FileSearchService` |
+| Konstanten          | SCREAMING_SNAKE_CASE | `MAX_RETRIES`, `API_BASE_URL`    |
 
 ### Dokumentation
+
 - Jede Funktion/Komponente mit **JSDoc** dokumentieren
+
 ```typescript
 /**
  * Searches files on disk based on query
@@ -125,6 +137,7 @@
 - [ ] Authentication/Authorization bei **jedem** Endpoint prüfen
 
 ### Verbotene Dateien
+
 ```
 .env
 .env.local
@@ -139,17 +152,20 @@ credentials/
 ## Code-Qualität
 
 ### DRY-Prinzip
+
 Wiederholungen vermeiden, in Funktionen auslagern
 
 ### Single Responsibility
+
 Eine Funktion = eine Aufgabe
 
 ### Früh returnen
+
 ```typescript
 // Gut ✅
 function process(data: Data | null): Result {
   if (!data) return null;
-  if (!data.isValid) return { error: 'Invalid' };
+  if (!data.isValid) return { error: "Invalid" };
 
   return processData(data);
 }
@@ -160,7 +176,7 @@ function process(data: Data | null): Result {
     if (data.isValid) {
       return processData(data);
     } else {
-      return { error: 'Invalid' };
+      return { error: "Invalid" };
     }
   }
   return null;
@@ -168,6 +184,7 @@ function process(data: Data | null): Result {
 ```
 
 ### Aussagekräftige Namen
+
 ```typescript
 // Gut ✅
 const isUserAuthenticated = checkAuth(user);
@@ -183,6 +200,7 @@ const getData = async (id) => { ... };
 ## Supervisor-System (Cloud Agents)
 
 ### Hierarchie
+
 ```
 META_SUPERVISOR (Routing + Monitoring)
     ↓
@@ -192,23 +210,26 @@ CLOUD_ASSISTANT (Execute + Report + Evidence)
 ```
 
 ### Kernprinzipien
+
 1. **Evidence-Based Verification**: Keine Behauptung ohne Beweis
 2. **STOP is Success**: Bei Risiko ist STOP die richtige Entscheidung
 3. **Cross-Layer Consistency**: Frontend ↔ Backend ↔ Database Alignment
 
 ### STOP-Score (0-100)
-| Score | Risk Level | Aktion |
-|-------|------------|--------|
-| 0-19 | LOW | Weiter |
-| 20-44 | MEDIUM | Review |
-| 45-69 | HIGH | Approval nötig |
-| 70-100 | CRITICAL | **STOP_REQUIRED** |
+
+| Score  | Risk Level | Aktion            |
+| ------ | ---------- | ----------------- |
+| 0-19   | LOW        | Weiter            |
+| 20-44  | MEDIUM     | Review            |
+| 45-69  | HIGH       | Approval nötig    |
+| 70-100 | CRITICAL   | **STOP_REQUIRED** |
 
 ---
 
 ## 🔐 GIT-WORKFLOW FÜR ALLE AGENTEN (PFLICHT!)
 
 ### Grundregeln
+
 ```yaml
 # Server .env Konfiguration
 GIT_MODE=branch_push              # Immer Feature-Branch erstellen
@@ -218,6 +239,7 @@ REDACT_SECRETS=true               # Secrets aus Logs entfernen
 ```
 
 ### ❌ VERBOTEN
+
 1. **NIEMALS** direkt auf `main` branch pushen
 2. **NIEMALS** auf `main` committen
 3. **NIEMALS** force push (`git push --force`)
@@ -227,6 +249,7 @@ REDACT_SECRETS=true               # Secrets aus Logs entfernen
 ### ✅ PFLICHT-WORKFLOW
 
 #### Schritt 1: Feature-Branch erstellen
+
 ```bash
 # Branch-Naming Convention:
 git checkout -b agent-aX-feature-name
@@ -238,6 +261,7 @@ git checkout -b agent-fixes-and-features
 ```
 
 #### Schritt 2: Änderungen committen
+
 ```bash
 # Alle Änderungen stagen
 git add -A
@@ -251,6 +275,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ```
 
 **Commit-Message Format:**
+
 ```
 <type>: <kurze beschreibung>
 
@@ -262,6 +287,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 ```
 
 **Types:**
+
 - `feat:` - Neues Feature
 - `fix:` - Bug-Fix
 - `docs:` - Dokumentation
@@ -271,6 +297,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 - `chore:` - Build/Dependencies
 
 #### Schritt 3: Push zu origin
+
 ```bash
 # Ersten Push mit -u flag
 git push -u origin agent-aX-feature-name
@@ -280,6 +307,7 @@ git push
 ```
 
 #### Schritt 4: Pull Request erstellen
+
 ```bash
 # Mit GitHub CLI (gh)
 gh pr create --title "feat: implement feature X" --body "$(cat <<'EOF'
@@ -303,6 +331,7 @@ EOF
 ```
 
 #### Schritt 5: Merge-Reihenfolge einhalten
+
 ```
 A2 (Setup) → main (ZUERST)
     ↓
@@ -316,6 +345,7 @@ A5 (Design) → main (ZULETZT)
 ```
 
 ### 🔍 Git-Status vor JEDEM Commit prüfen
+
 ```bash
 # 1. Status prüfen
 git status
@@ -333,6 +363,7 @@ git commit -m "..."
 ### 🚨 Wenn Hook fehlschlägt
 
 **Wenn Commit ABGELEHNT wurde (Hook rejected):**
+
 ```bash
 # ❌ NICHT amend verwenden!
 # ✅ Problem fixen, dann NEUEN Commit erstellen
@@ -341,6 +372,7 @@ git commit -m "fix: resolve hook issues"
 ```
 
 **Wenn Commit ERFOLGREICH war, aber Hook Auto-Modifications gemacht hat:**
+
 ```bash
 # Nur WENN:
 # 1. HEAD commit wurde von dir erstellt (git log -1)
@@ -364,18 +396,21 @@ git commit --amend --no-edit
 ### 🔗 Troubleshooting
 
 #### Problem: "fatal: could not read Username"
+
 ```bash
 # GitHub CLI authentifizieren
 gh auth login
 ```
 
 #### Problem: "rejected: cannot push to main"
+
 ```bash
 # Falscher Branch! Zurück zu Feature-Branch
 git checkout agent-aX-feature-name
 ```
 
 #### Problem: "Your branch is behind"
+
 ```bash
 # Erst pullen, dann pushen
 git pull origin agent-aX-feature-name
@@ -383,6 +418,7 @@ git push
 ```
 
 #### Problem: Merge-Konflikt
+
 ```bash
 # Lokale Änderungen sichern
 git stash
@@ -405,6 +441,7 @@ git push
 ## AI-Provider Integration
 
 ### Priorität
+
 1. **Cloud AI** (wenn Internet verfügbar):
    - Claude (Anthropic)
    - GPT-4 (OpenAI)
@@ -415,6 +452,7 @@ git push
    - LM Studio
 
 ### API-Key Konfiguration
+
 ```bash
 # .env.local (niemals committen!)
 ANTHROPIC_API_KEY=sk-...
@@ -438,6 +476,7 @@ XAI_API_KEY=xai-...
 **Naming Convention:** `screenName_elementType_beschreibung`
 
 Beispiele:
+
 - `login_button_submit`
 - `dashboard_list_agents`
 - `settings_toggle_darkmode`
@@ -445,11 +484,11 @@ Beispiele:
 
 ### Test-Typen
 
-| Typ | Wann | Beispiel |
-|-----|------|----------|
-| Unit Test | Jede Utility-Funktion | `auth.test.ts` |
-| Integration Test | Jeder Screen/API | `github-api.test.ts` |
-| E2E Test | Kritische Flows | `login-flow.test.ts` |
+| Typ              | Wann                  | Beispiel             |
+| ---------------- | --------------------- | -------------------- |
+| Unit Test        | Jede Utility-Funktion | `auth.test.ts`       |
+| Integration Test | Jeder Screen/API      | `github-api.test.ts` |
+| E2E Test         | Kritische Flows       | `login-flow.test.ts` |
 
 ### Vor jedem Commit - Checkliste
 

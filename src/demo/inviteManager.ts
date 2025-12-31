@@ -58,18 +58,22 @@ export class DemoInviteManager {
 
     const rawDb = this.db.getRawDb();
 
-    rawDb.prepare(`
+    rawDb
+      .prepare(
+        `
       INSERT INTO demo_invites (code, credit_limit_usd, max_messages, max_days, created_by, created_at, expires_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      code,
-      request.creditLimitUSD,
-      request.maxMessages,
-      request.maxDays,
-      adminUserId,
-      createdAt,
-      expiresAt
-    );
+    `,
+      )
+      .run(
+        code,
+        request.creditLimitUSD,
+        request.maxMessages,
+        request.maxDays,
+        adminUserId,
+        createdAt,
+        expiresAt,
+      );
 
     return {
       code,
@@ -91,9 +95,13 @@ export class DemoInviteManager {
   getInvite(code: string): DemoInvite | null {
     const rawDb = this.db.getRawDb();
 
-    const row = rawDb.prepare(`
+    const row = rawDb
+      .prepare(
+        `
       SELECT * FROM demo_invites WHERE code = ?
-    `).get(code) as any;
+    `,
+      )
+      .get(code) as any;
 
     if (!row) return null;
 
@@ -127,13 +135,17 @@ export class DemoInviteManager {
 
     const userId = `demo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     const startDate = new Date().toISOString();
-    const endDate = new Date(Date.now() + invite.maxDays * 24 * 60 * 60 * 1000).toISOString();
+    const endDate = new Date(
+      Date.now() + invite.maxDays * 24 * 60 * 60 * 1000,
+    ).toISOString();
     const redeemedAt = new Date().toISOString();
 
     const rawDb = this.db.getRawDb();
 
     // Create demo user
-    rawDb.prepare(`
+    rawDb
+      .prepare(
+        `
       INSERT INTO demo_users (
         id, email, password_hash, invite_code,
         credit_limit_usd, credit_used_usd,
@@ -141,26 +153,32 @@ export class DemoInviteManager {
         start_date, end_date,
         status
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      userId,
-      request.email,
-      passwordHash,
-      request.code,
-      invite.creditLimitUSD,
-      0,
-      invite.maxMessages,
-      0,
-      startDate,
-      endDate,
-      "active"
-    );
+    `,
+      )
+      .run(
+        userId,
+        request.email,
+        passwordHash,
+        request.code,
+        invite.creditLimitUSD,
+        0,
+        invite.maxMessages,
+        0,
+        startDate,
+        endDate,
+        "active",
+      );
 
     // Mark invite as redeemed
-    rawDb.prepare(`
+    rawDb
+      .prepare(
+        `
       UPDATE demo_invites
       SET redeemed_by = ?, redeemed_at = ?
       WHERE code = ?
-    `).run(userId, redeemedAt, request.code);
+    `,
+      )
+      .run(userId, redeemedAt, request.code);
 
     return this.getUser(userId)!;
   }
@@ -171,9 +189,13 @@ export class DemoInviteManager {
   getUser(userId: string): DemoUser | null {
     const rawDb = this.db.getRawDb();
 
-    const row = rawDb.prepare(`
+    const row = rawDb
+      .prepare(
+        `
       SELECT * FROM demo_users WHERE id = ?
-    `).get(userId) as any;
+    `,
+      )
+      .get(userId) as any;
 
     if (!row) return null;
 
@@ -182,19 +204,25 @@ export class DemoInviteManager {
     const startTime = new Date(row.start_date).getTime();
     const totalDuration = endTime - startTime;
     const elapsed = now - startTime;
-    const daysRemaining = Math.max(0, Math.ceil((endTime - now) / (24 * 60 * 60 * 1000)));
+    const daysRemaining = Math.max(
+      0,
+      Math.ceil((endTime - now) / (24 * 60 * 60 * 1000)),
+    );
 
     const creditLimit = row.credit_limit_usd;
     const creditUsed = row.credit_used_usd;
     const creditRemaining = Math.max(0, creditLimit - creditUsed);
-    const creditPercentage = creditLimit > 0 ? (creditUsed / creditLimit) * 100 : 0;
+    const creditPercentage =
+      creditLimit > 0 ? (creditUsed / creditLimit) * 100 : 0;
 
     const messageLimit = row.message_limit;
     const messageUsed = row.message_count;
     const messageRemaining = Math.max(0, messageLimit - messageUsed);
-    const messagePercentage = messageLimit > 0 ? (messageUsed / messageLimit) * 100 : 0;
+    const messagePercentage =
+      messageLimit > 0 ? (messageUsed / messageLimit) * 100 : 0;
 
-    const timePercentage = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
+    const timePercentage =
+      totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
 
     return {
       id: row.id,
@@ -228,11 +256,15 @@ export class DemoInviteManager {
   listInvites(): DemoInvite[] {
     const rawDb = this.db.getRawDb();
 
-    const rows = rawDb.prepare(`
+    const rows = rawDb
+      .prepare(
+        `
       SELECT * FROM demo_invites ORDER BY created_at DESC
-    `).all() as any[];
+    `,
+      )
+      .all() as any[];
 
-    return rows.map(row => ({
+    return rows.map((row) => ({
       code: row.code,
       creditLimitUSD: row.credit_limit_usd,
       maxMessages: row.max_messages,
@@ -252,11 +284,15 @@ export class DemoInviteManager {
   listUsers(): DemoUser[] {
     const rawDb = this.db.getRawDb();
 
-    const rows = rawDb.prepare(`
+    const rows = rawDb
+      .prepare(
+        `
       SELECT * FROM demo_users ORDER BY start_date DESC
-    `).all() as any[];
+    `,
+      )
+      .all() as any[];
 
-    return rows.map(row => this.getUser(row.id)!).filter(Boolean);
+    return rows.map((row) => this.getUser(row.id)!).filter(Boolean);
   }
 
   /**
@@ -277,7 +313,8 @@ export class DemoInviteManager {
    */
   private getInviteStatus(row: any): "active" | "redeemed" | "expired" {
     if (row.redeemed_by) return "redeemed";
-    if (row.expires_at && new Date(row.expires_at) < new Date()) return "expired";
+    if (row.expires_at && new Date(row.expires_at) < new Date())
+      return "expired";
     return "active";
   }
 
@@ -296,10 +333,14 @@ export class DemoInviteManager {
       const invites = this.listInvites();
       const users = this.listUsers();
 
-      const activeInvites = invites.filter(i => i.status === "active").length;
-      const redeemedInvites = invites.filter(i => i.status === "redeemed").length;
-      const expiredInvites = invites.filter(i => i.status === "expired").length;
-      const activeUsers = users.filter(u => u.status === "active").length;
+      const activeInvites = invites.filter((i) => i.status === "active").length;
+      const redeemedInvites = invites.filter(
+        (i) => i.status === "redeemed",
+      ).length;
+      const expiredInvites = invites.filter(
+        (i) => i.status === "expired",
+      ).length;
+      const activeUsers = users.filter((u) => u.status === "active").length;
 
       return {
         totalInvites: invites.length,
@@ -340,11 +381,15 @@ export class DemoInviteManager {
    */
   deactivateInvite(inviteCode: string): void {
     const rawDb = this.db.getRawDb();
-    rawDb.prepare(`
+    rawDb
+      .prepare(
+        `
       UPDATE demo_invites
       SET expires_at = datetime('now')
       WHERE code = ?
-    `).run(inviteCode);
+    `,
+      )
+      .run(inviteCode);
   }
 
   /**
@@ -352,11 +397,15 @@ export class DemoInviteManager {
    */
   deactivateDemoUser(userId: string): void {
     const rawDb = this.db.getRawDb();
-    rawDb.prepare(`
+    rawDb
+      .prepare(
+        `
       UPDATE demo_users
       SET status = 'suspended'
       WHERE id = ?
-    `).run(userId);
+    `,
+      )
+      .run(userId);
   }
 
   /**
@@ -364,11 +413,15 @@ export class DemoInviteManager {
    */
   expireOldDemoUsers(): number {
     const rawDb = this.db.getRawDb();
-    const result = rawDb.prepare(`
+    const result = rawDb
+      .prepare(
+        `
       UPDATE demo_users
       SET status = 'expired'
       WHERE status = 'active' AND end_date < datetime('now')
-    `).run();
+    `,
+      )
+      .run();
     return result.changes;
   }
 
@@ -377,7 +430,7 @@ export class DemoInviteManager {
    */
   initTables(): void {
     const rawDb = this.db.getRawDb();
-    
+
     rawDb.exec(`
       CREATE TABLE IF NOT EXISTS demo_invites (
         code TEXT PRIMARY KEY,

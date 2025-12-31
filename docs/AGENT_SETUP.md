@@ -6,42 +6,46 @@
 
 ## 📋 Agent-Übersicht
 
-| Agent | Ersetzt | Trigger | Priorität |
-|-------|---------|---------|-----------|
-| **Lead Import Agent** | Manuelles Eintragen | Webhook/API | 🔴 Hoch |
-| **Lead Qualifier Agent** | Sales-Qualifizierung | Nach Import | 🔴 Hoch |
-| **Voice AI Agent** | Telefon-Sales | Score > 50 | 🔴 Hoch |
-| **Email Agent** | Follow-up Mails | Nach Call/Event | 🟡 Mittel |
-| **Report Agent** | Tägliche Reports | Scheduled | 🟢 Niedrig |
-| **Support Agent** | Kundenanfragen | Ticket/Chat | 🟡 Mittel |
+| Agent                    | Ersetzt              | Trigger         | Priorität  |
+| ------------------------ | -------------------- | --------------- | ---------- |
+| **Lead Import Agent**    | Manuelles Eintragen  | Webhook/API     | 🔴 Hoch    |
+| **Lead Qualifier Agent** | Sales-Qualifizierung | Nach Import     | 🔴 Hoch    |
+| **Voice AI Agent**       | Telefon-Sales        | Score > 50      | 🔴 Hoch    |
+| **Email Agent**          | Follow-up Mails      | Nach Call/Event | 🟡 Mittel  |
+| **Report Agent**         | Tägliche Reports     | Scheduled       | 🟢 Niedrig |
+| **Support Agent**        | Kundenanfragen       | Ticket/Chat     | 🟡 Mittel  |
 
 ---
 
 ## 🤖 Agent 1: Lead Import Agent
 
 ### Funktion
+
 Automatisch Leads aus verschiedenen Quellen importieren
 
 ### Trigger
+
 - Webhook von Website-Formular
 - API Call von Ads (Facebook, Google)
 - CSV Import
 - E-Mail Parser
 
 ### Einstellungen
+
 ```yaml
 name: lead-import-agent
-model: claude-3-haiku  # Schnell + günstig
+model: claude-3-haiku # Schnell + günstig
 tools:
   - Read
   - Write
   - Bash(curl:*)
   - Database
-temperature: 0.1  # Deterministisch
+temperature: 0.1 # Deterministisch
 max_tokens: 1000
 ```
 
 ### Prompt
+
 ```
 Du bist ein Lead Import Agent.
 
@@ -71,26 +75,30 @@ OUTPUT:
 ## 🤖 Agent 2: Lead Qualifier Agent
 
 ### Funktion
+
 Automatisch Lead Score berechnen und priorisieren
 
 ### Trigger
+
 - Nach Lead Import
 - Täglich für alle Leads ohne Score
 - Nach Interaction Update
 
 ### Einstellungen
+
 ```yaml
 name: lead-qualifier-agent
-model: claude-3-sonnet  # Bessere Analyse
+model: claude-3-sonnet # Bessere Analyse
 tools:
   - Read
   - Database
-  - WebSearch  # Firmen-Research
+  - WebSearch # Firmen-Research
 temperature: 0.3
 max_tokens: 2000
 ```
 
 ### Scoring Kriterien
+
 ```
 SCORE BERECHNUNG (0-100):
 
@@ -111,6 +119,7 @@ PRIORITÄT:
 ```
 
 ### Prompt
+
 ```
 Du bist ein Lead Qualifier Agent.
 
@@ -142,21 +151,24 @@ OUTPUT:
 ## 🤖 Agent 3: Voice AI Agent
 
 ### Funktion
+
 Automatische Verkaufsanrufe durchführen
 
 ### Trigger
+
 - Lead Score > 50
 - Manueller Trigger
 - Scheduled Follow-up
 
 ### Provider-Einstellungen
+
 ```yaml
 name: voice-ai-agent
-provider: vapi  # oder retell, bland
+provider: vapi # oder retell, bland
 
 voice_config:
   language: de-DE
-  voice: "ElevenLabs - Stefan"  # Männlich, professionell
+  voice: "ElevenLabs - Stefan" # Männlich, professionell
   speed: 1.0
 
 stt_config:
@@ -175,6 +187,7 @@ telephony:
 ```
 
 ### Call Script
+
 ```
 ERÖFFNUNG:
 "Guten Tag, [Name]. Hier ist [Agent] von [Firma].
@@ -203,25 +216,29 @@ REGELN:
 ## 🤖 Agent 4: Email Agent
 
 ### Funktion
+
 Automatische Follow-up E-Mails senden
 
 ### Trigger
+
 - Nach Voice Call (immer)
 - Nach X Tagen ohne Reaktion
 - Nach Interaction Event
 
 ### Einstellungen
+
 ```yaml
 name: email-agent
 model: claude-3-haiku
 tools:
   - Read
-  - SendGrid  # oder SMTP
+  - SendGrid # oder SMTP
   - Database
 temperature: 0.5
 ```
 
 ### Email Templates
+
 ```
 NACH CALL - INTERESSE:
 Subject: Zusammenfassung unseres Gesprächs | [Firma]
@@ -275,25 +292,29 @@ Beste Grüße,
 ## 🤖 Agent 5: Report Agent
 
 ### Funktion
+
 Tägliche/Wöchentliche Reports erstellen
 
 ### Trigger
+
 - Täglich 18:00
 - Wöchentlich Montag 09:00
 - Auf Anfrage
 
 ### Einstellungen
+
 ```yaml
 name: report-agent
 model: claude-3-sonnet
 tools:
   - Read
   - Database
-  - Charts  # Matplotlib/Plotly
+  - Charts # Matplotlib/Plotly
 temperature: 0.1
 ```
 
 ### Report Struktur
+
 ```
 DAILY REPORT:
 
@@ -329,14 +350,17 @@ TOP LEADS:
 ## 🤖 Agent 6: Support Agent
 
 ### Funktion
+
 Kundenanfragen beantworten
 
 ### Trigger
+
 - Neues Support-Ticket
 - Chat-Nachricht
 - Email an Support
 
 ### Einstellungen
+
 ```yaml
 name: support-agent
 model: claude-3-sonnet
@@ -349,6 +373,7 @@ max_tokens: 1500
 ```
 
 ### Prompt
+
 ```
 Du bist ein Support Agent für [Firma].
 

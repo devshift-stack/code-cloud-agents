@@ -16,7 +16,12 @@ import type { Database } from "../db/database.js";
 import type { QueueAdapter } from "../queue/queue.js";
 
 // GitHub Event Types
-export type GitHubEvent = "push" | "pull_request" | "issues" | "issue_comment" | "ping";
+export type GitHubEvent =
+  | "push"
+  | "pull_request"
+  | "issues"
+  | "issue_comment"
+  | "ping";
 
 export interface GitHubWebhookPayload {
   action?: string;
@@ -61,7 +66,11 @@ export interface GitHubWebhookPayload {
  * @param secret - GitHub webhook secret
  * @returns true if signature is valid
  */
-export function verifyGitHubSignature(payload: string, signature: string, secret: string): boolean {
+export function verifyGitHubSignature(
+  payload: string,
+  signature: string,
+  secret: string,
+): boolean {
   if (!signature || !signature.startsWith("sha256=")) {
     return false;
   }
@@ -72,7 +81,10 @@ export function verifyGitHubSignature(payload: string, signature: string, secret
 
   // Use crypto.timingSafeEqual to prevent timing attacks
   try {
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(calculatedSignature));
+    return crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(calculatedSignature),
+    );
   } catch {
     return false;
   }
@@ -81,7 +93,11 @@ export function verifyGitHubSignature(payload: string, signature: string, secret
 /**
  * Stores webhook event in database
  */
-function storeWebhookEvent(db: Database, event: GitHubEvent, payload: GitHubWebhookPayload): void {
+function storeWebhookEvent(
+  db: Database,
+  event: GitHubEvent,
+  payload: GitHubWebhookPayload,
+): void {
   // Store in audit log for tracking
   db.createAuditEntry({
     agent: "github_webhook",
@@ -104,7 +120,10 @@ function storeWebhookEvent(db: Database, event: GitHubEvent, payload: GitHubWebh
 /**
  * Processes GitHub push event
  */
-async function processPushEvent(payload: GitHubWebhookPayload, queue: QueueAdapter): Promise<void> {
+async function processPushEvent(
+  payload: GitHubWebhookPayload,
+  queue: QueueAdapter,
+): Promise<void> {
   console.log("📦 GitHub push event:", {
     repo: payload.repository.full_name,
     sender: payload.sender.login,
@@ -124,7 +143,10 @@ async function processPushEvent(payload: GitHubWebhookPayload, queue: QueueAdapt
 /**
  * Processes GitHub pull request event
  */
-async function processPullRequestEvent(payload: GitHubWebhookPayload, queue: QueueAdapter): Promise<void> {
+async function processPullRequestEvent(
+  payload: GitHubWebhookPayload,
+  queue: QueueAdapter,
+): Promise<void> {
   console.log("🔀 GitHub pull_request event:", {
     repo: payload.repository.full_name,
     action: payload.action,
@@ -144,7 +166,10 @@ async function processPullRequestEvent(payload: GitHubWebhookPayload, queue: Que
 /**
  * Processes GitHub issues event
  */
-async function processIssuesEvent(payload: GitHubWebhookPayload, queue: QueueAdapter): Promise<void> {
+async function processIssuesEvent(
+  payload: GitHubWebhookPayload,
+  queue: QueueAdapter,
+): Promise<void> {
   console.log("🐛 GitHub issues event:", {
     repo: payload.repository.full_name,
     action: payload.action,
@@ -164,7 +189,10 @@ async function processIssuesEvent(payload: GitHubWebhookPayload, queue: QueueAda
 /**
  * Processes GitHub issue comment event
  */
-async function processIssueCommentEvent(payload: GitHubWebhookPayload, queue: QueueAdapter): Promise<void> {
+async function processIssueCommentEvent(
+  payload: GitHubWebhookPayload,
+  queue: QueueAdapter,
+): Promise<void> {
   console.log("💬 GitHub issue_comment event:", {
     repo: payload.repository.full_name,
     action: payload.action,
@@ -185,7 +213,10 @@ async function processIssueCommentEvent(payload: GitHubWebhookPayload, queue: Qu
 /**
  * Creates GitHub webhook router
  */
-export function createGitHubWebhookRouter(db: Database, queue: QueueAdapter): Router {
+export function createGitHubWebhookRouter(
+  db: Database,
+  queue: QueueAdapter,
+): Router {
   const router = Router();
 
   // Use express.text() to get raw body for signature verification
@@ -213,7 +244,9 @@ export function createGitHubWebhookRouter(db: Database, queue: QueueAdapter): Ro
       if (githubEvent !== "ping") {
         // Require secret to be configured
         if (!secret) {
-          console.error("❌ GITHUB_WEBHOOK_SECRET not configured - rejecting webhook");
+          console.error(
+            "❌ GITHUB_WEBHOOK_SECRET not configured - rejecting webhook",
+          );
           return res.status(500).json({
             success: false,
             error: "Webhook secret not configured",
@@ -221,7 +254,8 @@ export function createGitHubWebhookRouter(db: Database, queue: QueueAdapter): Ro
         }
 
         // req.body will be a string because we use express.text() middleware
-        const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+        const rawBody =
+          typeof req.body === "string" ? req.body : JSON.stringify(req.body);
         const isValid = verifyGitHubSignature(rawBody, signature, secret);
 
         if (!isValid) {
@@ -234,7 +268,9 @@ export function createGitHubWebhookRouter(db: Database, queue: QueueAdapter): Ro
       }
 
       // Parse JSON if body is string
-      const payload = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) as GitHubWebhookPayload;
+      const payload = (
+        typeof req.body === "string" ? JSON.parse(req.body) : req.body
+      ) as GitHubWebhookPayload;
 
       // Handle ping event (GitHub sends this to verify webhook setup)
       if (githubEvent === "ping") {

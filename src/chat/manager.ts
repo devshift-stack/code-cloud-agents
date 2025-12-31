@@ -4,12 +4,7 @@
  */
 
 import { ChatStorage } from "./storage.ts";
-import type {
-  ChatRequest,
-  ChatResponse,
-  ChatMessage,
-  Chat,
-} from "./types.ts";
+import type { ChatRequest, ChatResponse, ChatMessage, Chat } from "./types.ts";
 import { costTracker } from "../billing/costTracker.ts";
 import { selectModel } from "../billing/modelSelector.ts";
 import { agentTools, executeTool } from "./tools.ts";
@@ -69,7 +64,9 @@ export class ChatManager {
     });
 
     // Track chat metrics
-    metrics.increment("chat.messages.received", 1, { agentName: request.agentName });
+    metrics.increment("chat.messages.received", 1, {
+      agentName: request.agentName,
+    });
     metrics.set("chat.users.active", request.userId);
 
     // Get or create chat
@@ -83,12 +80,12 @@ export class ChatManager {
     } else {
       // Create new chat with auto-generated title
       const title = this.generateTitle(request.message);
-      chat = this.storage.createChat(
-        request.userId,
-        title,
-        request.agentName
-      );
-      log.info("New chat created", { chatId: chat.id, userId: request.userId, agentName: request.agentName });
+      chat = this.storage.createChat(request.userId, title, request.agentName);
+      log.info("New chat created", {
+        chatId: chat.id,
+        userId: request.userId,
+        agentName: request.agentName,
+      });
     }
 
     // Store user message
@@ -100,14 +97,15 @@ export class ChatManager {
 
     // Get chat history for context (if requested)
     const history: ChatMessage[] = request.includeHistory
-      ? this.storage.getRecentMessages(
-          chat.id,
-          request.maxHistory || 10
-        )
+      ? this.storage.getRecentMessages(chat.id, request.maxHistory || 10)
       : [];
 
     // Build prompt with history
-    const prompt = this.buildPrompt(request.message, history, request.agentName);
+    const prompt = this.buildPrompt(
+      request.message,
+      history,
+      request.agentName,
+    );
 
     // Select optimal model
     const modelRecommendation = selectModel(request.message, {
@@ -122,7 +120,7 @@ export class ChatManager {
       providerToUse,
       modelToUse,
       prompt,
-      request.agentName
+      request.agentName,
     );
 
     // Store assistant response
@@ -156,11 +154,20 @@ export class ChatManager {
       });
 
       // Track AI usage metrics
-      metrics.increment("ai.requests.total", 1, { provider: providerToUse, model: modelToUse });
-      metrics.distribution("ai.tokens.input", aiResponse.tokens.input, { provider: providerToUse });
-      metrics.distribution("ai.tokens.output", aiResponse.tokens.output, { provider: providerToUse });
+      metrics.increment("ai.requests.total", 1, {
+        provider: providerToUse,
+        model: modelToUse,
+      });
+      metrics.distribution("ai.tokens.input", aiResponse.tokens.input, {
+        provider: providerToUse,
+      });
+      metrics.distribution("ai.tokens.output", aiResponse.tokens.output, {
+        provider: providerToUse,
+      });
       if (aiResponse.cost?.usd) {
-        metrics.distribution("ai.cost.usd", aiResponse.cost.usd * 100, { provider: providerToUse }); // in cents
+        metrics.distribution("ai.cost.usd", aiResponse.cost.usd * 100, {
+          provider: providerToUse,
+        }); // in cents
       }
     }
 
@@ -245,9 +252,7 @@ export class ChatManager {
   private generateTitle(message: string): string {
     // Take first 50 chars or first sentence
     const shortened = message.substring(0, 50);
-    return shortened.length < message.length
-      ? shortened + "..."
-      : shortened;
+    return shortened.length < message.length ? shortened + "..." : shortened;
   }
 
   /**
@@ -256,7 +261,7 @@ export class ChatManager {
   private buildPrompt(
     message: string,
     history: ChatMessage[],
-    agentName: string
+    agentName: string,
   ): string {
     let prompt = "";
 
@@ -292,7 +297,7 @@ export class ChatManager {
     const preferred = preferredProvider.toLowerCase();
 
     if (allProviders.includes(preferred)) {
-      return [preferred, ...allProviders.filter(p => p !== preferred)];
+      return [preferred, ...allProviders.filter((p) => p !== preferred)];
     }
     return allProviders;
   }
@@ -306,7 +311,7 @@ export class ChatManager {
     provider: string,
     model: string,
     prompt: string,
-    agentName: string
+    agentName: string,
   ): Promise<{
     content: string;
     tokens?: { input: number; output: number; total: number };
@@ -315,75 +320,76 @@ export class ChatManager {
     console.log(`[Chat] Calling ${provider}/${model} for agent ${agentName}`);
 
     // Wrap AI call with Sentry tracking
-    return trackAICall(
-      { provider, model, agentName, prompt },
-      async () => {
-        const providers = this.getProviderOrder(provider);
-        let lastError: Error | null = null;
+    return trackAICall({ provider, model, agentName, prompt }, async () => {
+      const providers = this.getProviderOrder(provider);
+      let lastError: Error | null = null;
 
-        for (const p of providers) {
-          try {
-            console.log(`[Chat] Trying provider: ${p}`);
+      for (const p of providers) {
+        try {
+          console.log(`[Chat] Trying provider: ${p}`);
 
-            switch (p.toLowerCase()) {
-              case "anthropic":
-                if (!process.env.ANTHROPIC_API_KEY) {
-                  console.log("[Chat] Anthropic: No API key, skipping");
-                  continue;
-                }
-                return await this.callAnthropic(model, prompt, agentName);
-
-              case "openai":
-                if (!process.env.OPENAI_API_KEY) {
-                  console.log("[Chat] OpenAI: No API key, skipping");
-                  continue;
-                }
-                // Use gpt-4o as fallback model
-                return await this.callOpenAI("gpt-4o", prompt, agentName);
-
-              case "gemini":
-                if (!process.env.GEMINI_API_KEY) {
-                  console.log("[Chat] Gemini: No API key, skipping");
-                  continue;
-                }
-                return await this.callGemini(model, prompt, agentName);
-
-              default:
+          switch (p.toLowerCase()) {
+            case "anthropic":
+              if (!process.env.ANTHROPIC_API_KEY) {
+                console.log("[Chat] Anthropic: No API key, skipping");
                 continue;
-            }
-          } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : "Unknown error";
-            console.warn(`[Chat] ${p} failed: ${errorMessage}`);
+              }
+              return await this.callAnthropic(model, prompt, agentName);
 
-            // Check if it's a rate limit error - try next provider
-            if (errorMessage.includes("429") || errorMessage.includes("rate_limit")) {
-              console.log(`[Chat] ${p} rate limited, trying next provider...`);
-              log.warn("AI provider rate limited, trying fallback", {
-                provider: p,
-                error: errorMessage,
-              });
-            } else {
-              log.error("AI provider call failed", {
-                provider: p,
-                model,
-                agentName,
-                error: errorMessage,
-              });
-            }
+            case "openai":
+              if (!process.env.OPENAI_API_KEY) {
+                console.log("[Chat] OpenAI: No API key, skipping");
+                continue;
+              }
+              // Use gpt-4o as fallback model
+              return await this.callOpenAI("gpt-4o", prompt, agentName);
 
-            lastError = error instanceof Error ? error : new Error(errorMessage);
-            continue; // Try next provider
+            case "gemini":
+              if (!process.env.GEMINI_API_KEY) {
+                console.log("[Chat] Gemini: No API key, skipping");
+                continue;
+              }
+              return await this.callGemini(model, prompt, agentName);
+
+            default:
+              continue;
           }
-        }
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Unknown error";
+          console.warn(`[Chat] ${p} failed: ${errorMessage}`);
 
-        // All providers failed
-        log.error("All AI providers failed", {
-          attemptedProviders: providers.join(", "),
-          lastError: lastError?.message,
-        });
-        throw lastError || new Error("All AI providers failed");
+          // Check if it's a rate limit error - try next provider
+          if (
+            errorMessage.includes("429") ||
+            errorMessage.includes("rate_limit")
+          ) {
+            console.log(`[Chat] ${p} rate limited, trying next provider...`);
+            log.warn("AI provider rate limited, trying fallback", {
+              provider: p,
+              error: errorMessage,
+            });
+          } else {
+            log.error("AI provider call failed", {
+              provider: p,
+              model,
+              agentName,
+              error: errorMessage,
+            });
+          }
+
+          lastError = error instanceof Error ? error : new Error(errorMessage);
+          continue; // Try next provider
+        }
       }
-    );
+
+      // All providers failed
+      log.error("All AI providers failed", {
+        attemptedProviders: providers.join(", "),
+        lastError: lastError?.message,
+      });
+      throw lastError || new Error("All AI providers failed");
+    });
   }
 
   /**
@@ -392,7 +398,7 @@ export class ChatManager {
   private async callAnthropic(
     model: string,
     prompt: string,
-    _agentName: string
+    _agentName: string,
   ): Promise<{
     content: string;
     tokens: { input: number; output: number; total: number };
@@ -444,7 +450,7 @@ export class ChatManager {
             });
             const result = await executeTool(
               block.name,
-              block.input as Record<string, unknown>
+              block.input as Record<string, unknown>,
             );
             log.debug("Tool execution completed", {
               tool: block.name,
@@ -512,7 +518,7 @@ export class ChatManager {
   private async callOpenAI(
     model: string,
     prompt: string,
-    agentName: string
+    agentName: string,
   ): Promise<{
     content: string;
     tokens: { input: number; output: number; total: number };
@@ -569,7 +575,7 @@ export class ChatManager {
   private async callGemini(
     model: string,
     prompt: string,
-    agentName: string
+    agentName: string,
   ): Promise<{
     content: string;
     tokens: { input: number; output: number; total: number };

@@ -10,24 +10,27 @@ Analysiere und plane Automatisierung für: $ARGUMENTS
 ## Analyse-Schritte
 
 ### 1. Aktuellen Workflow verstehen
+
 - Welche manuellen Schritte gibt es?
 - Wer macht was?
 - Wie lange dauert jeder Schritt?
 - Wo sind Bottlenecks?
 
 ### 2. Automatisierungs-Potenzial
+
 - Welche Schritte sind repetitiv?
 - Welche Schritte brauchen keine menschliche Entscheidung?
 - Welche können Agents übernehmen?
 
 ### 3. Agent-Zuweisung
-| Task | Agent | Trigger |
-|------|-------|---------|
-| Code Review | /review | PR erstellt |
-| Security Check | /security | Vor Deploy |
-| Tests | /test | Nach Code Change |
-| Docs | /docs | Nach Feature Complete |
-| Design Check | /design | Vor Release |
+
+| Task           | Agent     | Trigger               |
+| -------------- | --------- | --------------------- |
+| Code Review    | /review   | PR erstellt           |
+| Security Check | /security | Vor Deploy            |
+| Tests          | /test     | Nach Code Change      |
+| Docs           | /docs     | Nach Feature Complete |
+| Design Check   | /design   | Vor Release           |
 
 ## Workflow-Template
 

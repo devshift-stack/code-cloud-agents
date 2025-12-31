@@ -10,6 +10,7 @@ Erstelle/Aktualisiere Dokumentation für: $ARGUMENTS
 ## Dokumentations-Typen
 
 ### 1. README.md
+
 - Projekt-Beschreibung
 - Quick Start Guide
 - Installation
@@ -17,6 +18,7 @@ Erstelle/Aktualisiere Dokumentation für: $ARGUMENTS
 - Contributing Guidelines
 
 ### 2. API Documentation
+
 - Endpoints Liste
 - Request/Response Beispiele
 - Authentication
@@ -24,11 +26,13 @@ Erstelle/Aktualisiere Dokumentation für: $ARGUMENTS
 - Rate Limits
 
 ### 3. Code Documentation
+
 - JSDoc für alle Funktionen
 - Inline Kommentare für komplexe Logik
 - Type Definitions
 
 ### 4. User Guide
+
 - Getting Started
 - Features Übersicht
 - Step-by-Step Tutorials
@@ -36,6 +40,7 @@ Erstelle/Aktualisiere Dokumentation für: $ARGUMENTS
 - Troubleshooting
 
 ### 5. Architecture Docs
+
 - System Overview
 - Component Diagram
 - Data Flow
@@ -48,22 +53,27 @@ Erstelle/Aktualisiere Dokumentation für: $ARGUMENTS
 # [Titel]
 
 ## Übersicht
+
 [Kurze Beschreibung]
 
 ## Inhaltsverzeichnis
+
 1. [Section 1]
 2. [Section 2]
-...
+   ...
 
 ## [Section 1]
+
 [Inhalt]
 
 ## [Section 2]
+
 [Inhalt]
 
 ---
-*Erstellt am: [Datum]*
-*Version: [Version]*
+
+_Erstellt am: [Datum]_
+_Version: [Version]_
 ```
 
 ## Regeln

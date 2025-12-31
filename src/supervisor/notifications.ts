@@ -4,11 +4,17 @@
  * With Mujo's multilingual humor (DE/EN/BS)
  */
 
-import { createSlackClient, type SlackMessage } from "../integrations/slack/client.js";
+import {
+  createSlackClient,
+  type SlackMessage,
+} from "../integrations/slack/client.js";
 import type { StopScoreResult, Severity } from "../audit/stopScorer.js";
 import type { SystemHealth } from "../meta/metaSupervisor.js";
 import type { StatusProposal } from "../assistant/cloudAssistant.js";
-import { getMujoSignature, type Language } from "../integrations/slack/humor.js";
+import {
+  getMujoSignature,
+  type Language,
+} from "../integrations/slack/humor.js";
 
 export interface NotificationConfig {
   channel: string; // Default channel for notifications (e.g., "#alerts")
@@ -33,8 +39,10 @@ export class SupervisorNotifications {
   constructor(config?: Partial<NotificationConfig>) {
     this.config = {
       channel: config?.channel || process.env.SLACK_ALERT_CHANNEL || "#alerts",
-      enabled: config?.enabled ?? process.env.SLACK_NOTIFICATIONS_ENABLED === "true",
-      language: config?.language || (process.env.MUJO_LANGUAGE as Language) || "de",
+      enabled:
+        config?.enabled ?? process.env.SLACK_NOTIFICATIONS_ENABLED === "true",
+      language:
+        config?.language || (process.env.MUJO_LANGUAGE as Language) || "de",
       humor: config?.humor ?? process.env.MUJO_HUMOR_ENABLED === "true",
       thresholds: {
         stopScore: config?.thresholds?.stopScore ?? 40,
@@ -53,7 +61,7 @@ export class SupervisorNotifications {
   async sendStopScoreAlert(
     taskName: string,
     stopScore: StopScoreResult,
-    context?: string
+    context?: string,
   ): Promise<{ success: boolean; error?: string }> {
     if (!this.config.enabled || !this.slack.isEnabled()) {
       return { success: false, error: "Slack notifications disabled" };
@@ -128,7 +136,7 @@ export class SupervisorNotifications {
    */
   async sendSystemHealthAlert(
     systemId: string,
-    health: SystemHealth
+    health: SystemHealth,
   ): Promise<{ success: boolean; error?: string }> {
     if (!this.config.enabled || !this.slack.isEnabled()) {
       return { success: false, error: "Slack notifications disabled" };
@@ -218,7 +226,7 @@ export class SupervisorNotifications {
    */
   async sendTaskCompletionNotification(
     taskId: string,
-    proposal: StatusProposal
+    proposal: StatusProposal,
   ): Promise<{ success: boolean; error?: string }> {
     if (!this.config.enabled || !this.slack.isEnabled()) {
       return { success: false, error: "Slack notifications disabled" };
@@ -323,7 +331,7 @@ export class SupervisorNotifications {
   async sendCustomMessage(
     title: string,
     message: string,
-    level: "info" | "warning" | "error" = "info"
+    level: "info" | "warning" | "error" = "info",
   ): Promise<{ success: boolean; error?: string }> {
     if (!this.config.enabled || !this.slack.isEnabled()) {
       return { success: false, error: "Slack notifications disabled" };
@@ -445,7 +453,7 @@ export class SupervisorNotifications {
  * Create a Supervisor Notifications instance
  */
 export function createSupervisorNotifications(
-  config?: Partial<NotificationConfig>
+  config?: Partial<NotificationConfig>,
 ): SupervisorNotifications {
   return new SupervisorNotifications(config);
 }

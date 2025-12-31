@@ -58,6 +58,7 @@
 ## Decision Examples
 
 ### Example 1: Clean Submission
+
 ```
 Input:
   - Description: "Added user login endpoint"
@@ -75,6 +76,7 @@ Final Status: COMPLETE
 ```
 
 ### Example 2: Missing Tests
+
 ```
 Input:
   - Description: "Added payment processing"
@@ -93,6 +95,7 @@ Required Action: Add missing: Tests, Deploy config
 ```
 
 ### Example 3: Pricing Claim
+
 ```
 Input:
   - Description: "Set price to $99/month for premium tier"
@@ -111,6 +114,7 @@ Required Action: STOP: Address PRICING_WITHOUT_FACT before proceeding
 ```
 
 ### Example 4: Multiple Issues
+
 ```
 Input:
   - Description: "Deployed the API with legal disclaimer"

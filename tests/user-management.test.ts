@@ -33,9 +33,13 @@ describe("User Database Operations", () => {
     const db = createTestDb();
 
     // Check table exists
-    const tables = db.prepare(`
+    const tables = db
+      .prepare(
+        `
       SELECT name FROM sqlite_master WHERE type='table' AND name='users'
-    `).all();
+    `,
+      )
+      .all();
 
     assert.strictEqual(tables.length, 1);
     db.close();
@@ -426,11 +430,19 @@ describe("Password Management", () => {
     assert.strictEqual(changed, true);
 
     // Verify old password doesn't work
-    const verified1 = await verifyUserPassword(db, "user@example.com", "oldpassword");
+    const verified1 = await verifyUserPassword(
+      db,
+      "user@example.com",
+      "oldpassword",
+    );
     assert.strictEqual(verified1, null);
 
     // Verify new password works
-    const verified2 = await verifyUserPassword(db, "user@example.com", "newpassword");
+    const verified2 = await verifyUserPassword(
+      db,
+      "user@example.com",
+      "newpassword",
+    );
     assert.ok(verified2);
 
     db.close();
@@ -445,7 +457,11 @@ describe("Password Management", () => {
       role: "user",
     });
 
-    const verified = await verifyUserPassword(db, "user@example.com", "correctpassword");
+    const verified = await verifyUserPassword(
+      db,
+      "user@example.com",
+      "correctpassword",
+    );
 
     assert.ok(verified);
     assert.strictEqual(verified!.email, "user@example.com");
@@ -462,7 +478,11 @@ describe("Password Management", () => {
       role: "user",
     });
 
-    const verified = await verifyUserPassword(db, "user@example.com", "wrongpassword");
+    const verified = await verifyUserPassword(
+      db,
+      "user@example.com",
+      "wrongpassword",
+    );
 
     assert.strictEqual(verified, null);
 
@@ -500,7 +520,11 @@ describe("Password Management", () => {
     // Deactivate user
     updateUser(db, user.id, { isActive: false });
 
-    const verified = await verifyUserPassword(db, "user@example.com", "password123");
+    const verified = await verifyUserPassword(
+      db,
+      "user@example.com",
+      "password123",
+    );
 
     assert.strictEqual(verified, null);
 

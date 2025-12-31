@@ -61,10 +61,14 @@ describe("Chat Provider Integration", () => {
       assert.fail("Should have thrown error");
     } catch (error: any) {
       // Accept either direct error or wrapped error
-      const hasApiKeyError = error.message.includes("ANTHROPIC_API_KEY") ||
-                             error.message.includes("API_KEY") ||
-                             error.message.includes("not configured");
-      assert.ok(hasApiKeyError, `Expected API key error, got: ${error.message}`);
+      const hasApiKeyError =
+        error.message.includes("ANTHROPIC_API_KEY") ||
+        error.message.includes("API_KEY") ||
+        error.message.includes("not configured");
+      assert.ok(
+        hasApiKeyError,
+        `Expected API key error, got: ${error.message}`,
+      );
     } finally {
       // Restore env
       if (originalAnthropicKey) {
@@ -85,10 +89,14 @@ describe("Chat Provider Integration", () => {
       assert.fail("Should have thrown error");
     } catch (error: any) {
       // Accept either direct error or wrapped error
-      const hasProviderError = error.message.includes("Unsupported provider") ||
-                               error.message.includes("unsupported") ||
-                               error.message.includes("Failed to call");
-      assert.ok(hasProviderError, `Expected provider error, got: ${error.message}`);
+      const hasProviderError =
+        error.message.includes("Unsupported provider") ||
+        error.message.includes("unsupported") ||
+        error.message.includes("Failed to call");
+      assert.ok(
+        hasProviderError,
+        `Expected provider error, got: ${error.message}`,
+      );
     }
   });
 
@@ -326,11 +334,12 @@ describe("Provider-Specific Error Handling", () => {
       assert.fail("Should have thrown error");
     } catch (error: any) {
       // Accept various error formats (API errors, network errors, etc.)
-      const hasError = error.message.includes("Failed to call") ||
-                       error.message.includes("anthropic") ||
-                       error.message.includes("API") ||
-                       error.message.includes("Invalid") ||
-                       error.message.includes("error");
+      const hasError =
+        error.message.includes("Failed to call") ||
+        error.message.includes("anthropic") ||
+        error.message.includes("API") ||
+        error.message.includes("Invalid") ||
+        error.message.includes("error");
       assert.ok(hasError, `Expected error message, got: ${error.message}`);
     } finally {
       if (originalKey) {
@@ -362,11 +371,12 @@ describe("Provider-Specific Error Handling", () => {
       assert.fail("Should have thrown error");
     } catch (error: any) {
       // Accept various error formats
-      const hasError = error.message.includes("Failed to call") ||
-                       error.message.includes("openai") ||
-                       error.message.includes("API") ||
-                       error.message.includes("Invalid") ||
-                       error.message.includes("error");
+      const hasError =
+        error.message.includes("Failed to call") ||
+        error.message.includes("openai") ||
+        error.message.includes("API") ||
+        error.message.includes("Invalid") ||
+        error.message.includes("error");
       assert.ok(hasError, `Expected error message, got: ${error.message}`);
     } finally {
       if (originalKey) {
@@ -398,11 +408,12 @@ describe("Provider-Specific Error Handling", () => {
       assert.fail("Should have thrown error");
     } catch (error: any) {
       // Accept various error formats
-      const hasError = error.message.includes("Failed to call") ||
-                       error.message.includes("gemini") ||
-                       error.message.includes("API") ||
-                       error.message.includes("Invalid") ||
-                       error.message.includes("error");
+      const hasError =
+        error.message.includes("Failed to call") ||
+        error.message.includes("gemini") ||
+        error.message.includes("API") ||
+        error.message.includes("Invalid") ||
+        error.message.includes("error");
       assert.ok(hasError, `Expected error message, got: ${error.message}`);
     } finally {
       if (originalKey) {

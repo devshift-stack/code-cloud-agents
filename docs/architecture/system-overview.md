@@ -46,16 +46,19 @@
 ## Key Principles
 
 ### 1. Evidence-Based Verification
+
 - No claim accepted without proof
 - Every artefact must be verifiable
 - File paths, test outputs, configs required
 
 ### 2. STOP is Success
+
 - When truth or safety at risk, STOP is correct
 - STOP decisions are never overridden by lower layers
 - Escalation path: Assistant → Lead → Meta → Human
 
 ### 3. Cross-Layer Consistency
+
 - Frontend ↔ Backend alignment required
 - Backend ↔ Database schema match
 - Claims ↔ Artefacts correspondence
@@ -63,18 +66,21 @@
 ## Component Details
 
 ### Meta Supervisor
+
 - Routes tasks to systems
 - Monitors health metrics
 - Aggregates costs and outcomes
 - Does NOT make business decisions
 
 ### Engineering Lead Supervisor
+
 - Plans implementation approach
 - Delegates to Cloud Assistant
 - Verifies completed work
 - Makes APPROVE/STOP decisions
 
 ### Cloud Assistant
+
 - Executes code changes
 - Collects evidence
 - Reports status honestly
@@ -84,13 +90,13 @@
 
 All integrations are **STUBS** until explicitly approved:
 
-| Integration | Status | Notes |
-|-------------|--------|-------|
-| WhatsApp | STUB | Requires approval |
-| Voice | STUB | Requires approval |
-| Google | STUB | OAuth not configured |
-| iCloud | STUB | Requires approval |
-| Pinecone | STUB | Vector DB not connected |
+| Integration | Status | Notes                   |
+| ----------- | ------ | ----------------------- |
+| WhatsApp    | STUB   | Requires approval       |
+| Voice       | STUB   | Requires approval       |
+| Google      | STUB   | OAuth not configured    |
+| iCloud      | STUB   | Requires approval       |
+| Pinecone    | STUB   | Vector DB not connected |
 
 ## Database Schema
 
@@ -125,15 +131,15 @@ CREATE TABLE audit_entries (
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Service info |
-| `/health` | GET | Health check |
-| `/health/ready` | GET | Readiness probe |
-| `/health/live` | GET | Liveness probe |
-| `/api/tasks` | GET | List tasks |
-| `/api/tasks` | POST | Create task |
-| `/api/tasks/:id` | GET | Get task |
-| `/api/audit` | GET | List audit entries |
-| `/api/audit/:id` | GET | Get audit entry |
-| `/api/audit/stats/stop-scores` | GET | Stop score statistics |
+| Endpoint                       | Method | Description           |
+| ------------------------------ | ------ | --------------------- |
+| `/`                            | GET    | Service info          |
+| `/health`                      | GET    | Health check          |
+| `/health/ready`                | GET    | Readiness probe       |
+| `/health/live`                 | GET    | Liveness probe        |
+| `/api/tasks`                   | GET    | List tasks            |
+| `/api/tasks`                   | POST   | Create task           |
+| `/api/tasks/:id`               | GET    | Get task              |
+| `/api/audit`                   | GET    | List audit entries    |
+| `/api/audit/:id`               | GET    | Get audit entry       |
+| `/api/audit/stats/stop-scores` | GET    | Stop score statistics |

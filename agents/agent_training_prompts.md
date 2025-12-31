@@ -1,4 +1,3 @@
-
 ## Training Module: Fehlererkennung & STOP
 
 **Fall 1: Preisfrage**  

@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { LoginPage } from './components/LoginPage';
-import { ChatInterface } from './components/ChatInterface';
-import { TaskBoard } from './components/TaskBoard';
-import { ImageWithFallback } from './components/figma/ImageWithFallback';
-import { AgentCard } from './components/AgentCard';
-import { CreateAgentDialog } from './components/CreateAgentDialog';
-import { StatsCard } from './components/StatsCard';
-import { ActivityLog } from './components/ActivityLog';
-import { SettingsPanel } from './components/SettingsPanel';
-import { BrainMemoryPage } from './components/BrainMemoryPage';
-import { Button } from './components/ui/button';
-import { Input } from './components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
+import { useState, useEffect } from "react";
+import { LoginPage } from "./components/LoginPage";
+import { ChatInterface } from "./components/ChatInterface";
+import { TaskBoard } from "./components/TaskBoard";
+import { ImageWithFallback } from "./components/figma/ImageWithFallback";
+import { AgentCard } from "./components/AgentCard";
+import { CreateAgentDialog } from "./components/CreateAgentDialog";
+import { StatsCard } from "./components/StatsCard";
+import { ActivityLog } from "./components/ActivityLog";
+import { SettingsPanel } from "./components/SettingsPanel";
+import { BrainMemoryPage } from "./components/BrainMemoryPage";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from './components/ui/sheet';
+} from "./components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "./components/ui/sheet";
 import {
   Plus,
   Search,
@@ -35,39 +35,39 @@ import {
   MessageSquare,
   CheckSquare,
   Brain,
-} from 'lucide-react';
-import { toast } from 'sonner';
+} from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from './components/ui/dialog';
-import { Label } from './components/ui/label';
-import { Switch } from './components/ui/switch';
+} from "./components/ui/dialog";
+import { Label } from "./components/ui/label";
+import { Switch } from "./components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './components/ui/select';
-import { StatusDashboard } from './components/StatusDashboard';
+} from "./components/ui/select";
+import { StatusDashboard } from "./components/StatusDashboard";
 
 // Reserved for future use
 export interface DailyTask {
   id: string;
   date: string;
   task: string;
-  status: 'completed' | 'failed' | 'in_progress';
+  status: "completed" | "failed" | "in_progress";
 }
 
 interface Agent {
   id: string;
   name: string;
   description: string;
-  status: 'active' | 'paused' | 'stopped';
+  status: "active" | "paused" | "stopped";
   language: string;
   lastRun: string;
   executionCount: number;
@@ -78,153 +78,163 @@ interface LogEntry {
   timestamp: string;
   agent: string;
   message: string;
-  level: 'info' | 'warning' | 'error' | 'success';
+  level: "info" | "warning" | "error" | "success";
 }
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [_currentUser, setCurrentUser] = useState<{ id: string; email: string; name: string; role: string } | null>(null);
+  const [_currentUser, setCurrentUser] = useState<{
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+  } | null>(null);
 
   // All useState hooks MUST be before any conditional returns
   const [agents, setAgents] = useState<Agent[]>([
     {
-      id: '1',
-      name: 'Data Processor',
-      description: 'Processes and transforms incoming data streams',
-      status: 'active',
-      language: 'Python',
-      lastRun: '2 min ago',
+      id: "1",
+      name: "Data Processor",
+      description: "Processes and transforms incoming data streams",
+      status: "active",
+      language: "Python",
+      lastRun: "2 min ago",
       executionCount: 1247,
     },
     {
-      id: '2',
-      name: 'API Monitor',
-      description: 'Monitors API endpoints for health and performance',
-      status: 'active',
-      language: 'TypeScript',
-      lastRun: '5 min ago',
+      id: "2",
+      name: "API Monitor",
+      description: "Monitors API endpoints for health and performance",
+      status: "active",
+      language: "TypeScript",
+      lastRun: "5 min ago",
       executionCount: 892,
     },
     {
-      id: '3',
-      name: 'Backup Agent',
-      description: 'Automated backup and recovery system',
-      status: 'paused',
-      language: 'Go',
-      lastRun: '1 hour ago',
+      id: "3",
+      name: "Backup Agent",
+      description: "Automated backup and recovery system",
+      status: "paused",
+      language: "Go",
+      lastRun: "1 hour ago",
       executionCount: 456,
     },
     {
-      id: '4',
-      name: 'Log Analyzer',
-      description: 'Analyzes logs for anomalies and patterns',
-      status: 'stopped',
-      language: 'Rust',
-      lastRun: '3 hours ago',
+      id: "4",
+      name: "Log Analyzer",
+      description: "Analyzes logs for anomalies and patterns",
+      status: "stopped",
+      language: "Rust",
+      lastRun: "3 hours ago",
       executionCount: 234,
     },
   ]);
 
   const [logs, setLogs] = useState<LogEntry[]>([
     {
-      id: '1',
-      timestamp: '14:23:45',
-      agent: 'Data Processor',
-      message: 'Successfully processed batch of 1,000 records',
-      level: 'success',
+      id: "1",
+      timestamp: "14:23:45",
+      agent: "Data Processor",
+      message: "Successfully processed batch of 1,000 records",
+      level: "success",
     },
     {
-      id: '2',
-      timestamp: '14:20:12',
-      agent: 'API Monitor',
-      message: 'All endpoints responding normally',
-      level: 'info',
+      id: "2",
+      timestamp: "14:20:12",
+      agent: "API Monitor",
+      message: "All endpoints responding normally",
+      level: "info",
     },
     {
-      id: '3',
-      timestamp: '14:18:30',
-      agent: 'Data Processor',
-      message: 'High memory usage detected (85%)',
-      level: 'warning',
+      id: "3",
+      timestamp: "14:18:30",
+      agent: "Data Processor",
+      message: "High memory usage detected (85%)",
+      level: "warning",
     },
     {
-      id: '4',
-      timestamp: '14:15:22',
-      agent: 'Backup Agent',
-      message: 'Scheduled backup completed successfully',
-      level: 'success',
+      id: "4",
+      timestamp: "14:15:22",
+      agent: "Backup Agent",
+      message: "Scheduled backup completed successfully",
+      level: "success",
     },
     {
-      id: '5',
-      timestamp: '14:12:01',
-      agent: 'Log Analyzer',
-      message: 'Connection timeout to database',
-      level: 'error',
+      id: "5",
+      timestamp: "14:12:01",
+      agent: "Log Analyzer",
+      message: "Connection timeout to database",
+      level: "error",
     },
     {
-      id: '6',
-      timestamp: '14:10:45',
-      agent: 'API Monitor',
-      message: 'Started health check cycle',
-      level: 'info',
+      id: "6",
+      timestamp: "14:10:45",
+      agent: "API Monitor",
+      message: "Started health check cycle",
+      level: "info",
     },
   ]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentTab, setCurrentTab] = useState('dashboard');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentTab, setCurrentTab] = useState("dashboard");
   const [configureAgentId, setConfigureAgentId] = useState<string | null>(null);
   const [agentSettings, setAgentSettings] = useState({
     autoRestart: true,
-    logLevel: 'info',
-    maxRetries: '3',
-    timeout: '30',
+    logLevel: "info",
+    maxRetries: "3",
+    timeout: "30",
   });
 
   // Check authentication on mount
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
 
     if (token && user) {
       try {
         setCurrentUser(JSON.parse(user));
         setIsAuthenticated(true);
       } catch {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     }
   }, []);
 
-  const handleLoginSuccess = (user: { id: string; email: string; name: string; role: string }) => {
+  const handleLoginSuccess = (user: {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+  }) => {
     setCurrentUser(user);
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setCurrentUser(null);
     setIsAuthenticated(false);
-    toast.success('Logged out successfully');
+    toast.success("Logged out successfully");
   };
 
   const handleStartAgent = (id: string) => {
     setAgents(
       agents.map((agent) =>
-        agent.id === id ? { ...agent, status: 'active' as const } : agent
-      )
+        agent.id === id ? { ...agent, status: "active" as const } : agent,
+      ),
     );
     const agent = agents.find((a) => a.id === id);
     toast.success(`${agent?.name} has been started`);
-    
+
     const newLog: LogEntry = {
       id: Date.now().toString(),
-      timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      agent: agent?.name || '',
-      message: 'Agent started successfully',
-      level: 'success',
+      timestamp: new Date().toLocaleTimeString("en-US", { hour12: false }),
+      agent: agent?.name || "",
+      message: "Agent started successfully",
+      level: "success",
     };
     setLogs([newLog, ...logs]);
   };
@@ -232,18 +242,18 @@ export default function App() {
   const handlePauseAgent = (id: string) => {
     setAgents(
       agents.map((agent) =>
-        agent.id === id ? { ...agent, status: 'paused' as const } : agent
-      )
+        agent.id === id ? { ...agent, status: "paused" as const } : agent,
+      ),
     );
     const agent = agents.find((a) => a.id === id);
     toast.info(`${agent?.name} has been paused`);
-    
+
     const newLog: LogEntry = {
       id: Date.now().toString(),
-      timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      agent: agent?.name || '',
-      message: 'Agent paused by user',
-      level: 'info',
+      timestamp: new Date().toLocaleTimeString("en-US", { hour12: false }),
+      agent: agent?.name || "",
+      message: "Agent paused by user",
+      level: "info",
     };
     setLogs([newLog, ...logs]);
   };
@@ -263,13 +273,13 @@ export default function App() {
     const agent = agents.find((a) => a.id === id);
     setAgents(agents.filter((a) => a.id !== id));
     toast.success(`${agent?.name} has been deleted`);
-    
+
     const newLog: LogEntry = {
       id: Date.now().toString(),
-      timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      agent: agent?.name || '',
-      message: 'Agent deleted by user',
-      level: 'warning',
+      timestamp: new Date().toLocaleTimeString("en-US", { hour12: false }),
+      agent: agent?.name || "",
+      message: "Agent deleted by user",
+      level: "warning",
     };
     setLogs([newLog, ...logs]);
   };
@@ -284,20 +294,20 @@ export default function App() {
       id: Date.now().toString(),
       name: newAgent.name,
       description: newAgent.description,
-      status: 'stopped',
+      status: "stopped",
       language: newAgent.language,
-      lastRun: 'Never',
+      lastRun: "Never",
       executionCount: 0,
     };
     setAgents([...agents, agent]);
     toast.success(`Agent "${newAgent.name}" created successfully`);
-    
+
     const newLog: LogEntry = {
       id: Date.now().toString(),
-      timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }),
+      timestamp: new Date().toLocaleTimeString("en-US", { hour12: false }),
       agent: newAgent.name,
-      message: 'New agent created and deployed',
-      level: 'success',
+      message: "New agent created and deployed",
+      level: "success",
     };
     setLogs([newLog, ...logs]);
   };
@@ -305,11 +315,14 @@ export default function App() {
   const filteredAgents = agents.filter(
     (agent) =>
       agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      agent.description.toLowerCase().includes(searchQuery.toLowerCase())
+      agent.description.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const activeAgents = agents.filter((a) => a.status === 'active').length;
-  const totalExecutions = agents.reduce((acc, agent) => acc + agent.executionCount, 0);
+  const activeAgents = agents.filter((a) => a.status === "active").length;
+  const totalExecutions = agents.reduce(
+    (acc, agent) => acc + agent.executionCount,
+    0,
+  );
 
   // Show login page if not authenticated
   if (!isAuthenticated) {
@@ -332,33 +345,33 @@ export default function App() {
                 <SheetContent side="left">
                   <nav className="flex flex-col gap-4 mt-8">
                     <Button
-                      variant={currentTab === 'dashboard' ? 'default' : 'ghost'}
+                      variant={currentTab === "dashboard" ? "default" : "ghost"}
                       className="justify-start"
-                      onClick={() => setCurrentTab('dashboard')}
+                      onClick={() => setCurrentTab("dashboard")}
                     >
                       <Activity className="w-4 h-4 mr-2" />
                       Dashboard
                     </Button>
                     <Button
-                      variant={currentTab === 'agents' ? 'default' : 'ghost'}
+                      variant={currentTab === "agents" ? "default" : "ghost"}
                       className="justify-start"
-                      onClick={() => setCurrentTab('agents')}
+                      onClick={() => setCurrentTab("agents")}
                     >
                       <Bot className="w-4 h-4 mr-2" />
                       Agents
                     </Button>
                     <Button
-                      variant={currentTab === 'settings' ? 'default' : 'ghost'}
+                      variant={currentTab === "settings" ? "default" : "ghost"}
                       className="justify-start"
-                      onClick={() => setCurrentTab('settings')}
+                      onClick={() => setCurrentTab("settings")}
                     >
                       <SettingsIcon className="w-4 h-4 mr-2" />
                       Settings
                     </Button>
                     <Button
-                      variant={currentTab === 'memory' ? 'default' : 'ghost'}
+                      variant={currentTab === "memory" ? "default" : "ghost"}
                       className="justify-start"
-                      onClick={() => setCurrentTab('memory')}
+                      onClick={() => setCurrentTab("memory")}
                     >
                       <Brain className="w-4 h-4 mr-2" />
                       Brain
@@ -366,7 +379,7 @@ export default function App() {
                   </nav>
                 </SheetContent>
               </Sheet>
-              
+
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <Cloud className="w-6 h-6 text-white" />
@@ -395,7 +408,7 @@ export default function App() {
                   Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => setCurrentTab('settings')}
+                  onClick={() => setCurrentTab("settings")}
                   data-testid="agents.navigation.settingsMenu.menuitem"
                   data-otop-id="agents.navigation.settingsMenu.menuitem"
                 >
@@ -418,7 +431,11 @@ export default function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
+        <Tabs
+          value={currentTab}
+          onValueChange={setCurrentTab}
+          className="w-full"
+        >
           <TabsList className="hidden md:inline-flex mb-8">
             <TabsTrigger
               value="dashboard"
@@ -502,7 +519,7 @@ export default function App() {
                 title="Active Agents"
                 value={activeAgents}
                 description="Currently running"
-                trend={{ value: 12, direction: 'up' }}
+                trend={{ value: 12, direction: "up" }}
                 icon={<Bot className="w-4 h-4 text-muted-foreground" />}
               />
               <StatsCard
@@ -515,14 +532,14 @@ export default function App() {
                 title="Executions Today"
                 value={totalExecutions}
                 description="Across all agents"
-                trend={{ value: 8, direction: 'up' }}
+                trend={{ value: 8, direction: "up" }}
                 icon={<Zap className="w-4 h-4 text-muted-foreground" />}
               />
               <StatsCard
                 title="Success Rate"
                 value="98.5%"
                 description="Last 24 hours"
-                trend={{ value: 2, direction: 'up' }}
+                trend={{ value: 2, direction: "up" }}
                 icon={<Activity className="w-4 h-4 text-muted-foreground" />}
               />
             </div>
@@ -536,12 +553,18 @@ export default function App() {
             {/* Task Management Section - Coming Soon */}
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="rounded-lg border bg-card p-6">
-                <h3 className="text-lg font-semibold mb-2">Top Priority Tasks</h3>
-                <p className="text-sm text-muted-foreground">Task management coming soon...</p>
+                <h3 className="text-lg font-semibold mb-2">
+                  Top Priority Tasks
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Task management coming soon...
+                </p>
               </div>
               <div className="rounded-lg border bg-card p-6">
                 <h3 className="text-lg font-semibold mb-2">Repository Tasks</h3>
-                <p className="text-sm text-muted-foreground">Repository integration coming soon...</p>
+                <p className="text-sm text-muted-foreground">
+                  Repository integration coming soon...
+                </p>
               </div>
             </div>
 
@@ -601,8 +624,8 @@ export default function App() {
                 <h3 className="text-lg mb-2">No agents found</h3>
                 <p className="text-muted-foreground mb-4">
                   {searchQuery
-                    ? 'Try adjusting your search'
-                    : 'Create your first agent to get started'}
+                    ? "Try adjusting your search"
+                    : "Create your first agent to get started"}
                 </p>
                 {!searchQuery && (
                   <Button onClick={() => setDialogOpen(true)}>
@@ -632,7 +655,10 @@ export default function App() {
       />
 
       {/* Agent Settings Dialog */}
-      <Dialog open={!!configureAgentId} onOpenChange={(open) => !open && setConfigureAgentId(null)}>
+      <Dialog
+        open={!!configureAgentId}
+        onOpenChange={(open) => !open && setConfigureAgentId(null)}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Configure {configuredAgent?.name}</DialogTitle>
@@ -680,7 +706,10 @@ export default function App() {
                 type="number"
                 value={agentSettings.maxRetries}
                 onChange={(e) =>
-                  setAgentSettings({ ...agentSettings, maxRetries: e.target.value })
+                  setAgentSettings({
+                    ...agentSettings,
+                    maxRetries: e.target.value,
+                  })
                 }
               />
             </div>
@@ -690,7 +719,10 @@ export default function App() {
                 type="number"
                 value={agentSettings.timeout}
                 onChange={(e) =>
-                  setAgentSettings({ ...agentSettings, timeout: e.target.value })
+                  setAgentSettings({
+                    ...agentSettings,
+                    timeout: e.target.value,
+                  })
                 }
               />
             </div>

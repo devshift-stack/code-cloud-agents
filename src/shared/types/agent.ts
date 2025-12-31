@@ -2,7 +2,12 @@
  * Agent Types - Shared across Frontend and Backend
  */
 
-import type { AgentStatus, ModelProvider, Timestamps, WithId } from "./common.js";
+import type {
+  AgentStatus,
+  ModelProvider,
+  Timestamps,
+  WithId,
+} from "./common.js";
 
 /**
  * Agent entity

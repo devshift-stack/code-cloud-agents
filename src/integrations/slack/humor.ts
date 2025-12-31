@@ -5,7 +5,11 @@
  */
 
 export type Language = "de" | "en" | "bs";
-export type JokeCategory = "mujo-hase" | "bosnier-turken" | "chuck-norris" | "tech";
+export type JokeCategory =
+  | "mujo-hase"
+  | "bosnier-turken"
+  | "chuck-norris"
+  | "tech";
 
 export interface Joke {
   category: JokeCategory;
@@ -23,8 +27,10 @@ const MUJO_HASE_JOKES: Joke[] = [
   {
     category: "mujo-hase",
     language: "de",
-    setup: "Mujo und Hase sitzen am Fluss. Hase fragt: 'Mujo, wie viele Server haben wir?'",
-    punchline: "Mujo: 'Drei. Einer läuft, einer crashed, und einer weiß nicht, dass er ein Server ist.'",
+    setup:
+      "Mujo und Hase sitzen am Fluss. Hase fragt: 'Mujo, wie viele Server haben wir?'",
+    punchline:
+      "Mujo: 'Drei. Einer läuft, einer crashed, und einer weiß nicht, dass er ein Server ist.'",
     rating: "professional",
   },
   {
@@ -52,7 +58,8 @@ const MUJO_HASE_JOKES: Joke[] = [
     category: "mujo-hase",
     language: "de",
     setup: "Mujo schreibt Code. Hase: 'Warum keine Kommentare?'",
-    punchline: "Mujo: 'Guter Code erklärt sich selbst. Schlechter Code auch - mit Stack Traces!'",
+    punchline:
+      "Mujo: 'Guter Code erklärt sich selbst. Schlechter Code auch - mit Stack Traces!'",
     rating: "professional",
   },
 
@@ -112,7 +119,8 @@ const BOSNIER_TURKEN_JOKES: Joke[] = [
     category: "bosnier-turken",
     language: "de",
     setup: "Ein Bosnier und ein Türke gründen ein Startup.",
-    punchline: "Bosnier macht den Code, Türke macht den Döner. Beide sind erfolgreich!",
+    punchline:
+      "Bosnier macht den Code, Türke macht den Döner. Beide sind erfolgreich!",
     rating: "safe",
   },
   {
@@ -125,8 +133,10 @@ const BOSNIER_TURKEN_JOKES: Joke[] = [
   {
     category: "bosnier-turken",
     language: "de",
-    setup: "Was ist der Unterschied zwischen einem bosnischen und türkischen Developer?",
-    punchline: "Beide sagen 'Das deploye ich gleich!' - aber keiner macht's vor Freitag 17 Uhr!",
+    setup:
+      "Was ist der Unterschied zwischen einem bosnischen und türkischen Developer?",
+    punchline:
+      "Beide sagen 'Das deploye ich gleich!' - aber keiner macht's vor Freitag 17 Uhr!",
     rating: "professional",
   },
 
@@ -135,7 +145,8 @@ const BOSNIER_TURKEN_JOKES: Joke[] = [
     category: "bosnier-turken",
     language: "en",
     setup: "A Bosnian and a Turkish developer walk into a meeting.",
-    punchline: "They both say: 'It works on my machine!' - nobody can reproduce the bug!",
+    punchline:
+      "They both say: 'It works on my machine!' - nobody can reproduce the bug!",
     rating: "professional",
   },
 
@@ -144,14 +155,16 @@ const BOSNIER_TURKEN_JOKES: Joke[] = [
     category: "bosnier-turken",
     language: "bs",
     setup: "Bosanac i Turcin prave aplikaciju.",
-    punchline: "Bosanac: 'Kod je gotov!' Turcin: 'Server je spreman!' Bug: 'Ja sam tu cijelo vrijeme!' 😄",
+    punchline:
+      "Bosanac: 'Kod je gotov!' Turcin: 'Server je spreman!' Bug: 'Ja sam tu cijelo vrijeme!' 😄",
     rating: "professional",
   },
   {
     category: "bosnier-turken",
     language: "bs",
     setup: "Bosanac i Turcin rade DevOps.",
-    punchline: "Bosanac: 'Deployujem!' Turcin: 'I ja deployujem!' Production: 'Ne deployujte više!' 😅",
+    punchline:
+      "Bosanac: 'Deployujem!' Turcin: 'I ja deployujem!' Production: 'Ne deployujte više!' 😅",
     rating: "professional",
   },
 ];
@@ -164,7 +177,8 @@ const CHUCK_NORRIS_JOKES: Joke[] = [
   {
     category: "chuck-norris",
     language: "de",
-    punchline: "Mujo schreibt keinen Code. Er denkt an die Lösung und die Computer programmieren sich selbst.",
+    punchline:
+      "Mujo schreibt keinen Code. Er denkt an die Lösung und die Computer programmieren sich selbst.",
     rating: "safe",
   },
   {
@@ -200,13 +214,15 @@ const CHUCK_NORRIS_JOKES: Joke[] = [
   {
     category: "chuck-norris",
     language: "de",
-    punchline: "Wenn Mujo einen STOP Score von 100 sieht, geht der Score in Rente.",
+    punchline:
+      "Wenn Mujo einen STOP Score von 100 sieht, geht der Score in Rente.",
     rating: "professional",
   },
   {
     category: "chuck-norris",
     language: "de",
-    punchline: "Mujo braucht keinen Debugger. Bugs debuggen sich selbst wenn sie Mujo sehen.",
+    punchline:
+      "Mujo braucht keinen Debugger. Bugs debuggen sich selbst wenn sie Mujo sehen.",
     rating: "safe",
   },
 
@@ -282,7 +298,8 @@ const TECH_JOKES: Joke[] = [
   {
     category: "tech",
     language: "de",
-    setup: "Wie viele Programmierer braucht man, um eine Glühbirne zu wechseln?",
+    setup:
+      "Wie viele Programmierer braucht man, um eine Glühbirne zu wechseln?",
     punchline: "Keinen. Das ist ein Hardware-Problem!",
     rating: "safe",
   },
@@ -329,7 +346,7 @@ const ALL_JOKES: Joke[] = [
 export function getRandomJoke(
   language: Language = "de",
   category?: JokeCategory,
-  rating: "safe" | "professional" | "casual" = "professional"
+  rating: "safe" | "professional" | "casual" = "professional",
 ): Joke | null {
   const ratingLevels = { safe: 3, professional: 2, casual: 1 };
   const minRating = ratingLevels[rating];
@@ -338,7 +355,7 @@ export function getRandomJoke(
     (joke) =>
       joke.language === language &&
       ratingLevels[joke.rating] >= minRating &&
-      (!category || joke.category === category)
+      (!category || joke.category === category),
   );
 
   if (jokes.length === 0) {
@@ -346,7 +363,7 @@ export function getRandomJoke(
     jokes = ALL_JOKES.filter(
       (joke) =>
         ratingLevels[joke.rating] >= minRating &&
-        (!category || joke.category === category)
+        (!category || joke.category === category),
     );
   }
 
@@ -426,7 +443,7 @@ export function getFarewell(language: Language = "de"): string {
 export function addHumor(
   message: string,
   context: "alert" | "info" | "success" | "greeting" | "farewell" = "info",
-  language: Language = "de"
+  language: Language = "de",
 ): string {
   // Critical alerts: no jokes
   if (context === "alert" && message.includes("CRITICAL")) {

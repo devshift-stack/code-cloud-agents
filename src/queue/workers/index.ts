@@ -12,7 +12,10 @@ import type { Database } from "../../db/database.js";
  * Registers all webhook event workers with the queue
  * Call this once during application startup
  */
-export function registerAllWebhookWorkers(queue: QueueAdapter, db: Database): void {
+export function registerAllWebhookWorkers(
+  queue: QueueAdapter,
+  db: Database,
+): void {
   console.log("🔧 Registering all webhook workers...");
 
   // Register GitHub webhook workers

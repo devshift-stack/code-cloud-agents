@@ -91,7 +91,7 @@ export function createWebSocketClient(token: string) {
         JSON.stringify({
           type: "user_presence",
           data: status,
-        })
+        }),
       );
     },
 
@@ -159,7 +159,7 @@ export async function testNodeJSClient() {
       JSON.stringify({
         type: "user_presence",
         data: "online",
-      })
+      }),
     );
   });
 
@@ -185,7 +185,8 @@ export async function testNodeJSClient() {
  */
 export function serverBroadcastExamples() {
   // Access global wsManager (set in src/index.ts)
-  const wsManager = (global as typeof global & { wsManager?: unknown }).wsManager;
+  const wsManager = (global as typeof global & { wsManager?: unknown })
+    .wsManager;
 
   if (!wsManager || typeof wsManager !== "object") {
     console.warn("WebSocket manager not available");

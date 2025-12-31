@@ -12,9 +12,17 @@ export interface GoogleConfig {
 export interface GoogleClient {
   isEnabled(): boolean;
   getAuthUrl(): string;
-  handleCallback(code: string): Promise<{ success: boolean; tokens?: unknown; error?: string }>;
-  getCalendarEvents(calendarId: string): Promise<{ success: boolean; events?: unknown[]; error?: string }>;
-  getContacts(): Promise<{ success: boolean; contacts?: unknown[]; error?: string }>;
+  handleCallback(
+    code: string,
+  ): Promise<{ success: boolean; tokens?: unknown; error?: string }>;
+  getCalendarEvents(
+    calendarId: string,
+  ): Promise<{ success: boolean; events?: unknown[]; error?: string }>;
+  getContacts(): Promise<{
+    success: boolean;
+    contacts?: unknown[];
+    error?: string;
+  }>;
   getStatus(): Promise<{ connected: boolean; error?: string }>;
 }
 
@@ -34,11 +42,14 @@ export function createGoogleClient(_config?: GoogleConfig): GoogleClient {
       return "STUB: Google OAuth not configured";
     },
 
-    async handleCallback(_code: string): Promise<{ success: boolean; tokens?: unknown; error?: string }> {
+    async handleCallback(
+      _code: string,
+    ): Promise<{ success: boolean; tokens?: unknown; error?: string }> {
       if (!enabled) {
         return {
           success: false,
-          error: "STUB: Google integration is disabled. Set GOOGLE_ENABLED=true to enable.",
+          error:
+            "STUB: Google integration is disabled. Set GOOGLE_ENABLED=true to enable.",
         };
       }
 
@@ -48,7 +59,9 @@ export function createGoogleClient(_config?: GoogleConfig): GoogleClient {
       };
     },
 
-    async getCalendarEvents(_calendarId: string): Promise<{ success: boolean; events?: unknown[]; error?: string }> {
+    async getCalendarEvents(
+      _calendarId: string,
+    ): Promise<{ success: boolean; events?: unknown[]; error?: string }> {
       if (!enabled) {
         return {
           success: false,
@@ -63,7 +76,11 @@ export function createGoogleClient(_config?: GoogleConfig): GoogleClient {
       };
     },
 
-    async getContacts(): Promise<{ success: boolean; contacts?: unknown[]; error?: string }> {
+    async getContacts(): Promise<{
+      success: boolean;
+      contacts?: unknown[];
+      error?: string;
+    }> {
       if (!enabled) {
         return {
           success: false,

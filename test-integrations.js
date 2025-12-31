@@ -25,7 +25,12 @@ if (githubStatus.connected) {
   const repos = await github.listRepos();
   if (repos.success && repos.repos) {
     console.log(`   Repos: ${repos.repos.length} found`);
-    console.log(`   Sample: ${repos.repos.slice(0, 3).map(r => r.name).join(", ")}`);
+    console.log(
+      `   Sample: ${repos.repos
+        .slice(0, 3)
+        .map((r) => r.name)
+        .join(", ")}`,
+    );
   }
 } else {
   console.log(`❌ GitHub failed: ${githubStatus.error}`);
@@ -49,7 +54,7 @@ if (slackStatus.connected) {
   const channels = await slack.listChannels();
   if (channels.success && channels.channels) {
     console.log(`   Channels: ${channels.channels.length} found`);
-    const memberChannels = channels.channels.filter(c => c.isMember);
+    const memberChannels = channels.channels.filter((c) => c.isMember);
     console.log(`   Member of: ${memberChannels.length} channels`);
   }
 } else {
@@ -74,7 +79,7 @@ if (linearStatus.connected) {
   const teams = await linear.listTeams();
   if (teams.success && teams.teams) {
     console.log(`   Teams: ${teams.teams.length} found`);
-    console.log(`   Names: ${teams.teams.map(t => t.name).join(", ")}`);
+    console.log(`   Names: ${teams.teams.map((t) => t.name).join(", ")}`);
   }
 } else {
   console.log(`❌ Linear failed: ${linearStatus.error}`);

@@ -10,21 +10,25 @@ Führe ein Code Review durch für: $ARGUMENTS
 ## Prüfe folgende Aspekte:
 
 ### 1. TypeScript Standards
+
 - [ ] Strikte Typisierung (keine `any`)
 - [ ] Korrekte Namenskonventionen
 - [ ] JSDoc Dokumentation vorhanden
 
 ### 2. Sicherheit
+
 - [ ] Input-Validierung
 - [ ] Keine hardgecodeten Secrets
 - [ ] XSS/Injection Prevention
 
 ### 3. Code-Qualität
+
 - [ ] DRY-Prinzip eingehalten
 - [ ] Single Responsibility
 - [ ] Aussagekräftige Namen
 
 ### 4. Integration
+
 - [ ] API-Types geteilt
 - [ ] Error-Handling vollständig
 - [ ] State vor UI

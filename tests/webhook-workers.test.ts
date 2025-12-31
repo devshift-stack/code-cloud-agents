@@ -60,7 +60,12 @@ function createMockQueue(): QueueAdapter {
     },
 
     getStats() {
-      return { pending: 0, processing: 0, completed: jobs.filter((j) => j.status === "completed").length, failed: 0 };
+      return {
+        pending: 0,
+        processing: 0,
+        completed: jobs.filter((j) => j.status === "completed").length,
+        failed: 0,
+      };
     },
   };
 }

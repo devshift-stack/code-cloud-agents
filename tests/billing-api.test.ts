@@ -9,12 +9,14 @@ import express, { type Express } from "express";
 import { createBillingRouter } from "../src/api/billing.ts";
 
 // Test helpers
-function createMockRequest(overrides: Partial<{
-  headers: Record<string, string>;
-  params: Record<string, string>;
-  query: Record<string, string>;
-  body: any;
-}> = {}) {
+function createMockRequest(
+  overrides: Partial<{
+    headers: Record<string, string>;
+    params: Record<string, string>;
+    query: Record<string, string>;
+    body: any;
+  }> = {},
+) {
   return {
     headers: overrides.headers || {},
     params: overrides.params || {},
@@ -50,7 +52,11 @@ describe("Billing API Router", () => {
     it("should create a billing router", () => {
       const router = createBillingRouter();
       assert.ok(router, "Router should be created");
-      assert.strictEqual(typeof router, "function", "Router should be a function");
+      assert.strictEqual(
+        typeof router,
+        "function",
+        "Router should be a function",
+      );
     });
   });
 
@@ -61,7 +67,9 @@ describe("Billing API Router", () => {
       app.use("/api/billing", createBillingRouter());
 
       // Make request without auth headers
-      const response = await fetch("http://localhost:0/api/billing/summary").catch(() => null);
+      const response = await fetch(
+        "http://localhost:0/api/billing/summary",
+      ).catch(() => null);
       // Note: This test documents expected behavior - actual integration test would need server
     });
 
@@ -123,7 +131,10 @@ describe("Billing API Request Validation", () => {
         outputTokens: 50,
       };
 
-      assert.ok(!invalidBody.hasOwnProperty("userId"), "userId should be missing");
+      assert.ok(
+        !invalidBody.hasOwnProperty("userId"),
+        "userId should be missing",
+      );
     });
 
     it("should require model field", () => {
@@ -134,7 +145,10 @@ describe("Billing API Request Validation", () => {
         outputTokens: 50,
       };
 
-      assert.ok(!invalidBody.hasOwnProperty("model"), "model should be missing");
+      assert.ok(
+        !invalidBody.hasOwnProperty("model"),
+        "model should be missing",
+      );
     });
 
     it("should require provider field", () => {
@@ -145,7 +159,10 @@ describe("Billing API Request Validation", () => {
         outputTokens: 50,
       };
 
-      assert.ok(!invalidBody.hasOwnProperty("provider"), "provider should be missing");
+      assert.ok(
+        !invalidBody.hasOwnProperty("provider"),
+        "provider should be missing",
+      );
     });
 
     it("should require inputTokens field", () => {
@@ -156,7 +173,10 @@ describe("Billing API Request Validation", () => {
         outputTokens: 50,
       };
 
-      assert.ok(!invalidBody.hasOwnProperty("inputTokens"), "inputTokens should be missing");
+      assert.ok(
+        !invalidBody.hasOwnProperty("inputTokens"),
+        "inputTokens should be missing",
+      );
     });
 
     it("should require outputTokens field", () => {
@@ -167,7 +187,10 @@ describe("Billing API Request Validation", () => {
         inputTokens: 100,
       };
 
-      assert.ok(!invalidBody.hasOwnProperty("outputTokens"), "outputTokens should be missing");
+      assert.ok(
+        !invalidBody.hasOwnProperty("outputTokens"),
+        "outputTokens should be missing",
+      );
     });
 
     it("should accept valid cost entry", () => {
@@ -290,7 +313,7 @@ describe("Billing API Response Structure", () => {
       ];
 
       // Document expected response structure
-      expectedFields.forEach(field => {
+      expectedFields.forEach((field) => {
         assert.ok(typeof field === "string");
       });
     });
@@ -308,7 +331,7 @@ describe("Billing API Response Structure", () => {
         "outputCostFormatted",
       ];
 
-      expectedPricingFields.forEach(field => {
+      expectedPricingFields.forEach((field) => {
         assert.ok(typeof field === "string");
       });
     });

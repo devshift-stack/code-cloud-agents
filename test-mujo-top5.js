@@ -5,7 +5,7 @@
 import { generateResponse } from "./src/integrations/slack/bot-responses.js";
 
 console.log("🏆 Testing Mujo's Top 5 Wishes Easter Egg\n");
-console.log("=" .repeat(60) + "\n");
+console.log("=".repeat(60) + "\n");
 
 // Level 1: Simple wish
 console.log("📊 LEVEL 1: Simple Greatest Wish\n");
@@ -24,7 +24,7 @@ for (const msg of simple) {
   console.log("");
 }
 
-console.log("=" .repeat(60) + "\n");
+console.log("=".repeat(60) + "\n");
 
 // Level 2: Top 5 wishes
 console.log("📊 LEVEL 2: Top 5 Wishes (Official List)\n");
@@ -44,7 +44,7 @@ for (const msg of top5) {
   console.log("");
 }
 
-console.log("=" .repeat(60) + "\n");
+console.log("=".repeat(60) + "\n");
 
 // Level 3: Secret wish (after being prompted)
 console.log("📊 LEVEL 3: Real Secret Wish (After Prompt)\n");
@@ -64,7 +64,7 @@ for (const msg of secret) {
   console.log("");
 }
 
-console.log("=" .repeat(60));
+console.log("=".repeat(60));
 console.log("\n✅ Multi-Level Easter Egg Test Complete!\n");
 
 console.log("💡 Flow:");

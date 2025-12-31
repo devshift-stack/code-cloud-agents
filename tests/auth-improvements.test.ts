@@ -241,21 +241,30 @@ describe("Auth Improvements - Token Expiry", () => {
   });
 
   it("should set email verification token expiry to 24 hours", () => {
-    const token = generateVerificationToken(db, testUserId, "expiry-test@example.com");
+    const token = generateVerificationToken(
+      db,
+      testUserId,
+      "expiry-test@example.com",
+    );
     const tokenData = getVerificationToken(db, testUserId);
 
     assert.ok(tokenData);
 
     const expiresAt = new Date(tokenData.expiresAt);
     const createdAt = new Date(tokenData.createdAt);
-    const diffHours = (expiresAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
+    const diffHours =
+      (expiresAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
 
     // Should be approximately 24 hours (allow 1 second tolerance)
     assert.ok(diffHours >= 23.99 && diffHours <= 24.01);
   });
 
   it("should set password reset token expiry to 1 hour", () => {
-    const token = generatePasswordResetToken(db, testUserId, "expiry-test@example.com");
+    const token = generatePasswordResetToken(
+      db,
+      testUserId,
+      "expiry-test@example.com",
+    );
 
     // Get token from database
     const stmt = db.prepare(`
@@ -268,7 +277,8 @@ describe("Auth Improvements - Token Expiry", () => {
 
     const expiresAt = new Date(tokenData.expires_at);
     const createdAt = new Date(tokenData.created_at);
-    const diffMinutes = (expiresAt.getTime() - createdAt.getTime()) / (1000 * 60);
+    const diffMinutes =
+      (expiresAt.getTime() - createdAt.getTime()) / (1000 * 60);
 
     // Should be approximately 60 minutes (allow 1 second tolerance)
     assert.ok(diffMinutes >= 59.98 && diffMinutes <= 60.02);
@@ -296,8 +306,16 @@ describe("Auth Improvements - Security", () => {
       role: "user",
     });
 
-    const token1 = generateVerificationToken(db, user.id, "unique-test@example.com");
-    const token2 = generateVerificationToken(db, user.id, "unique-test@example.com");
+    const token1 = generateVerificationToken(
+      db,
+      user.id,
+      "unique-test@example.com",
+    );
+    const token2 = generateVerificationToken(
+      db,
+      user.id,
+      "unique-test@example.com",
+    );
 
     assert.notStrictEqual(token1, token2);
   });
@@ -309,7 +327,11 @@ describe("Auth Improvements - Security", () => {
       role: "user",
     });
 
-    const token = generateVerificationToken(db, user.id, "secure-test@example.com");
+    const token = generateVerificationToken(
+      db,
+      user.id,
+      "secure-test@example.com",
+    );
 
     // Token should be 64 hex chars (32 bytes)
     assert.strictEqual(token.length, 64);
@@ -323,7 +345,11 @@ describe("Auth Improvements - Security", () => {
       role: "user",
     });
 
-    const token = generateVerificationToken(db, user.id, "Case-Test@EXAMPLE.COM");
+    const token = generateVerificationToken(
+      db,
+      user.id,
+      "Case-Test@EXAMPLE.COM",
+    );
     const tokenData = getVerificationToken(db, user.id);
 
     assert.ok(tokenData);

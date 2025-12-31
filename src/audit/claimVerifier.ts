@@ -29,9 +29,15 @@ export interface VerificationResult {
  * Claim patterns we look for
  */
 const CLAIM_PATTERNS = [
-  { pattern: /scraped\s+(\d+)\s*(urls?|pages?|sites?|portals?)/i, type: "scrape" },
+  {
+    pattern: /scraped\s+(\d+)\s*(urls?|pages?|sites?|portals?)/i,
+    type: "scrape",
+  },
   { pattern: /created\s+(\d+)\s*(files?|components?|modules?)/i, type: "file" },
-  { pattern: /implemented\s+(\d+)\s*(features?|endpoints?|apis?)/i, type: "feature" },
+  {
+    pattern: /implemented\s+(\d+)\s*(features?|endpoints?|apis?)/i,
+    type: "feature",
+  },
   { pattern: /fixed\s+(\d+)\s*(bugs?|issues?|errors?)/i, type: "fix" },
   { pattern: /added\s+(\d+)\s*(tests?|specs?)/i, type: "test" },
   { pattern: /deployed\s+(\d+)\s*(services?|instances?)/i, type: "deploy" },
@@ -43,7 +49,7 @@ const CLAIM_PATTERNS = [
 export function verifyClaims(
   content: string,
   artefacts: string[],
-  projectRoot?: string
+  projectRoot?: string,
 ): VerificationResult {
   const verifications: ClaimVerification[] = [];
 
@@ -55,7 +61,11 @@ export function verifyClaims(
       const claim = match[0];
 
       // Count relevant artefacts
-      const relevantArtefacts = filterArtefactsByType(artefacts, type, projectRoot);
+      const relevantArtefacts = filterArtefactsByType(
+        artefacts,
+        type,
+        projectRoot,
+      );
       const actualCount = relevantArtefacts.length;
 
       const verification: ClaimVerification = {
@@ -89,7 +99,7 @@ export function verifyClaims(
 function filterArtefactsByType(
   artefacts: string[],
   type: string,
-  projectRoot?: string
+  projectRoot?: string,
 ): string[] {
   const relevant: string[] = [];
 
@@ -131,14 +141,20 @@ function filterArtefactsByType(
 
       case "test":
         // Test files
-        if (/\.(test|spec)\.(ts|js|tsx|jsx)$/i.test(artefact) || /tests?\//i.test(artefact)) {
+        if (
+          /\.(test|spec)\.(ts|js|tsx|jsx)$/i.test(artefact) ||
+          /tests?\//i.test(artefact)
+        ) {
           relevant.push(artefact);
         }
         break;
 
       case "deploy":
         // Deploy/config files
-        if (/\.(yaml|yml|json|toml|dockerfile)$/i.test(artefact) || /docker|k8s|deploy/i.test(artefact)) {
+        if (
+          /\.(yaml|yml|json|toml|dockerfile)$/i.test(artefact) ||
+          /docker|k8s|deploy/i.test(artefact)
+        ) {
           relevant.push(artefact);
         }
         break;
@@ -163,7 +179,9 @@ export function generateVerificationReport(result: VerificationResult): string {
   lines.push(`- Total Claims: ${result.totalClaims}`);
   lines.push(`- Verified: ${result.verifiedClaims}`);
   lines.push(`- Failed: ${result.failedClaims.length}`);
-  lines.push(`- Status: ${result.allVerified ? "✅ ALL VERIFIED" : "❌ VERIFICATION FAILED"}`);
+  lines.push(
+    `- Status: ${result.allVerified ? "✅ ALL VERIFIED" : "❌ VERIFICATION FAILED"}`,
+  );
   lines.push("");
 
   if (result.failedClaims.length > 0) {

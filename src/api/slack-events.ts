@@ -5,7 +5,11 @@
 
 import type { Request, Response } from "express";
 import { createSlackClient } from "../integrations/slack/client.js";
-import { getSmartResponse, isMentioningMujo, cleanMessage } from "../integrations/slack/bot-responses.js";
+import {
+  getSmartResponse,
+  isMentioningMujo,
+  cleanMessage,
+} from "../integrations/slack/bot-responses.js";
 import { createMetaSupervisor } from "../meta/metaSupervisor.js";
 import { computeStopScore } from "../audit/stopScorer.js";
 import { type Language } from "../integrations/slack/humor.js";
@@ -149,7 +153,7 @@ async function handleMention(event: any) {
 async function handleSupervisorCommands(
   message: string,
   channel: string,
-  language: Language
+  language: Language,
 ): Promise<boolean> {
   const messageLower = message.toLowerCase();
 
@@ -294,6 +298,6 @@ export function verifySlackSignature(req: Request): boolean {
 
   return crypto.timingSafeEqual(
     Buffer.from(mySignature, "utf8"),
-    Buffer.from(slackSignature, "utf8")
+    Buffer.from(slackSignature, "utf8"),
   );
 }

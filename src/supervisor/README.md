@@ -13,6 +13,7 @@ Diese Integration verbindet das **Supervisor System** (Meta Supervisor, Engineer
 ### Was macht es?
 
 Der Supervisor sendet automatisch Alerts zu:
+
 - 🛑 **STOP Score Alerts** - Kritische Risiko-Scores (>40)
 - 🔴 **System Health Alerts** - Degradierte oder unhealthy Systeme
 - ⚠️ **Task Completion Notifications** - Tasks mit Gaps oder Risiken
@@ -64,6 +65,7 @@ Der Supervisor sendet automatisch Alerts zu:
 ### 1. Slack bereits konfiguriert
 
 Du hast bereits:
+
 - ✅ Mujo bot erstellt (Activi Agent App)
 - ✅ Bot Token konfiguriert: `SLACK_TOKEN`
 - ✅ Bot in Slack aktiviert
@@ -86,6 +88,7 @@ SUPERVISOR_QUEUE_DEPTH_THRESHOLD=50
 ### 3. Mujo bot in Channel einladen
 
 Damit Mujo Nachrichten senden kann:
+
 ```
 /invite @Mujo
 ```
@@ -117,20 +120,18 @@ const notifications = createSupervisorNotifications({
 });
 
 // STOP Score berechnen
-const stopScore = computeStopScore([
-  "PRICING_WITHOUT_FACT",
-  "MISSING_TESTS",
-]);
+const stopScore = computeStopScore(["PRICING_WITHOUT_FACT", "MISSING_TESTS"]);
 
 // Alert senden
 await notifications.sendStopScoreAlert(
   "Database Migration Task",
   stopScore,
-  "Missing test coverage and unverified pricing claims"
+  "Missing test coverage and unverified pricing claims",
 );
 ```
 
 **Slack Output:**
+
 ```
 🔴 STOP Score Alert
 
@@ -167,11 +168,12 @@ metaSupervisor.updateHealth("code-cloud-agents", {
 const metrics = metaSupervisor.getAggregatedMetrics();
 await notifications.sendSystemHealthAlert(
   "code-cloud-agents",
-  metrics.systemHealth["code-cloud-agents"]
+  metrics.systemHealth["code-cloud-agents"],
 );
 ```
 
 **Slack Output:**
+
 ```
 🟡 System Health Alert
 
@@ -207,6 +209,7 @@ await notifications.sendTaskCompletionNotification("TASK-123", proposal);
 ```
 
 **Slack Output:**
+
 ```
 ⚠️ Task COMPLETE WITH GAPS
 
@@ -233,21 +236,21 @@ const notifications = createSupervisorNotifications();
 await notifications.sendCustomMessage(
   "Deployment Started",
   "Production deployment initiated\n\n*Target:* production-eu\n*Version:* v2.1.0",
-  "info"
+  "info",
 );
 
 // Warning Message
 await notifications.sendCustomMessage(
   "High Memory Usage",
   "System memory at 85%\n\n*Threshold:* 90%",
-  "warning"
+  "warning",
 );
 
 // Error Message
 await notifications.sendCustomMessage(
   "Deployment Failed",
   "Database migration timeout\n\n*Action:* Rolling back",
-  "error"
+  "error",
 );
 ```
 
@@ -260,6 +263,7 @@ await notifications.sendCustomMessage(
 **Wann:** STOP Score >= Threshold (default: 40)
 
 **Enthält:**
+
 - Task Name
 - STOP Score (0-100)
 - Severity (LOW, MEDIUM, HIGH, CRITICAL)
@@ -267,6 +271,7 @@ await notifications.sendCustomMessage(
 - Context (optional)
 
 **Emoji:**
+
 - 🔴 CRITICAL (70-100)
 - 🟠 HIGH (40-69)
 - 🟡 MEDIUM (20-39)
@@ -275,11 +280,13 @@ await notifications.sendCustomMessage(
 ### System Health Alerts
 
 **Wann:**
+
 - System status != "healthy"
 - Stop Rate >= Threshold (default: 0.3)
 - Queue Depth >= Threshold (default: 50)
 
 **Enthält:**
+
 - System ID
 - Status (healthy, degraded, unhealthy)
 - Task Completion Rate
@@ -291,10 +298,12 @@ await notifications.sendCustomMessage(
 ### Task Completion Notifications
 
 **Wann:**
+
 - Status = STOP_REQUIRED
 - Status = COMPLETE_WITH_GAPS
 
 **Enthält:**
+
 - Task ID
 - Status
 - Risks
@@ -307,6 +316,7 @@ await notifications.sendCustomMessage(
 **Wann:** Manuell ausgelöst
 
 **Levels:**
+
 - `info` - ℹ️ Informationen
 - `warning` - ⚠️ Warnungen
 - `error` - 🔴 Fehler
@@ -337,9 +347,9 @@ const notifications = createSupervisorNotifications({
   channel: "#dev-alerts",
   enabled: true,
   thresholds: {
-    stopScore: 50,        // Nur kritische Scores
-    stopRate: 0.4,        // Höhere Toleranz
-    queueDepth: 100,      // Mehr Tasks erlaubt
+    stopScore: 50, // Nur kritische Scores
+    stopRate: 0.4, // Höhere Toleranz
+    queueDepth: 100, // Mehr Tasks erlaubt
   },
 });
 
@@ -363,12 +373,14 @@ npx tsx test-supervisor-slack.js
 ```
 
 **Testet:**
+
 1. ✅ STOP Score Alert
 2. ✅ System Health Alert
 3. ✅ Task Completion Notification
 4. ✅ Custom Message
 
 **Output:**
+
 ```
 🧪 Testing Supervisor → Slack (Mujo) Integration
 
@@ -417,27 +429,29 @@ TEST 4: Custom Message
 ### 1. CI/CD Pipeline Monitoring
 
 ```typescript
-const notifications = createSupervisorNotifications({ channel: "#deployments" });
+const notifications = createSupervisorNotifications({
+  channel: "#deployments",
+});
 
 // Deployment Start
 await notifications.sendCustomMessage(
   "🚀 Deployment Started",
   "Version v2.1.0 → production-eu",
-  "info"
+  "info",
 );
 
 // Deployment Success
 await notifications.sendCustomMessage(
   "✅ Deployment Successful",
   "v2.1.0 deployed in 4m 32s",
-  "info"
+  "info",
 );
 
 // Deployment Failed
 await notifications.sendCustomMessage(
   "❌ Deployment Failed",
   "Database migration timeout\n\nRolling back to v2.0.9",
-  "error"
+  "error",
 );
 ```
 
@@ -455,7 +469,7 @@ setInterval(async () => {
     await notifications.sendCustomMessage(
       "System Alert",
       alert,
-      alert.includes("CRITICAL") ? "error" : "warning"
+      alert.includes("CRITICAL") ? "error" : "warning",
     );
   }
 }, 60000);
@@ -480,7 +494,7 @@ const stopScore = computeStopScore([
 if (stopScore.stopRequired) {
   await notifications.sendStopScoreAlert(
     "FEAT-789: Payment Integration",
-    stopScore
+    stopScore,
   );
 }
 ```
@@ -500,7 +514,7 @@ await notifications.sendCustomMessage(
 *Completed:* ${metrics.completedTasks}
 *Stopped:* ${metrics.stoppedTasks}
 *Avg STOP Score:* ${metrics.avgStopScore.toFixed(1)}`,
-  "info"
+  "info",
 );
 ```
 
@@ -513,6 +527,7 @@ await notifications.sendCustomMessage(
 Erstellt Supervisor Notifications Instanz.
 
 **Parameters:**
+
 - `config?.channel` - Default Channel (default: `#alerts`)
 - `config?.enabled` - Aktiviert/Deaktiviert (default: from ENV)
 - `config?.thresholds` - Alert Thresholds
@@ -526,6 +541,7 @@ Erstellt Supervisor Notifications Instanz.
 Sendet STOP Score Alert.
 
 **Parameters:**
+
 - `taskName: string` - Task Name
 - `stopScore: StopScoreResult` - Stop Score Ergebnis
 - `context?: string` - Zusätzlicher Kontext
@@ -539,6 +555,7 @@ Sendet STOP Score Alert.
 Sendet System Health Alert.
 
 **Parameters:**
+
 - `systemId: string` - System ID
 - `health: SystemHealth` - System Health Daten
 
@@ -551,6 +568,7 @@ Sendet System Health Alert.
 Sendet Task Completion Notification.
 
 **Parameters:**
+
 - `taskId: string` - Task ID
 - `proposal: StatusProposal` - Status Proposal
 
@@ -563,6 +581,7 @@ Sendet Task Completion Notification.
 Sendet Custom Message.
 
 **Parameters:**
+
 - `title: string` - Titel
 - `message: string` - Nachricht (Markdown)
 - `level?: "info" | "warning" | "error"` - Level (default: `info`)
@@ -576,6 +595,7 @@ Sendet Custom Message.
 ### Error: "Slack notifications disabled"
 
 **Lösung:**
+
 ```bash
 # In .env
 SLACK_NOTIFICATIONS_ENABLED=true
@@ -586,6 +606,7 @@ SLACK_ENABLED=true
 
 **Lösung:**
 Mujo bot in Channel einladen:
+
 ```
 /invite @Mujo
 ```
@@ -594,6 +615,7 @@ Mujo bot in Channel einladen:
 
 **Lösung:**
 Channel-Namen mit `#` verwenden:
+
 ```bash
 SLACK_ALERT_CHANNEL=#general
 ```
@@ -601,6 +623,7 @@ SLACK_ALERT_CHANNEL=#general
 ### Keine Nachrichten empfangen
 
 **Prüfen:**
+
 1. ✅ `SLACK_NOTIFICATIONS_ENABLED=true`
 2. ✅ `SLACK_TOKEN` korrekt
 3. ✅ Mujo bot in Channel
@@ -612,27 +635,32 @@ SLACK_ALERT_CHANNEL=#general
 ## Best Practices
 
 1. **Separate Channels** - Verschiedene Channels für verschiedene Alert-Typen
+
    ```typescript
-   const criticalAlerts = createSupervisorNotifications({ channel: "#critical" });
+   const criticalAlerts = createSupervisorNotifications({
+     channel: "#critical",
+   });
    const infoAlerts = createSupervisorNotifications({ channel: "#info" });
    ```
 
 2. **Threshold anpassen** - Je nach Team-Größe
+
    ```typescript
    const notifications = createSupervisorNotifications({
      thresholds: {
-       stopScore: 50,      // Weniger false positives
-       queueDepth: 100,    // Mehr Kapazität
+       stopScore: 50, // Weniger false positives
+       queueDepth: 100, // Mehr Kapazität
      },
    });
    ```
 
 3. **Context hinzufügen** - Immer Context bei STOP Alerts
+
    ```typescript
    await notifications.sendStopScoreAlert(
      taskName,
      stopScore,
-     "User: @john, Branch: feature/auth, PR: #123"
+     "User: @john, Branch: feature/auth, PR: #123",
    );
    ```
 
@@ -651,6 +679,7 @@ SLACK_ALERT_CHANNEL=#general
 ## Examples
 
 Siehe `src/supervisor/example.ts` für vollständige Beispiele:
+
 - ✅ STOP Score Alert
 - ✅ System Health Monitoring
 - ✅ Task Completion

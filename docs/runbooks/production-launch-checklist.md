@@ -33,6 +33,7 @@
 ## Integration Enablement
 
 For each integration:
+
 - [ ] Security review completed
 - [ ] Credentials rotated from dev
 - [ ] Rate limits configured

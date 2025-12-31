@@ -9,12 +9,14 @@
 ## ⚠️ KRITISCHE REGELN
 
 ### ❌ VERBOTEN
+
 1. **NIEMALS direkt auf `main` pushen**
 2. **NIEMALS `git push --force` verwenden**
 3. **NIEMALS ohne Commit-Message pushen**
 4. **NIEMALS API-Keys/Secrets committen**
 
 ### ✅ PFLICHT
+
 1. **IMMER Feature-Branch erstellen**
 2. **IMMER aussagekräftige Commit-Messages**
 3. **IMMER Co-Authored-By hinzufügen**
@@ -40,6 +42,7 @@ git checkout -b agent-a5-design-system
 ```
 
 **Branch-Naming-Convention:**
+
 - `agent-a1-*` - Agent A1 (Dokumentation)
 - `agent-a2-*` - Agent A2 (Setup/Infrastructure)
 - `agent-a3-*` - Agent A3 (Integrations)
@@ -76,6 +79,7 @@ EOF
 ```
 
 **Commit-Message-Format:**
+
 ```
 <type>: <kurze beschreibung>
 
@@ -89,6 +93,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 ```
 
 **Types:**
+
 - `feat:` - Neues Feature
 - `fix:` - Bugfix
 - `docs:` - Dokumentation
@@ -169,6 +174,7 @@ git status
 ## 🔄 MERGE-PROZESS
 
 ### Agent A2 (Setup) - Zuerst mergen
+
 ```bash
 git checkout main
 git pull origin main
@@ -177,6 +183,7 @@ git push origin main
 ```
 
 ### Agent A1 (Docs) - Nach A2
+
 ```bash
 # Warten bis A2 gemerged ist
 git checkout main
@@ -186,6 +193,7 @@ git push origin main
 ```
 
 ### Agent A3 (Integrations) - Nach A1
+
 ```bash
 git checkout main
 git pull origin main
@@ -194,6 +202,7 @@ git push origin main
 ```
 
 ### Agent A4 (API Docs) - Nach A3
+
 ```bash
 git checkout main
 git pull origin main
@@ -202,6 +211,7 @@ git push origin main
 ```
 
 **Merge-Reihenfolge:**
+
 ```
 A2 (Setup) → A1 (Docs) → A3 (Integrations) → A4 (API Docs) → A5 (Design)
 ```

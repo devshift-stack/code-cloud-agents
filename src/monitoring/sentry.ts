@@ -20,7 +20,8 @@ export function initSentry(): boolean {
   // Read env vars now (after dotenv has loaded)
   SENTRY_DSN = process.env.SENTRY_DSN;
   const NODE_ENV = process.env.NODE_ENV ?? "development";
-  const SENTRY_RELEASE = process.env.SENTRY_RELEASE || process.env.npm_package_version || "0.1.0";
+  const SENTRY_RELEASE =
+    process.env.SENTRY_RELEASE || process.env.npm_package_version || "0.1.0";
 
   if (!SENTRY_DSN) {
     console.log("⚠️  Sentry: No DSN configured, error tracking disabled");
@@ -75,7 +76,14 @@ export function initSentry(): boolean {
       }
       // Redact sensitive body fields
       if (event.request?.data && typeof event.request.data === "object") {
-        const sensitiveKeys = ["password", "token", "apiKey", "secret", "api_key", "access_token"];
+        const sensitiveKeys = [
+          "password",
+          "token",
+          "apiKey",
+          "secret",
+          "api_key",
+          "access_token",
+        ];
         const data = event.request.data as Record<string, unknown>;
         for (const key of sensitiveKeys) {
           if (key in data) {
@@ -95,15 +103,14 @@ export function initSentry(): boolean {
       return event;
     },
     // Ignore common non-actionable errors
-    ignoreErrors: [
-      "ECONNRESET",
-      "ECONNREFUSED",
-      "socket hang up",
-      "ETIMEDOUT",
-    ],
+    ignoreErrors: ["ECONNRESET", "ECONNREFUSED", "socket hang up", "ETIMEDOUT"],
   });
 
-  console.log("✅ Sentry initialized with AI monitoring + Logs + Profiling (env:", NODE_ENV, ")");
+  console.log(
+    "✅ Sentry initialized with AI monitoring + Logs + Profiling (env:",
+    NODE_ENV,
+    ")",
+  );
   return true;
 }
 
@@ -143,7 +150,10 @@ export function sentryErrorHandler() {
 /**
  * Capture an exception manually
  */
-export function captureException(error: Error, context?: Record<string, unknown>): string | null {
+export function captureException(
+  error: Error,
+  context?: Record<string, unknown>,
+): string | null {
   if (!SENTRY_DSN) {
     console.error("❌ Error (Sentry disabled):", error.message);
     return null;
@@ -157,7 +167,10 @@ export function captureException(error: Error, context?: Record<string, unknown>
 /**
  * Capture a message manually
  */
-export function captureMessage(message: string, level: "info" | "warning" | "error" = "info"): string | null {
+export function captureMessage(
+  message: string,
+  level: "info" | "warning" | "error" = "info",
+): string | null {
   if (!SENTRY_DSN) {
     console.log(`[${level.toUpperCase()}] ${message}`);
     return null;
@@ -169,7 +182,9 @@ export function captureMessage(message: string, level: "info" | "warning" | "err
 /**
  * Set user context for error tracking
  */
-export function setUser(user: { id: string; email?: string; username?: string } | null): void {
+export function setUser(
+  user: { id: string; email?: string; username?: string } | null,
+): void {
   if (!SENTRY_DSN) return;
   Sentry.setUser(user);
 }
@@ -206,7 +221,9 @@ export async function trackAICall<T>(
     agentName: string;
     prompt: string;
   },
-  fn: () => Promise<T & { tokens?: { input: number; output: number }; cost?: { usd: number } }>
+  fn: () => Promise<
+    T & { tokens?: { input: number; output: number }; cost?: { usd: number } }
+  >,
 ): Promise<T> {
   if (!SENTRY_DSN) {
     return fn();
@@ -231,7 +248,10 @@ export async function trackAICall<T>(
         if (result.tokens) {
           span.setAttribute("ai.usage.input_tokens", result.tokens.input);
           span.setAttribute("ai.usage.output_tokens", result.tokens.output);
-          span.setAttribute("ai.usage.total_tokens", result.tokens.input + result.tokens.output);
+          span.setAttribute(
+            "ai.usage.total_tokens",
+            result.tokens.input + result.tokens.output,
+          );
         }
         if (result.cost) {
           span.setAttribute("ai.usage.cost_usd", result.cost.usd);
@@ -243,7 +263,7 @@ export async function trackAICall<T>(
         span.setStatus({ code: 2, message: String(error) }); // ERROR
         throw error;
       }
-    }
+    },
   );
 }
 
@@ -266,11 +286,12 @@ interface LogAttributes {
 export function sentryLog(
   level: LogLevel,
   message: string,
-  attributes?: LogAttributes
+  attributes?: LogAttributes,
 ): void {
   if (!SENTRY_DSN) {
     // Fallback to console
-    const consoleFn = level === "fatal" ? "error" : level === "trace" ? "debug" : level;
+    const consoleFn =
+      level === "fatal" ? "error" : level === "trace" ? "debug" : level;
     console[consoleFn]?.(`[${level.toUpperCase()}]`, message, attributes || "");
     return;
   }
@@ -301,12 +322,18 @@ export function sentryLog(
 
 // Convenience functions for each log level
 export const log = {
-  trace: (message: string, attrs?: LogAttributes) => sentryLog("trace", message, attrs),
-  debug: (message: string, attrs?: LogAttributes) => sentryLog("debug", message, attrs),
-  info: (message: string, attrs?: LogAttributes) => sentryLog("info", message, attrs),
-  warn: (message: string, attrs?: LogAttributes) => sentryLog("warn", message, attrs),
-  error: (message: string, attrs?: LogAttributes) => sentryLog("error", message, attrs),
-  fatal: (message: string, attrs?: LogAttributes) => sentryLog("fatal", message, attrs),
+  trace: (message: string, attrs?: LogAttributes) =>
+    sentryLog("trace", message, attrs),
+  debug: (message: string, attrs?: LogAttributes) =>
+    sentryLog("debug", message, attrs),
+  info: (message: string, attrs?: LogAttributes) =>
+    sentryLog("info", message, attrs),
+  warn: (message: string, attrs?: LogAttributes) =>
+    sentryLog("warn", message, attrs),
+  error: (message: string, attrs?: LogAttributes) =>
+    sentryLog("error", message, attrs),
+  fatal: (message: string, attrs?: LogAttributes) =>
+    sentryLog("fatal", message, attrs),
 };
 
 /**
@@ -367,19 +394,28 @@ export const metrics = {
   set: (name: string, value: string | number, tags?: MetricTags) => {
     if (!SENTRY_DSN) return;
     // Use count with unique identifier as attribute
-    Sentry.metrics.count(name, 1, { attributes: { ...tags, unique_id: String(value) } });
+    Sentry.metrics.count(name, 1, {
+      attributes: { ...tags, unique_id: String(value) },
+    });
   },
 
   /**
    * Timing helper - Measure execution time
    */
-  timing: async <T>(name: string, fn: () => Promise<T>, tags?: MetricTags): Promise<T> => {
+  timing: async <T>(
+    name: string,
+    fn: () => Promise<T>,
+    tags?: MetricTags,
+  ): Promise<T> => {
     const start = performance.now();
     try {
       const result = await fn();
       const duration = performance.now() - start;
       if (SENTRY_DSN) {
-        Sentry.metrics.distribution(name, duration, { attributes: tags, unit: "millisecond" });
+        Sentry.metrics.distribution(name, duration, {
+          attributes: tags,
+          unit: "millisecond",
+        });
       }
       return result;
     } catch (error) {
@@ -387,7 +423,7 @@ export const metrics = {
       if (SENTRY_DSN) {
         Sentry.metrics.distribution(name, duration, {
           attributes: { ...tags, error: "true" },
-          unit: "millisecond"
+          unit: "millisecond",
         });
       }
       throw error;
@@ -484,7 +520,7 @@ export const cronMonitor = {
   wrap: async <T>(
     slug: string,
     fn: () => Promise<T>,
-    config?: Omit<CronMonitorConfig, "slug">
+    config?: Omit<CronMonitorConfig, "slug">,
   ): Promise<T> => {
     if (!SENTRY_DSN) {
       return fn();
@@ -508,7 +544,7 @@ export const cronMonitor = {
       async () => {
         return fn();
       },
-      monitorConfig
+      monitorConfig,
     );
   },
 

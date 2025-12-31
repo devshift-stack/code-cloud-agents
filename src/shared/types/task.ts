@@ -2,7 +2,13 @@
  * Task Types - Shared across Frontend and Backend
  */
 
-import type { RiskLevel, Status, Timestamps, WithId, Metadata } from "./common.js";
+import type {
+  RiskLevel,
+  Status,
+  Timestamps,
+  WithId,
+  Metadata,
+} from "./common.js";
 
 /**
  * Task priority levels

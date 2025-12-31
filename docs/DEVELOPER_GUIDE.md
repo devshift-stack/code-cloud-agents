@@ -23,15 +23,18 @@ Umfassender Leitfaden für Entwickler, die an Code Cloud Agents arbeiten.
 ### 1. System-Voraussetzungen
 
 **Erforderlich:**
+
 - Node.js ≥20.0.0
 - npm ≥10.0.0
 - Git
 
 **Optional:**
+
 - Redis (für Production Queue)
 - PM2 (für Production Deployment)
 
 **Installation prüfen:**
+
 ```bash
 node --version   # v20.19.6 oder höher
 npm --version    # 10.8.2 oder höher
@@ -65,6 +68,7 @@ npm install --production
 ```
 
 **Wichtige Dependencies:**
+
 - `express`: Backend Web Framework
 - `better-sqlite3`: SQLite Database
 - `tsx`: TypeScript Runtime
@@ -81,6 +85,7 @@ cp .env.example .env
 ```
 
 **Minimale .env Konfiguration:**
+
 ```bash
 # Server
 PORT=3000
@@ -98,6 +103,7 @@ MAX_PARALLEL_AGENTS=4
 ```
 
 **Production .env:**
+
 ```bash
 PORT=3000
 NODE_ENV=production
@@ -123,6 +129,7 @@ Die SQLite-Datenbank wird automatisch beim ersten Start erstellt.
 ### 6. Projekt starten
 
 **Development Mode:**
+
 ```bash
 # Backend (Terminal 1)
 npm run backend:dev
@@ -132,6 +139,7 @@ npm run dev
 ```
 
 **Production Mode:**
+
 ```bash
 # Build
 npm run build
@@ -240,6 +248,7 @@ npm run queue:status       # Queue status
 ### Coding Standards
 
 **TypeScript Strict Mode:**
+
 ```json
 {
   "compilerOptions": {
@@ -251,6 +260,7 @@ npm run queue:status       # Queue status
 ```
 
 **Naming Conventions:**
+
 ```typescript
 // Variables & Functions: camelCase
 const userName = "John";
@@ -266,6 +276,7 @@ const API_BASE_URL = "http://localhost:3000";
 ```
 
 **JSDoc Comments:**
+
 ```typescript
 /**
  * Creates a new task and assigns it to an agent
@@ -280,6 +291,7 @@ async function createTask(taskData: TaskData, agentId: string): Promise<Task> {
 ```
 
 **Error Handling:**
+
 ```typescript
 // Always use try/catch for async operations
 try {
@@ -300,6 +312,7 @@ try {
 **Test Framework:** Node.js native test runner (Node v20+)
 
 **Test Structure:**
+
 ```
 tests/
 ├── api/
@@ -335,6 +348,7 @@ npm test -- --coverage
 ### Writing Tests
 
 **Example Test:**
+
 ```typescript
 import { describe, it } from "node:test";
 import assert from "node:assert";
@@ -385,6 +399,7 @@ it("should create task with valid data", async () => {
 ### Backend Debugging
 
 **Console Logs:**
+
 ```typescript
 console.log("✅ Success:", data);
 console.error("❌ Error:", error);
@@ -393,6 +408,7 @@ console.info("ℹ️ Info:", info);
 ```
 
 **VS Code Debugger:**
+
 ```json
 // .vscode/launch.json
 {
@@ -411,6 +427,7 @@ console.info("ℹ️ Info:", info);
 ```
 
 **Node.js Inspector:**
+
 ```bash
 node --inspect --import tsx/esm src/index.ts
 # Open chrome://inspect in Chrome
@@ -421,11 +438,13 @@ node --inspect --import tsx/esm src/index.ts
 ### Frontend Debugging
 
 **React DevTools:**
+
 1. Install React DevTools Extension (Chrome/Firefox)
 2. Open DevTools → React Tab
 3. Inspect Component Tree, Props, State
 
 **Console Logs in Components:**
+
 ```typescript
 function AgentCard({ agent }: { agent: Agent }) {
   console.log("AgentCard rendering:", agent);
@@ -444,6 +463,7 @@ function AgentCard({ agent }: { agent: Agent }) {
 ### Database Debugging
 
 **SQLite CLI:**
+
 ```bash
 # Connect to database
 sqlite3 data/app.sqlite
@@ -463,6 +483,7 @@ SELECT * FROM audit_log LIMIT 10;
 ```
 
 **Database Health Check:**
+
 ```bash
 npm run db:health
 ```
@@ -474,6 +495,7 @@ npm run db:health
 ### Schema
 
 **Tables:**
+
 1. **tasks**: Task management
 2. **audit_log**: Action audit trail
 3. **enforcement_log**: STOP decisions
@@ -481,6 +503,7 @@ npm run db:health
 5. **demo_users**: Demo users
 
 **Migrations:**
+
 ```bash
 npm run db:migrate
 ```
@@ -490,24 +513,30 @@ npm run db:migrate
 ### Database Operations
 
 **Insert:**
+
 ```typescript
-const stmt = db.prepare("INSERT INTO tasks (id, title, status) VALUES (?, ?, ?)");
+const stmt = db.prepare(
+  "INSERT INTO tasks (id, title, status) VALUES (?, ?, ?)",
+);
 stmt.run(id, title, status);
 ```
 
 **Select:**
+
 ```typescript
 const stmt = db.prepare("SELECT * FROM tasks WHERE status = ?");
 const tasks = stmt.all("pending");
 ```
 
 **Update:**
+
 ```typescript
 const stmt = db.prepare("UPDATE tasks SET status = ? WHERE id = ?");
 stmt.run("completed", taskId);
 ```
 
 **Delete:**
+
 ```typescript
 const stmt = db.prepare("DELETE FROM tasks WHERE id = ?");
 stmt.run(taskId);
@@ -520,6 +549,7 @@ stmt.run(taskId);
 ### Creating New Endpoints
 
 **1. Create Router File:**
+
 ```typescript
 // src/api/myFeature.ts
 import { Router } from "express";
@@ -536,6 +566,7 @@ export function createMyFeatureRouter(): Router {
 ```
 
 **2. Mount in index.ts:**
+
 ```typescript
 // src/index.ts
 import { createMyFeatureRouter } from "./api/myFeature.js";
@@ -544,6 +575,7 @@ app.use("/api/myFeature", createMyFeatureRouter());
 ```
 
 **3. Test the endpoint:**
+
 ```bash
 curl http://localhost:3000/api/myFeature
 ```
@@ -597,6 +629,7 @@ router.post("/tasks", async (req, res) => {
 ### Component Development
 
 **Component Structure:**
+
 ```typescript
 // src/components/MyComponent.tsx
 import { useState } from "react";
@@ -629,21 +662,21 @@ export function MyComponent({ title, onAction }: MyComponentProps) {
 ### Styling
 
 **Tailwind CSS:**
+
 ```tsx
 <div className="p-4 bg-white rounded-lg shadow-md">
-  <h1 className="text-2xl font-bold text-gray-900">
-    Title
-  </h1>
+  <h1 className="text-2xl font-bold text-gray-900">Title</h1>
 </div>
 ```
 
 **Radix UI Components:**
+
 ```tsx
 import { Button } from "@/components/ui/button";
 
 <Button variant="primary" size="lg">
   Click Me
-</Button>
+</Button>;
 ```
 
 ---
@@ -669,6 +702,7 @@ git checkout -b docs/api-documentation
 ### Commit Messages
 
 **Format:**
+
 ```
 <type>(<scope>): <subject>
 
@@ -679,6 +713,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation
@@ -687,6 +722,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 - `chore`: Maintenance
 
 **Examples:**
+
 ```bash
 git commit -m "feat(auth): Add admin middleware
 
@@ -716,11 +752,13 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ### Port bereits in Verwendung
 
 **Problem:**
+
 ```
 Error: EADDRINUSE: Port 3000 already in use
 ```
 
 **Lösung:**
+
 ```bash
 # Prozess finden
 lsof -i :3000
@@ -737,11 +775,13 @@ killall node
 ### Database locked
 
 **Problem:**
+
 ```
 Error: database is locked
 ```
 
 **Lösung:**
+
 ```bash
 # Prozesse prüfen
 lsof data/app.sqlite
@@ -759,11 +799,13 @@ npm run backend:dev  # Auto-recreates
 ### TypeScript Build Errors
 
 **Problem:**
+
 ```
 error TS2307: Cannot find module
 ```
 
 **Lösung:**
+
 ```bash
 # node_modules neu installieren
 rm -rf node_modules package-lock.json
@@ -779,12 +821,14 @@ npm run backend:build
 ### Tests failing
 
 **Problem:**
+
 ```
 npm test
 # Tests fail with timeout
 ```
 
 **Lösung:**
+
 ```bash
 # Server stoppen (Tests brauchen Port 3000)
 lsof -i :3000

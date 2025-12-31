@@ -13,36 +13,45 @@ Mujo ist jetzt ein vollständig interaktiver Bot mit Supervisor-Gehirn!
 Mujo nutzt das **Supervisor-System** als Gehirn:
 
 ✅ **System Status abfragen**
+
 ```
 @mujo system status
 mujo health
 ```
+
 → Zeigt: Alerts, Metrics, Task Stats
 
 ✅ **STOP Score Info**
+
 ```
 @mujo stop score
 mujo was ist ein stop score?
 ```
+
 → Erklärt das STOP Score System
 
 ✅ **STOP Score berechnen**
+
 ```
 mujo berechne stop score
 mujo calculate stop score
 ```
+
 → Beispiel-Berechnung mit Reasons
 
 ✅ **Alerts anzeigen**
+
 ```
 @mujo alerts
 mujo warnungen
 ```
+
 → Aktive System-Alerts
 
 ### 💬 Interaktive Responses
 
 ✅ **Wer bist du?**
+
 ```
 User: "mujo koji si ti K... obdje?"
 
@@ -53,6 +62,7 @@ na vrijeme bacim vic. Govorim Deutsch, English i Bosanski!"
 ```
 
 ✅ **Witze**
+
 ```
 User: "mujo erzähl einen witz"
 
@@ -61,6 +71,7 @@ Production testet in Mujo."
 ```
 
 ✅ **Hilfe**
+
 ```
 User: "@mujo help"
 
@@ -73,6 +84,7 @@ Mujo: "🆘 Mujo's Commands:
 ```
 
 ✅ **3 Sprachen**
+
 - Erkennt automatisch: Deutsch, English, Bosnisch
 - Antwortet in erkannter Sprache
 
@@ -99,6 +111,7 @@ Mujo: "🆘 Mujo's Commands:
 **Bot Token Scopes:**
 
 Stelle sicher diese Scopes sind aktiviert:
+
 - ✅ `chat:write` - Send messages
 - ✅ `channels:read` - View channels
 - ✅ `groups:read` - View private channels
@@ -130,11 +143,13 @@ SLACK_ARNEL_USER_ID=U01234567  # Arnel's User ID (für Paris-Easter-Egg)
 ```
 
 **Bot User ID finden:**
+
 1. Slack App → **OAuth & Permissions**
 2. Scroll zu **Bot User OAuth Token**
 3. Copy User ID (z.B. U01234567)
 
 **Signing Secret finden:**
+
 1. Slack App → **Basic Information**
 2. Scroll zu **App Credentials**
 3. Copy **Signing Secret**
@@ -148,6 +163,7 @@ npm run dev
 ```
 
 Output:
+
 ```
 🚀 Starting Code Cloud Agents...
 ✅ Database initialized
@@ -175,11 +191,13 @@ ngrok http 3000
 ```
 
 Output:
+
 ```
 Forwarding    https://abc123.ngrok.io -> http://localhost:3000
 ```
 
 **Trage in Slack ein:**
+
 ```
 Request URL: https://abc123.ngrok.io/api/slack/events
 ```
@@ -189,6 +207,7 @@ Request URL: https://abc123.ngrok.io/api/slack/events
 ### 5. Test in Slack
 
 **Mujo im Channel einladen:**
+
 ```
 /invite @Mujo
 ```
@@ -224,43 +243,44 @@ mujo sistem status
 
 ### 🧠 Supervisor Commands (mit Supervisor-Wissen)
 
-| Command | Beschreibung | Beispiel |
-|---------|--------------|----------|
-| `system status` | System Health, Metrics, Alerts | `mujo system status` |
-| `health` | System Health Check | `mujo health` |
-| `stop score` | STOP Score System Info | `mujo stop score` |
-| `berechne stop score` | STOP Score Beispiel | `mujo berechne stop score` |
-| `alerts` | Aktive System Alerts | `mujo alerts` |
+| Command               | Beschreibung                   | Beispiel                   |
+| --------------------- | ------------------------------ | -------------------------- |
+| `system status`       | System Health, Metrics, Alerts | `mujo system status`       |
+| `health`              | System Health Check            | `mujo health`              |
+| `stop score`          | STOP Score System Info         | `mujo stop score`          |
+| `berechne stop score` | STOP Score Beispiel            | `mujo berechne stop score` |
+| `alerts`              | Aktive System Alerts           | `mujo alerts`              |
 
 ### 💬 Personality Commands
 
-| Command | Beschreibung | Beispiel |
-|---------|--------------|----------|
-| `wer bist du?` | Mujo vorstellen | `mujo wer bist du?` |
-| `help` | Command Liste | `mujo help` |
-| `status` | Bot Status | `mujo status` |
-| `joke` | Witz erzählen | `mujo joke` |
-| `sprache [de\|en\|bs]` | Sprache wechseln | `mujo sprache en` |
+| Command                | Beschreibung     | Beispiel            |
+| ---------------------- | ---------------- | ------------------- |
+| `wer bist du?`         | Mujo vorstellen  | `mujo wer bist du?` |
+| `help`                 | Command Liste    | `mujo help`         |
+| `status`               | Bot Status       | `mujo status`       |
+| `joke`                 | Witz erzählen    | `mujo joke`         |
+| `sprache [de\|en\|bs]` | Sprache wechseln | `mujo sprache en`   |
 
 ### 👋 Greetings & Thanks
 
-| Input | Response |
-|-------|----------|
+| Input        | Response                      |
+| ------------ | ----------------------------- |
 | `hallo mujo` | Greeting in detected language |
-| `danke mujo` | Thanks response |
-| `@mujo ...` | Responds to any mention |
+| `danke mujo` | Thanks response               |
+| `@mujo ...`  | Responds to any mention       |
 
 ### 🎁 Easter Eggs
 
-| Trigger | Action |
-|---------|--------|
-| `ja moram na put u Paris` | 🎯 Mujo sendet automatisch DM an Arnel: "Hocemo na kafu nas dvoje dok Denis bude na putu?" + ✈️ "Bon voyage!" im Channel |
-| `moram u Paris` | Same as above |
-| `going to Paris` | Same as above (English) |
-| `nach Paris` | Same as above (German) |
-| `mujo sta je tvoja najveca zelja` | 🎯 Multi-Level Easter Egg (3 Levels: Simple → Top 5 → Secret) |
+| Trigger                           | Action                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `ja moram na put u Paris`         | 🎯 Mujo sendet automatisch DM an Arnel: "Hocemo na kafu nas dvoje dok Denis bude na putu?" + ✈️ "Bon voyage!" im Channel |
+| `moram u Paris`                   | Same as above                                                                                                            |
+| `going to Paris`                  | Same as above (English)                                                                                                  |
+| `nach Paris`                      | Same as above (German)                                                                                                   |
+| `mujo sta je tvoja najveca zelja` | 🎯 Multi-Level Easter Egg (3 Levels: Simple → Top 5 → Secret)                                                            |
 
 **Paris Easter Egg Details:**
+
 - Wird ausgelöst **ohne** Mujo zu erwähnen
 - Sendet **automatisch** eine private DM an Arnel
 - Gibt subtile "Bon voyage!" Bestätigung im Channel
@@ -311,16 +331,19 @@ USER SEES RESPONSE
 ### Files Created:
 
 **1. `src/api/slack-events.ts`**
+
 - Webhook handler
 - Message & mention processing
 - Supervisor command handling
 - Signature verification
 
 **2. Updated `src/index.ts`**
+
 - Added `/api/slack/events` route
 - Integrated event handler
 
 **3. Already exists:**
+
 - `src/integrations/slack/bot-responses.ts` - Interactive responses
 - `src/integrations/slack/humor.ts` - Jokes & personality
 - `src/supervisor/notifications.ts` - Supervisor integration
@@ -418,20 +441,25 @@ export function verifySlackSignature(req: Request): boolean {
 
   return crypto.timingSafeEqual(
     Buffer.from(mySignature),
-    Buffer.from(slackSignature)
+    Buffer.from(slackSignature),
   );
 }
 ```
 
 **Aktivieren:**
+
 ```typescript
 // Optional: Add middleware to verify
-app.post("/api/slack/events", (req, res, next) => {
-  if (!verifySlackSignature(req)) {
-    return res.status(401).send("Invalid signature");
-  }
-  next();
-}, handleSlackEvents);
+app.post(
+  "/api/slack/events",
+  (req, res, next) => {
+    if (!verifySlackSignature(req)) {
+      return res.status(401).send("Invalid signature");
+    }
+    next();
+  },
+  handleSlackEvents,
+);
 ```
 
 ### Bot User ID Check
@@ -451,19 +479,23 @@ if (event.user === botUserId) {
 ### Manual Testing
 
 **1. Start Server:**
+
 ```bash
 npm run dev
 ```
 
 **2. Start ngrok:**
+
 ```bash
 ngrok http 3000
 ```
 
 **3. Update Slack App:**
+
 - Request URL: `https://xyz.ngrok.io/api/slack/events`
 
 **4. Test in Slack:**
+
 ```
 @mujo wer bist du?
 ```
@@ -487,6 +519,7 @@ npx tsx test-mujo-humor.js
 **Problem:** Messages erreichen Mujo nicht
 
 **Check:**
+
 1. ✅ Event Subscriptions aktiviert?
 2. ✅ Request URL korrekt?
 3. ✅ ngrok läuft? (für lokales Testing)
@@ -494,6 +527,7 @@ npx tsx test-mujo-humor.js
 5. ✅ `SLACK_ENABLED=true` in .env?
 
 **Debug:**
+
 ```bash
 # Check server logs
 npm run dev
@@ -509,6 +543,7 @@ npm run dev
 **Problem:** Slack sagt "Challenge failed"
 
 **Lösung:**
+
 ```typescript
 // In slack-events.ts - dies ist schon implementiert:
 if (event.type === "url_verification") {
@@ -517,6 +552,7 @@ if (event.type === "url_verification") {
 ```
 
 **Check:**
+
 - Server muss laufen
 - URL muss erreichbar sein
 - JSON response muss exact sein
@@ -528,12 +564,14 @@ if (event.type === "url_verification") {
 **Problem:** Infinite loop
 
 **Lösung:**
+
 ```bash
 # In .env:
 SLACK_BOT_USER_ID=U01234567  # Mujo's User ID eintragen
 ```
 
 Code check (schon implementiert):
+
 ```typescript
 if (event.user === botUserId) {
   return; // Don't respond to self
@@ -547,12 +585,14 @@ if (event.user === botUserId) {
 **Problem:** 401 Error
 
 **Check:**
+
 ```bash
 # .env:
 SLACK_SIGNING_SECRET=abc123...  # Muss korrekt sein
 ```
 
 **Debug:**
+
 ```typescript
 // Temporarily disable verification:
 // Comment out verification middleware
@@ -567,6 +607,7 @@ SLACK_SIGNING_SECRET=abc123...  # Muss korrekt sein
 Du brauchst eine öffentliche URL (nicht ngrok):
 
 Options:
+
 - **Heroku** - `heroku.com`
 - **Railway** - `railway.app`
 - **Fly.io** - `fly.io`
@@ -604,11 +645,13 @@ NODE_ENV=production
 ### 3. Update Slack App
 
 **Request URL:**
+
 ```
 https://your-production-domain.com/api/slack/events
 ```
 
 **Save & Test:**
+
 1. Slack validates URL
 2. Send test message
 3. Mujo responds!
@@ -618,6 +661,7 @@ https://your-production-domain.com/api/slack/events
 ### 4. Monitoring
 
 **Check logs:**
+
 ```bash
 # Server logs
 tail -f logs/app.log
@@ -627,6 +671,7 @@ tail -f logs/error.log
 ```
 
 **Health Check:**
+
 ```bash
 curl https://your-domain.com/health
 ```
@@ -674,16 +719,16 @@ await slack.sendMessage({
   blocks: [
     {
       type: "header",
-      text: { type: "plain_text", text: "📊 System Status" }
+      text: { type: "plain_text", text: "📊 System Status" },
     },
     {
       type: "section",
       fields: [
         { type: "mrkdwn", text: `*Tasks:* ${metrics.totalTasks}` },
-        { type: "mrkdwn", text: `*STOP Score:* ${metrics.avgStopScore}` }
-      ]
-    }
-  ]
+        { type: "mrkdwn", text: `*STOP Score:* ${metrics.avgStopScore}` },
+      ],
+    },
+  ],
 });
 ```
 
@@ -700,6 +745,7 @@ Erstelle Slack Slash Commands:
 ```
 
 **Setup:**
+
 1. Slack App → **Slash Commands**
 2. **Create New Command**
 3. Request URL: `https://your-domain.com/api/slack/commands`
@@ -717,7 +763,7 @@ await slack.sendMessage({
   blocks: [
     {
       type: "section",
-      text: { type: "mrkdwn", text: "Task needs approval" }
+      text: { type: "mrkdwn", text: "Task needs approval" },
     },
     {
       type: "actions",
@@ -725,17 +771,17 @@ await slack.sendMessage({
         {
           type: "button",
           text: { type: "plain_text", text: "Approve ✅" },
-          action_id: "approve_task"
+          action_id: "approve_task",
         },
         {
           type: "button",
           text: { type: "plain_text", text: "Reject ❌" },
           action_id: "reject_task",
-          style: "danger"
-        }
-      ]
-    }
-  ]
+          style: "danger",
+        },
+      ],
+    },
+  ],
 });
 ```
 

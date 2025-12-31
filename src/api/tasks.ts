@@ -26,7 +26,11 @@ const SubmitWorkSchema = z.object({
   claims: z.array(z.string()).optional().default([]),
 });
 
-export function createTaskRouter(db: Database, queue: QueueAdapter, gate: EnforcementGate): Router {
+export function createTaskRouter(
+  db: Database,
+  queue: QueueAdapter,
+  gate: EnforcementGate,
+): Router {
   const router = Router();
 
   // Phase-1 Hardening: All task routes require authentication
@@ -55,11 +59,18 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
 
       // ENFORCEMENT GATE: Evaluate task content before queuing
       const content = `${parsed.data.title} ${parsed.data.description ?? ""}`;
-      const gateDecision = gate.evaluate(task.id, content, parsed.data.artefacts);
+      const gateDecision = gate.evaluate(
+        task.id,
+        content,
+        parsed.data.artefacts,
+      );
 
       if (gateDecision.status === "BLOCKED") {
         // Task is BLOCKED - do NOT queue, require human approval
-        db.updateTask(task.id, { status: "stopped", stop_score: gateDecision.stopScore });
+        db.updateTask(task.id, {
+          status: "stopped",
+          stop_score: gateDecision.stopScore,
+        });
 
         // Log blocked task event
         db.audit.log({
@@ -68,7 +79,10 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
           taskId: task.id,
           userId: (req as any).userId,
           severity: "warn",
-          meta: { stopScore: gateDecision.stopScore, reasons: gateDecision.reasons },
+          meta: {
+            stopScore: gateDecision.stopScore,
+            reasons: gateDecision.reasons,
+          },
         });
 
         return res.status(202).json({
@@ -76,7 +90,9 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
           status: "BLOCKED",
           stop_score: gateDecision.stopScore,
           reasons: gateDecision.reasons,
-          message: "⚠️ STOP_REQUIRED: Task blocked. Human approval needed at /api/enforcement/approve/" + task.id,
+          message:
+            "⚠️ STOP_REQUIRED: Task blocked. Human approval needed at /api/enforcement/approve/" +
+            task.id,
           approval_url: `/api/enforcement/approve/${task.id}`,
         });
       }
@@ -125,11 +141,18 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
       }
 
       // ENFORCEMENT GATE: Evaluate submitted work
-      const gateDecision = gate.evaluate(task.id, parsed.data.content, parsed.data.artefacts);
+      const gateDecision = gate.evaluate(
+        task.id,
+        parsed.data.content,
+        parsed.data.artefacts,
+      );
 
       if (gateDecision.status === "BLOCKED") {
         // Work is BLOCKED - cannot complete task
-        db.updateTask(task.id, { status: "stopped", stop_score: gateDecision.stopScore });
+        db.updateTask(task.id, {
+          status: "stopped",
+          stop_score: gateDecision.stopScore,
+        });
 
         // Log blocked submission event
         db.audit.log({
@@ -138,7 +161,10 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
           taskId: task.id,
           userId: (req as any).userId,
           severity: "warn",
-          meta: { stopScore: gateDecision.stopScore, reasons: gateDecision.reasons },
+          meta: {
+            stopScore: gateDecision.stopScore,
+            reasons: gateDecision.reasons,
+          },
         });
 
         return res.status(202).json({
@@ -146,13 +172,17 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
           status: "BLOCKED",
           stop_score: gateDecision.stopScore,
           reasons: gateDecision.reasons,
-          message: "⚠️ STOP_REQUIRED: Submission blocked. Human approval needed.",
+          message:
+            "⚠️ STOP_REQUIRED: Submission blocked. Human approval needed.",
           approval_url: `/api/enforcement/approve/${task.id}`,
         });
       }
 
       // Work passed gate - mark as completed
-      db.updateTask(task.id, { status: "completed", stop_score: gateDecision.stopScore });
+      db.updateTask(task.id, {
+        status: "completed",
+        stop_score: gateDecision.stopScore,
+      });
 
       // Log task completed event
       db.audit.log({
@@ -182,7 +212,9 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
   router.get("/", (req, res) => {
     try {
       const state = req.query.state as string | undefined;
-      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+      const limit = req.query.limit
+        ? parseInt(req.query.limit as string, 10)
+        : 100;
 
       const tasks = db.listTasks({ state, limit });
 
@@ -222,7 +254,9 @@ export function createTaskRouter(db: Database, queue: QueueAdapter, gate: Enforc
         enforcement: {
           blocked: isBlocked,
           pending_approval: pending ?? null,
-          approval_url: isBlocked ? `/api/enforcement/approve/${task.id}` : null,
+          approval_url: isBlocked
+            ? `/api/enforcement/approve/${task.id}`
+            : null,
         },
       });
     } catch (error) {

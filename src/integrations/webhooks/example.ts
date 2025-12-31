@@ -109,7 +109,11 @@ function exampleUnregisterWebhook(webhookId: string) {
 /**
  * Example 8: Verify incoming webhook (for receiving webhooks)
  */
-function exampleVerifyIncoming(requestBody: string, signature: string, secret: string) {
+function exampleVerifyIncoming(
+  requestBody: string,
+  signature: string,
+  secret: string,
+) {
   const isValid = webhookManager.verifyIncoming(requestBody, signature, secret);
 
   if (isValid) {
@@ -125,7 +129,9 @@ function exampleVerifyIncoming(requestBody: string, signature: string, secret: s
  */
 async function exampleSlackIntegration() {
   webhookManager.register({
-    url: process.env.SLACK_WEBHOOK_URL || "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+    url:
+      process.env.SLACK_WEBHOOK_URL ||
+      "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
     events: ["stop_score.high", "stop_score.critical"],
     enabled: !!process.env.SLACK_WEBHOOK_URL,
   });

@@ -37,7 +37,9 @@ describe("Rate Limiter Module", () => {
       });
 
       const mockReq = {
-        headers: { "x-forwarded-for": "192.168.1." + Math.floor(Math.random() * 255) },
+        headers: {
+          "x-forwarded-for": "192.168.1." + Math.floor(Math.random() * 255),
+        },
         socket: { remoteAddress: "192.168.1.100" },
       } as unknown as Request;
 
@@ -54,7 +56,11 @@ describe("Rate Limiter Module", () => {
 
       await limiter(mockReq, mockRes, mockNext);
 
-      assert.strictEqual(nextCalled, true, "next() should be called for allowed requests");
+      assert.strictEqual(
+        nextCalled,
+        true,
+        "next() should be called for allowed requests",
+      );
     });
 
     it("should set rate limit headers", async () => {
@@ -65,7 +71,9 @@ describe("Rate Limiter Module", () => {
       });
 
       const mockReq = {
-        headers: { "x-forwarded-for": "192.168.2." + Math.floor(Math.random() * 255) },
+        headers: {
+          "x-forwarded-for": "192.168.2." + Math.floor(Math.random() * 255),
+        },
         socket: { remoteAddress: "192.168.2.101" },
       } as unknown as Request;
 
@@ -80,9 +88,18 @@ describe("Rate Limiter Module", () => {
 
       await limiter(mockReq, mockRes, () => {});
 
-      assert.ok("X-RateLimit-Limit" in headers, "Should set X-RateLimit-Limit header");
-      assert.ok("X-RateLimit-Remaining" in headers, "Should set X-RateLimit-Remaining header");
-      assert.ok("X-RateLimit-Reset" in headers, "Should set X-RateLimit-Reset header");
+      assert.ok(
+        "X-RateLimit-Limit" in headers,
+        "Should set X-RateLimit-Limit header",
+      );
+      assert.ok(
+        "X-RateLimit-Remaining" in headers,
+        "Should set X-RateLimit-Remaining header",
+      );
+      assert.ok(
+        "X-RateLimit-Reset" in headers,
+        "Should set X-RateLimit-Reset header",
+      );
     });
 
     it("should handle array x-forwarded-for header", async () => {
@@ -120,7 +137,9 @@ describe("Rate Limiter Module", () => {
 
       const mockReq = {
         headers: {},
-        socket: { remoteAddress: "172.16.0." + Math.floor(Math.random() * 255) },
+        socket: {
+          remoteAddress: "172.16.0." + Math.floor(Math.random() * 255),
+        },
       } as unknown as Request;
 
       const mockRes = {
@@ -166,7 +185,10 @@ describe("Rate Limiter Module", () => {
     it("should export getRateLimiterMode function", () => {
       assert.strictEqual(typeof getRateLimiterMode, "function");
       const mode = getRateLimiterMode();
-      assert.ok(mode === "redis" || mode === "in-memory", "Mode should be 'redis' or 'in-memory'");
+      assert.ok(
+        mode === "redis" || mode === "in-memory",
+        "Mode should be 'redis' or 'in-memory'",
+      );
     });
   });
 

@@ -7,7 +7,10 @@
 import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert";
 import type { Request, Response } from "express";
-import { createAgentControlRouter, resetAgents } from "../src/api/agent-control.ts";
+import {
+  createAgentControlRouter,
+  resetAgents,
+} from "../src/api/agent-control.ts";
 
 // Mock Express Response
 function createMockResponse() {
@@ -38,7 +41,7 @@ function createMockResponse() {
 function createMockRequest(
   params: Record<string, string> = {},
   query: Record<string, string> = {},
-  body: any = {}
+  body: any = {},
 ): Request {
   return {
     params,
@@ -60,7 +63,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const listRoute = routes.find(
-        (r: any) => r.route?.path === "/" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/" && r.route?.methods?.get,
       );
       const handler = listRoute?.route?.stack[0]?.handle;
 
@@ -82,7 +85,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const listRoute = routes.find(
-        (r: any) => r.route?.path === "/" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/" && r.route?.methods?.get,
       );
       const handler = listRoute?.route?.stack[0]?.handle;
 
@@ -109,7 +112,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const detailsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get,
       );
       const handler = detailsRoute?.route?.stack[0]?.handle;
 
@@ -131,7 +134,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const detailsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get,
       );
       const handler = detailsRoute?.route?.stack[0]?.handle;
 
@@ -150,7 +153,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const detailsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get,
       );
       const handler = detailsRoute?.route?.stack[0]?.handle;
 
@@ -169,7 +172,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const detailsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/:id" && r.route?.methods?.get,
       );
       const handler = detailsRoute?.route?.stack[0]?.handle;
 
@@ -191,7 +194,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const startRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/start"
+        (r: any) => r.route?.path === "/:id/start",
       );
       const handler = startRoute?.route?.stack[0]?.handle;
 
@@ -212,7 +215,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const startRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/start"
+        (r: any) => r.route?.path === "/:id/start",
       );
       const handler = startRoute?.route?.stack[0]?.handle;
 
@@ -231,7 +234,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const startRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/start"
+        (r: any) => r.route?.path === "/:id/start",
       );
       const handler = startRoute?.route?.stack[0]?.handle;
 
@@ -250,9 +253,7 @@ describe("Agent Control API", () => {
       const res = createMockResponse();
 
       const routes = (router as any).stack;
-      const stopRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/stop"
-      );
+      const stopRoute = routes.find((r: any) => r.route?.path === "/:id/stop");
       const handler = stopRoute?.route?.stack[0]?.handle;
 
       if (handler) {
@@ -271,9 +272,7 @@ describe("Agent Control API", () => {
       const res = createMockResponse();
 
       const routes = (router as any).stack;
-      const stopRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/stop"
-      );
+      const stopRoute = routes.find((r: any) => r.route?.path === "/:id/stop");
       const handler = stopRoute?.route?.stack[0]?.handle;
 
       if (handler) {
@@ -293,7 +292,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const restartRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/restart"
+        (r: any) => r.route?.path === "/:id/restart",
       );
       const handler = restartRoute?.route?.stack[0]?.handle;
 
@@ -314,7 +313,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const restartRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/restart"
+        (r: any) => r.route?.path === "/:id/restart",
       );
       const handler = restartRoute?.route?.stack[0]?.handle;
 
@@ -334,7 +333,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const statusRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/status"
+        (r: any) => r.route?.path === "/:id/status",
       );
       const handler = statusRoute?.route?.stack[0]?.handle;
 
@@ -357,7 +356,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const statusRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/status"
+        (r: any) => r.route?.path === "/:id/status",
       );
       const handler = statusRoute?.route?.stack[0]?.handle;
 
@@ -376,9 +375,7 @@ describe("Agent Control API", () => {
       const res = createMockResponse();
 
       const routes = (router as any).stack;
-      const logsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/logs"
-      );
+      const logsRoute = routes.find((r: any) => r.route?.path === "/:id/logs");
       const handler = logsRoute?.route?.stack[0]?.handle;
 
       if (handler) {
@@ -399,9 +396,7 @@ describe("Agent Control API", () => {
       const res = createMockResponse();
 
       const routes = (router as any).stack;
-      const logsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/logs"
-      );
+      const logsRoute = routes.find((r: any) => r.route?.path === "/:id/logs");
       const handler = logsRoute?.route?.stack[0]?.handle;
 
       if (handler) {
@@ -418,9 +413,7 @@ describe("Agent Control API", () => {
       const res = createMockResponse();
 
       const routes = (router as any).stack;
-      const logsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/logs"
-      );
+      const logsRoute = routes.find((r: any) => r.route?.path === "/:id/logs");
       const handler = logsRoute?.route?.stack[0]?.handle;
 
       if (handler) {
@@ -437,9 +430,7 @@ describe("Agent Control API", () => {
       const res = createMockResponse();
 
       const routes = (router as any).stack;
-      const logsRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/logs"
-      );
+      const logsRoute = routes.find((r: any) => r.route?.path === "/:id/logs");
       const handler = logsRoute?.route?.stack[0]?.handle;
 
       if (handler) {
@@ -459,13 +450,13 @@ describe("Agent Control API", () => {
         {
           task: "Build Status Dashboard",
           priority: "high",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const tasksRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/tasks"
+        (r: any) => r.route?.path === "/:id/tasks",
       );
       const handler = tasksRoute?.route?.stack[0]?.handle;
 
@@ -487,7 +478,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const tasksRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/tasks"
+        (r: any) => r.route?.path === "/:id/tasks",
       );
       const handler = tasksRoute?.route?.stack[0]?.handle;
 
@@ -507,13 +498,13 @@ describe("Agent Control API", () => {
         {
           task: "Test task",
           priority: "invalid",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const tasksRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/tasks"
+        (r: any) => r.route?.path === "/:id/tasks",
       );
       const handler = tasksRoute?.route?.stack[0]?.handle;
 
@@ -533,13 +524,13 @@ describe("Agent Control API", () => {
           task: "Test task",
           priority: "medium",
           deadline: "2025-12-31T23:59:59Z",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const tasksRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/tasks"
+        (r: any) => r.route?.path === "/:id/tasks",
       );
       const handler = tasksRoute?.route?.stack[0]?.handle;
 
@@ -559,13 +550,13 @@ describe("Agent Control API", () => {
         {},
         {
           task: "Test task",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const tasksRoute = routes.find(
-        (r: any) => r.route?.path === "/:id/tasks"
+        (r: any) => r.route?.path === "/:id/tasks",
       );
       const handler = tasksRoute?.route?.stack[0]?.handle;
 
@@ -585,7 +576,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const statusRoute = routes.find(
-        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get,
       );
       const handler = statusRoute?.route?.stack[0]?.handle;
 
@@ -608,7 +599,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const statusRoute = routes.find(
-        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get,
       );
       const handler = statusRoute?.route?.stack[0]?.handle;
 
@@ -627,7 +618,9 @@ describe("Agent Control API", () => {
       assert.ok(typeof agent.lastActivity === "string");
       // pid and lastError can be null
       assert.ok(agent.pid === null || typeof agent.pid === "number");
-      assert.ok(agent.lastError === null || typeof agent.lastError === "string");
+      assert.ok(
+        agent.lastError === null || typeof agent.lastError === "string",
+      );
     });
 
     it("returns online agents with PID", async () => {
@@ -637,7 +630,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const statusRoute = routes.find(
-        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get,
       );
       const handler = statusRoute?.route?.stack[0]?.handle;
 
@@ -646,7 +639,9 @@ describe("Agent Control API", () => {
       }
 
       const response = res.getJson();
-      const onlineAgent = response.agents.find((a: any) => a.status === "online");
+      const onlineAgent = response.agents.find(
+        (a: any) => a.status === "online",
+      );
 
       if (onlineAgent) {
         assert.ok(typeof onlineAgent.pid === "number");
@@ -660,7 +655,7 @@ describe("Agent Control API", () => {
 
       const routes = (router as any).stack;
       const statusRoute = routes.find(
-        (r: any) => r.route?.path === "/status" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/status" && r.route?.methods?.get,
       );
       const handler = statusRoute?.route?.stack[0]?.handle;
 
@@ -669,7 +664,9 @@ describe("Agent Control API", () => {
       }
 
       const response = res.getJson();
-      const offlineAgent = response.agents.find((a: any) => a.status === "offline");
+      const offlineAgent = response.agents.find(
+        (a: any) => a.status === "offline",
+      );
 
       if (offlineAgent) {
         assert.strictEqual(offlineAgent.pid, null);

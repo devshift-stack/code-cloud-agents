@@ -106,7 +106,11 @@ export function createBrainRouter(db: Database): Router {
         message: `Document "${doc.title}" ingested`,
         userId,
         severity: "info",
-        meta: { docId: doc.id, sourceType: doc.sourceType, contentLength: parsed.data.content.length },
+        meta: {
+          docId: doc.id,
+          sourceType: doc.sourceType,
+          contentLength: parsed.data.content.length,
+        },
       });
 
       res.status(201).json({
@@ -152,7 +156,7 @@ export function createBrainRouter(db: Database): Router {
           url: parsed.data.url,
           metadata: parsed.data.metadata,
         },
-        parsed.data.content
+        parsed.data.content,
       );
 
       // Generate embeddings in background
@@ -280,7 +284,7 @@ export function createBrainRouter(db: Database): Router {
       // Log brain search event (POST)
       db.audit.log({
         kind: "brain_search",
-        message: `Search: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`,
+        message: `Search: "${query.substring(0, 50)}${query.length > 50 ? "..." : ""}"`,
         userId,
         severity: "info",
         meta: { query, mode, resultCount: results.length },
@@ -355,7 +359,7 @@ export function createBrainRouter(db: Database): Router {
       // Log brain search event (GET)
       db.audit.log({
         kind: "brain_search",
-        message: `Search: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`,
+        message: `Search: "${query.substring(0, 50)}${query.length > 50 ? "..." : ""}"`,
         userId,
         severity: "info",
         meta: { query, mode, resultCount: results.length },
@@ -397,7 +401,12 @@ export function createBrainRouter(db: Database): Router {
       const sourceType = req.query.sourceType as string;
       const status = req.query.status as string;
 
-      const docs = brainManager.listDocs(userId, { limit, offset, sourceType, status });
+      const docs = brainManager.listDocs(userId, {
+        limit,
+        offset,
+        sourceType,
+        status,
+      });
 
       res.json({
         success: true,

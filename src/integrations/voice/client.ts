@@ -16,8 +16,12 @@ export interface VoiceCall {
 
 export interface VoiceClient {
   isEnabled(): boolean;
-  makeCall(call: VoiceCall): Promise<{ success: boolean; callId?: string; error?: string }>;
-  transcribe(audioUrl: string): Promise<{ success: boolean; text?: string; error?: string }>;
+  makeCall(
+    call: VoiceCall,
+  ): Promise<{ success: boolean; callId?: string; error?: string }>;
+  transcribe(
+    audioUrl: string,
+  ): Promise<{ success: boolean; text?: string; error?: string }>;
   getStatus(): Promise<{ connected: boolean; error?: string }>;
 }
 
@@ -33,11 +37,14 @@ export function createVoiceClient(_config?: VoiceConfig): VoiceClient {
       return enabled;
     },
 
-    async makeCall(_call: VoiceCall): Promise<{ success: boolean; callId?: string; error?: string }> {
+    async makeCall(
+      _call: VoiceCall,
+    ): Promise<{ success: boolean; callId?: string; error?: string }> {
       if (!enabled) {
         return {
           success: false,
-          error: "STUB: Voice integration is disabled. Set VOICE_ENABLED=true to enable.",
+          error:
+            "STUB: Voice integration is disabled. Set VOICE_ENABLED=true to enable.",
         };
       }
 
@@ -48,7 +55,9 @@ export function createVoiceClient(_config?: VoiceConfig): VoiceClient {
       };
     },
 
-    async transcribe(_audioUrl: string): Promise<{ success: boolean; text?: string; error?: string }> {
+    async transcribe(
+      _audioUrl: string,
+    ): Promise<{ success: boolean; text?: string; error?: string }> {
       if (!enabled) {
         return {
           success: false,

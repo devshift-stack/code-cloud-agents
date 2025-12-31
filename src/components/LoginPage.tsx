@@ -1,8 +1,13 @@
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface LoginPageProps {
-  onLoginSuccess: (user: { id: string; email: string; role: string; name: string }) => void;
+  onLoginSuccess: (user: {
+    id: string;
+    email: string;
+    role: string;
+    name: string;
+  }) => void;
 }
 
 /**
@@ -10,25 +15,25 @@ interface LoginPageProps {
  * Connects to POST /api/auth/login endpoint
  */
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email || !password) {
-      toast.error('Please enter email and password');
+      toast.error("Please enter email and password");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -36,7 +41,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || 'Login failed');
+        throw new Error(data.error || data.message || "Login failed");
       }
 
       // Store tokens (new API format)
@@ -44,13 +49,13 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
       const user = data.user;
 
       if (!token || !user) {
-        throw new Error('Invalid response from server');
+        throw new Error("Invalid response from server");
       }
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      toast.success('Login successful!');
+      toast.success("Login successful!");
 
       // Add small delay to ensure storage is complete
       setTimeout(() => {
@@ -58,12 +63,12 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           id: user.id,
           email: user.email,
           role: user.role,
-          name: user.displayName || user.email
+          name: user.displayName || user.email,
         });
       }, 100);
     } catch (error) {
-      console.error('Login error:', error);
-      toast.error(error instanceof Error ? error.message : 'Login failed');
+      console.error("Login error:", error);
+      toast.error(error instanceof Error ? error.message : "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +145,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
               data-testid="cloudagents.auth.login.submit.button"
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? "Signing in..." : "Sign In"}
             </button>
           </form>
 

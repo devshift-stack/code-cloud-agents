@@ -17,8 +17,13 @@ export interface PineconeVector {
 
 export interface PineconeClient {
   isEnabled(): boolean;
-  upsert(vectors: PineconeVector[]): Promise<{ success: boolean; upsertedCount?: number; error?: string }>;
-  query(vector: number[], topK?: number): Promise<{ success: boolean; matches?: unknown[]; error?: string }>;
+  upsert(
+    vectors: PineconeVector[],
+  ): Promise<{ success: boolean; upsertedCount?: number; error?: string }>;
+  query(
+    vector: number[],
+    topK?: number,
+  ): Promise<{ success: boolean; matches?: unknown[]; error?: string }>;
   deleteById(ids: string[]): Promise<{ success: boolean; error?: string }>;
   getStatus(): Promise<{ connected: boolean; error?: string }>;
 }
@@ -35,11 +40,14 @@ export function createPineconeClient(_config?: PineconeConfig): PineconeClient {
       return enabled;
     },
 
-    async upsert(_vectors: PineconeVector[]): Promise<{ success: boolean; upsertedCount?: number; error?: string }> {
+    async upsert(
+      _vectors: PineconeVector[],
+    ): Promise<{ success: boolean; upsertedCount?: number; error?: string }> {
       if (!enabled) {
         return {
           success: false,
-          error: "STUB: Pinecone integration is disabled. Set PINECONE_ENABLED=true to enable.",
+          error:
+            "STUB: Pinecone integration is disabled. Set PINECONE_ENABLED=true to enable.",
         };
       }
 
@@ -50,7 +58,10 @@ export function createPineconeClient(_config?: PineconeConfig): PineconeClient {
       };
     },
 
-    async query(_vector: number[], _topK = 10): Promise<{ success: boolean; matches?: unknown[]; error?: string }> {
+    async query(
+      _vector: number[],
+      _topK = 10,
+    ): Promise<{ success: boolean; matches?: unknown[]; error?: string }> {
       if (!enabled) {
         return {
           success: false,
@@ -65,7 +76,9 @@ export function createPineconeClient(_config?: PineconeConfig): PineconeClient {
       };
     },
 
-    async deleteById(_ids: string[]): Promise<{ success: boolean; error?: string }> {
+    async deleteById(
+      _ids: string[],
+    ): Promise<{ success: boolean; error?: string }> {
       return {
         success: false,
         error: "STUB: Pinecone delete not implemented",

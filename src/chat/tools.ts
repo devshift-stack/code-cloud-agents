@@ -86,7 +86,7 @@ export const agentTools: Anthropic.Tool[] = [
  */
 export async function executeTool(
   toolName: string,
-  toolInput: Record<string, unknown>
+  toolInput: Record<string, unknown>,
 ): Promise<string> {
   try {
     switch (toolName) {
@@ -95,12 +95,12 @@ export async function executeTool(
       case "list_files":
         return listFiles(
           toolInput.directory as string,
-          toolInput.recursive as boolean
+          toolInput.recursive as boolean,
         );
       case "search_code":
         return searchCode(
           toolInput.query as string,
-          toolInput.file_pattern as string | undefined
+          toolInput.file_pattern as string | undefined,
         );
       case "get_project_structure":
         return getProjectStructure();
@@ -164,7 +164,7 @@ function listFiles(directory: string, recursive = false): string {
 
     // Skip node_modules and hidden directories
     const filtered = entries.filter(
-      (e) => !e.name.startsWith(".") && e.name !== "node_modules"
+      (e) => !e.name.startsWith(".") && e.name !== "node_modules",
     );
 
     for (const entry of filtered) {
@@ -186,8 +186,10 @@ function listFiles(directory: string, recursive = false): string {
     return "Directory is empty or contains only hidden files/node_modules";
   }
 
-  return results.slice(0, 100).join("\n") +
-    (results.length > 100 ? `\n... and ${results.length - 100} more files` : "");
+  return (
+    results.slice(0, 100).join("\n") +
+    (results.length > 100 ? `\n... and ${results.length - 100} more files` : "")
+  );
 }
 
 /**
@@ -222,8 +224,19 @@ function searchCode(query: string, filePattern?: string): string {
         // Only search text files
         const ext = path.extname(entry.name).toLowerCase();
         const textExts = [
-          ".ts", ".tsx", ".js", ".jsx", ".json", ".md", ".css",
-          ".html", ".yaml", ".yml", ".toml", ".env", ".sh",
+          ".ts",
+          ".tsx",
+          ".js",
+          ".jsx",
+          ".json",
+          ".md",
+          ".css",
+          ".html",
+          ".yaml",
+          ".yml",
+          ".toml",
+          ".env",
+          ".sh",
         ];
         if (!textExts.includes(ext) && ext !== "") {
           continue;
@@ -260,9 +273,7 @@ function searchCode(query: string, filePattern?: string): string {
     return `No matches found for: ${query}`;
   }
 
-  return results
-    .map((r) => `${r.file}:${r.line}: ${r.content}`)
-    .join("\n");
+  return results.map((r) => `${r.file}:${r.line}: ${r.content}`).join("\n");
 }
 
 /**
@@ -277,7 +288,11 @@ function getProjectStructure(): string {
     const pkg = JSON.parse(fs.readFileSync(packagePath, "utf-8"));
     structure.push(`📦 Project: ${pkg.name || "unknown"}`);
     structure.push(`📝 Description: ${pkg.description || "N/A"}`);
-    structure.push(`🔧 Main dependencies: ${Object.keys(pkg.dependencies || {}).slice(0, 10).join(", ")}`);
+    structure.push(
+      `🔧 Main dependencies: ${Object.keys(pkg.dependencies || {})
+        .slice(0, 10)
+        .join(", ")}`,
+    );
     structure.push("");
   }
 
@@ -285,7 +300,7 @@ function getProjectStructure(): string {
   structure.push("📁 Project Structure:");
   const entries = fs.readdirSync(PROJECT_ROOT, { withFileTypes: true });
   const filtered = entries.filter(
-    (e) => !e.name.startsWith(".") && e.name !== "node_modules"
+    (e) => !e.name.startsWith(".") && e.name !== "node_modules",
   );
 
   for (const entry of filtered) {
@@ -299,7 +314,9 @@ function getProjectStructure(): string {
           return stat.isDirectory() && !c.startsWith(".");
         });
         if (childDirs.length > 0) {
-          structure.push(`      └── ${childDirs.slice(0, 5).join(", ")}${childDirs.length > 5 ? "..." : ""}`);
+          structure.push(
+            `      └── ${childDirs.slice(0, 5).join(", ")}${childDirs.length > 5 ? "..." : ""}`,
+          );
         }
       } catch {
         // Skip if can't read

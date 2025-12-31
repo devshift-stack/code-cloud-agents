@@ -3,6 +3,7 @@
 ## Authentication
 
 ### Login (get JWT token)
+
 ```bash
 # Success case
 curl -X POST http://localhost:4000/api/auth/login \
@@ -36,6 +37,7 @@ curl -X POST http://localhost:4000/api/auth/login \
 ## Agents Status (NEW)
 
 ### GET /api/agents/status
+
 Get status overview of all agents (for MCP tools / dashboard).
 
 ```bash
@@ -46,6 +48,7 @@ curl -X GET http://localhost:4000/api/agents/status \
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -75,6 +78,7 @@ curl -X GET http://localhost:4000/api/agents/status \
 ```
 
 **Error (401 Unauthorized):**
+
 ```json
 {
   "error": "No authorization header"
@@ -82,6 +86,7 @@ curl -X GET http://localhost:4000/api/agents/status \
 ```
 
 **Error (403 Forbidden):**
+
 ```json
 {
   "error": "Admin access required"
@@ -93,6 +98,7 @@ curl -X GET http://localhost:4000/api/agents/status \
 ## Tasks
 
 ### GET /api/tasks - List all tasks
+
 ```bash
 TOKEN="your-jwt-token"
 
@@ -108,6 +114,7 @@ curl -X GET "http://localhost:4000/api/tasks?state=running" \
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -126,14 +133,16 @@ curl -X GET "http://localhost:4000/api/tasks?state=running" \
 ```
 
 ### State mapping:
+
 | API State | Database Status |
-|-----------|-----------------|
+| --------- | --------------- |
 | running   | in_progress     |
 | failed    | stopped         |
 | done      | completed       |
 | pending   | pending         |
 
 ### POST /api/tasks - Create task
+
 ```bash
 TOKEN="your-jwt-token"
 
@@ -148,6 +157,7 @@ curl -X POST http://localhost:4000/api/tasks \
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "uuid-123",
@@ -158,6 +168,7 @@ curl -X POST http://localhost:4000/api/tasks \
 ```
 
 **Response (202 Accepted - BLOCKED by Enforcement Gate):**
+
 ```json
 {
   "id": "uuid-123",
@@ -216,6 +227,7 @@ curl -s -X GET $BASE_URL/health | jq '.'
 ## Error Response Shapes
 
 ### 400 Bad Request
+
 ```json
 {
   "error": "Invalid request",
@@ -230,12 +242,15 @@ curl -s -X GET $BASE_URL/health | jq '.'
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "error": "No authorization header"
 }
 ```
+
 or
+
 ```json
 {
   "error": "Invalid or expired token"
@@ -243,6 +258,7 @@ or
 ```
 
 ### 403 Forbidden
+
 ```json
 {
   "error": "Admin access required"
@@ -250,6 +266,7 @@ or
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "error": "Task not found"
@@ -257,6 +274,7 @@ or
 ```
 
 ### 429 Too Many Requests
+
 ```json
 {
   "error": "Too many requests. Please try again later."
@@ -264,6 +282,7 @@ or
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
   "error": "Internal server error"

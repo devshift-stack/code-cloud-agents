@@ -9,7 +9,13 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,7 +59,7 @@ const API_BASE = "/api/brain";
 async function brainApi<T>(
   endpoint: string,
   method: string = "GET",
-  body?: unknown
+  body?: unknown,
 ): Promise<T> {
   const token = localStorage.getItem("auth_token");
   const headers: Record<string, string> = {
@@ -112,17 +118,33 @@ interface BrainStats {
 
 // Status badge component
 function StatusBadge({ status }: { status: string }) {
-  const variants: Record<string, { icon: React.ReactNode; className: string }> = {
-    ready: { icon: <CheckCircle className="h-3 w-3" />, className: "bg-green-100 text-green-700" },
-    processing: { icon: <Loader2 className="h-3 w-3 animate-spin" />, className: "bg-blue-100 text-blue-700" },
-    pending: { icon: <Clock className="h-3 w-3" />, className: "bg-yellow-100 text-yellow-700" },
-    error: { icon: <AlertCircle className="h-3 w-3" />, className: "bg-red-100 text-red-700" },
-  };
+  const variants: Record<string, { icon: React.ReactNode; className: string }> =
+    {
+      ready: {
+        icon: <CheckCircle className="h-3 w-3" />,
+        className: "bg-green-100 text-green-700",
+      },
+      processing: {
+        icon: <Loader2 className="h-3 w-3 animate-spin" />,
+        className: "bg-blue-100 text-blue-700",
+      },
+      pending: {
+        icon: <Clock className="h-3 w-3" />,
+        className: "bg-yellow-100 text-yellow-700",
+      },
+      error: {
+        icon: <AlertCircle className="h-3 w-3" />,
+        className: "bg-red-100 text-red-700",
+      },
+    };
 
   const variant = variants[status] || variants.pending;
 
   return (
-    <Badge className={`flex items-center gap-1 ${variant.className}`} data-testid="brain-doc-status">
+    <Badge
+      className={`flex items-center gap-1 ${variant.className}`}
+      data-testid="brain-doc-status"
+    >
       {variant.icon}
       {status}
     </Badge>
@@ -144,7 +166,9 @@ function SourceIcon({ type }: { type: string }) {
 // Main component
 export function BrainMemoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchMode, setSearchMode] = useState<"hybrid" | "semantic" | "keyword">("hybrid");
+  const [searchMode, setSearchMode] = useState<
+    "hybrid" | "semantic" | "keyword"
+  >("hybrid");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [docs, setDocs] = useState<BrainDoc[]>([]);
   const [stats, setStats] = useState<BrainStats | null>(null);
@@ -190,11 +214,15 @@ export function BrainMemoryPage() {
     setError(null);
 
     try {
-      const result = await brainApi<{ results: SearchResult[] }>("/search", "POST", {
-        query: searchQuery,
-        mode: searchMode,
-        limit: 20,
-      });
+      const result = await brainApi<{ results: SearchResult[] }>(
+        "/search",
+        "POST",
+        {
+          query: searchQuery,
+          mode: searchMode,
+          limit: 20,
+        },
+      );
       setSearchResults(result.results);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed");
@@ -257,8 +285,12 @@ export function BrainMemoryPage() {
         <div className="flex items-center gap-3">
           <Brain className="h-8 w-8 text-purple-500" />
           <div>
-            <h1 className="text-2xl font-bold" data-testid="brain-page-title">Knowledge Base</h1>
-            <p className="text-muted-foreground">Manage your AI's memory and knowledge</p>
+            <h1 className="text-2xl font-bold" data-testid="brain-page-title">
+              Knowledge Base
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your AI's memory and knowledge
+            </p>
           </div>
         </div>
 
@@ -372,7 +404,9 @@ export function BrainMemoryPage() {
           </Card>
           <Card>
             <CardContent className="pt-6">
-              <div className="text-2xl font-bold">{stats.embeddingCoverage}%</div>
+              <div className="text-2xl font-bold">
+                {stats.embeddingCoverage}%
+              </div>
               <div className="text-sm text-muted-foreground">Coverage</div>
             </CardContent>
           </Card>
@@ -411,7 +445,10 @@ export function BrainMemoryPage() {
                   className="flex-1"
                   data-testid="brain-search-input"
                 />
-                <Select value={searchMode} onValueChange={(v) => setSearchMode(v as typeof searchMode)}>
+                <Select
+                  value={searchMode}
+                  onValueChange={(v) => setSearchMode(v as typeof searchMode)}
+                >
                   <SelectTrigger className="w-32">
                     <SelectValue />
                   </SelectTrigger>

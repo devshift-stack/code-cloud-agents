@@ -32,8 +32,10 @@ function setupTestDatabase(): Database {
 function cleanupTestDatabase() {
   try {
     if (fs.existsSync(TEST_DB_PATH)) fs.unlinkSync(TEST_DB_PATH);
-    if (fs.existsSync(TEST_DB_PATH + "-shm")) fs.unlinkSync(TEST_DB_PATH + "-shm");
-    if (fs.existsSync(TEST_DB_PATH + "-wal")) fs.unlinkSync(TEST_DB_PATH + "-wal");
+    if (fs.existsSync(TEST_DB_PATH + "-shm"))
+      fs.unlinkSync(TEST_DB_PATH + "-shm");
+    if (fs.existsSync(TEST_DB_PATH + "-wal"))
+      fs.unlinkSync(TEST_DB_PATH + "-wal");
   } catch {
     // Ignore cleanup errors
   }
@@ -43,21 +45,31 @@ function insertTestData(db: Database) {
   const rawDb = db.getRawDb();
 
   // Create test user
-  rawDb.prepare(`
+  rawDb
+    .prepare(
+      `
     INSERT OR IGNORE INTO users (id, email, password_hash, role, created_at)
     VALUES ('user-1', 'test@example.com', 'hash', 'user', datetime('now'))
-  `).run();
+  `,
+    )
+    .run();
 
   // Create test chats
-  rawDb.prepare(`
+  rawDb
+    .prepare(
+      `
     INSERT INTO chats (id, user_id, title, agent_name, message_count, last_message, created_at, updated_at)
     VALUES
       ('chat-1', 'user-1', 'TypeScript Help', 'CodeAssistant', 3, 'Thanks for the help!', datetime('now', '-1 hour'), datetime('now')),
       ('chat-2', 'user-1', 'React Components', 'CodeAssistant', 2, 'Great explanation!', datetime('now', '-2 hours'), datetime('now', '-1 hour'))
-  `).run();
+  `,
+    )
+    .run();
 
   // Create test messages
-  rawDb.prepare(`
+  rawDb
+    .prepare(
+      `
     INSERT INTO chat_messages (id, chat_id, role, content, agent_name, input_tokens, output_tokens, total_tokens, timestamp)
     VALUES
       ('msg-1', 'chat-1', 'user', 'How do I fix TypeScript errors in my React app?', NULL, 0, 0, 0, datetime('now', '-1 hour')),
@@ -65,7 +77,9 @@ function insertTestData(db: Database) {
       ('msg-3', 'chat-1', 'user', 'Thanks for the help!', NULL, 0, 0, 0, datetime('now', '-58 minutes')),
       ('msg-4', 'chat-2', 'user', 'Explain React hooks to me', NULL, 0, 0, 0, datetime('now', '-2 hours')),
       ('msg-5', 'chat-2', 'assistant', 'React hooks are functions that let you use state and lifecycle features in functional components. The most common hooks are useState and useEffect.', 'CodeAssistant', 8, 40, 48, datetime('now', '-119 minutes'))
-  `).run();
+  `,
+    )
+    .run();
 }
 
 describe("MemorySearch", () => {
@@ -89,7 +103,7 @@ describe("MemorySearch", () => {
       assert.ok(results.length > 0, "Should find TypeScript messages");
       assert.ok(
         results.some((r) => r.message.content.includes("TypeScript")),
-        "Results should contain TypeScript"
+        "Results should contain TypeScript",
       );
     });
 

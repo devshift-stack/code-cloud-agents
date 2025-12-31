@@ -78,6 +78,7 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 **Technologie:** React 18 + TypeScript + Vite
 
 **Verantwortlichkeiten:**
+
 - User Interface für Agent-Monitoring
 - Task-Management Dashboard
 - Audit-Log Visualisierung
@@ -85,6 +86,7 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 - Admin Controls (Demo System, Enforcement Approvals)
 
 **Komponenten:**
+
 - `App.tsx`: Main Application Component
 - `AgentCard.tsx`: Agent Status Display
 - `TaskCard.tsx`: Task Details Display
@@ -98,6 +100,7 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 **Technologie:** Node.js v20+ + Express + TypeScript
 
 **Verantwortlichkeiten:**
+
 - REST API Endpoints
 - Business Logic Execution
 - Database Operations
@@ -107,6 +110,7 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 - Enforcement Gate Logic
 
 **Module:**
+
 - `src/index.ts`: Server Entry Point
 - `src/api/*`: REST API Routes
 - `src/db/database.ts`: Database Interface
@@ -121,12 +125,14 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 **Technologie:** SQLite (better-sqlite3)
 
 **Verantwortlichkeiten:**
+
 - Persistent Data Storage
 - ACID Transactions
 - Indexing & Query Optimization
 - Audit Trail Storage
 
 **Schema:**
+
 - `tasks`: Task management
 - `audit_entries`: Audit log
 - `demo_invites`: Invite codes
@@ -139,6 +145,7 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 **Technologie:** Redis (production) / In-Memory (development)
 
 **Verantwortlichkeiten:**
+
 - Task Queue Management
 - Background Job Processing
 - Retry Logic
@@ -151,6 +158,7 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 **Technologie:** Custom TypeScript Module
 
 **Verantwortlichkeiten:**
+
 - STOP-Score Calculation
 - Risk Assessment
 - Task Blocking
@@ -225,33 +233,35 @@ Code Cloud Agents ist ein **Supervised AI System**, das AI-Agenten überwacht un
 ### Datentypen
 
 #### Task
+
 ```typescript
 interface Task {
-  id: string;                   // UUID
-  title: string;                // Max 200 chars
-  description?: string;          // Optional
+  id: string; // UUID
+  title: string; // Max 200 chars
+  description?: string; // Optional
   priority: "low" | "medium" | "high";
   status: "pending" | "in_progress" | "completed" | "stopped";
-  assignee: string;             // Agent name
-  created_at: string;           // ISO 8601
-  updated_at?: string;          // ISO 8601
-  stop_score?: number;          // 0-100
+  assignee: string; // Agent name
+  created_at: string; // ISO 8601
+  updated_at?: string; // ISO 8601
+  stop_score?: number; // 0-100
 }
 ```
 
 #### Audit Entry
+
 ```typescript
 interface AuditEntry {
-  id: string;                   // UUID
-  task_id?: string;             // FK to tasks
+  id: string; // UUID
+  task_id?: string; // FK to tasks
   decision: "APPROVED" | "STOP_REQUIRED";
   final_status: "COMPLETE" | "COMPLETE_WITH_GAPS" | "STOP_REQUIRED";
   risk_level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  stop_score: number;           // 0-100
-  verified_artefacts: string;   // JSON array
+  stop_score: number; // 0-100
+  verified_artefacts: string; // JSON array
   missing_invalid_parts: string; // JSON array
   required_next_action: string;
-  created_at: string;           // ISO 8601
+  created_at: string; // ISO 8601
 }
 ```
 
@@ -264,6 +274,7 @@ interface AuditEntry {
 **Base URL:** `http://localhost:3000`
 
 **Principles:**
+
 - RESTful Design
 - JSON Request/Response
 - HTTP Status Codes
@@ -275,12 +286,14 @@ interface AuditEntry {
 ### API Endpoints
 
 #### Health & Info
+
 ```
 GET  /api              → API Info
 GET  /health           → Health Check
 ```
 
 #### Tasks
+
 ```
 POST /api/tasks        → Create Task
 GET  /api/tasks        → List All Tasks
@@ -289,12 +302,14 @@ PUT  /api/tasks/:id    → Update Task
 ```
 
 #### Audit
+
 ```
 GET  /api/audit        → List Audit Entries
 GET  /api/audit/:id    → Get Audit Entry
 ```
 
 #### Enforcement
+
 ```
 GET  /api/enforcement/blocked   → List Blocked Tasks
 POST /api/enforcement/approve   → Approve Blocked Task
@@ -302,6 +317,7 @@ POST /api/enforcement/reject    → Reject Blocked Task
 ```
 
 #### Demo System
+
 ```
 POST /api/demo/invites          → Create Invite (Admin)
 POST /api/demo/redeem           → Redeem Invite Code
@@ -314,6 +330,7 @@ GET  /api/demo/users/:id        → User Usage Stats
 ### Request/Response Format
 
 **Success Response:**
+
 ```json
 {
   "success": true,
@@ -325,6 +342,7 @@ GET  /api/demo/users/:id        → User Usage Stats
 ```
 
 **Error Response:**
+
 ```json
 {
   "success": false,
@@ -340,15 +358,15 @@ GET  /api/demo/users/:id        → User Usage Stats
 
 ### HTTP Status Codes
 
-| Code | Meaning | Usage |
-|------|---------|-------|
-| 200 | OK | Successful GET/PUT |
-| 201 | Created | Successful POST |
-| 400 | Bad Request | Invalid input |
-| 401 | Unauthorized | Authentication required |
-| 403 | Forbidden | No permission |
-| 404 | Not Found | Resource not found |
-| 500 | Internal Error | Server error |
+| Code | Meaning        | Usage                   |
+| ---- | -------------- | ----------------------- |
+| 200  | OK             | Successful GET/PUT      |
+| 201  | Created        | Successful POST         |
+| 400  | Bad Request    | Invalid input           |
+| 401  | Unauthorized   | Authentication required |
+| 403  | Forbidden      | No permission           |
+| 404  | Not Found      | Resource not found      |
+| 500  | Internal Error | Server error            |
 
 ---
 
@@ -385,12 +403,14 @@ App.tsx
 **Strategy:** React Context + Hooks
 
 **Global State:**
+
 - `AgentContext`: Agent status, capabilities
 - `TaskContext`: Task list, active task
 - `AuditContext`: Audit entries
 - `EnforcementContext`: Blocked tasks, approvals
 
 **Component State:**
+
 - Local UI state (modals, forms, etc.)
 - Form inputs
 - Loading states
@@ -435,12 +455,12 @@ Der **STOP-Score** ist eine Risikobewertung (0-100), die bestimmt, ob eine Agent
 
 ```typescript
 const WEIGHTS = {
-  PRICE_CLAIM: 25,           // Preisbehauptung
-  LEGAL_CLAIM: 30,           // Rechtsbehauptung
-  UNPROVEN_CLAIM: 20,        // Unbewiesene Behauptung
-  MISSING_EVIDENCE: 15,      // Fehlende Evidenz
-  IMPLEMENTATION_GAP: 10,    // Implementierungslücke
-  NO_VERIFICATION: 25,       // Keine Verifikation
+  PRICE_CLAIM: 25, // Preisbehauptung
+  LEGAL_CLAIM: 30, // Rechtsbehauptung
+  UNPROVEN_CLAIM: 20, // Unbewiesene Behauptung
+  MISSING_EVIDENCE: 15, // Fehlende Evidenz
+  IMPLEMENTATION_GAP: 10, // Implementierungslücke
+  NO_VERIFICATION: 25, // Keine Verifikation
 };
 
 function computeStopScore(reasons: StopReason[]): ScoreResult {
@@ -463,25 +483,25 @@ function computeStopScore(reasons: StopReason[]): ScoreResult {
 
 ### Risk Levels
 
-| Score | Level | Action |
-|-------|-------|--------|
-| 0-19 | LOW | ✅ Proceed |
-| 20-44 | MEDIUM | ⚠️ Review Recommended |
-| 45-69 | HIGH | ⚠️ Approval Recommended |
-| 70-100 | CRITICAL | 🛑 **HARD STOP** |
+| Score  | Level    | Action                  |
+| ------ | -------- | ----------------------- |
+| 0-19   | LOW      | ✅ Proceed              |
+| 20-44  | MEDIUM   | ⚠️ Review Recommended   |
+| 45-69  | HIGH     | ⚠️ Approval Recommended |
+| 70-100 | CRITICAL | 🛑 **HARD STOP**        |
 
 ---
 
 ### STOP Reasons
 
-| Reason | Score | Description |
-|--------|-------|-------------|
-| `PRICE_CLAIM` | 25 | Unverified price statement |
-| `LEGAL_CLAIM` | 30 | Unverified legal statement |
-| `UNPROVEN_CLAIM` | 20 | Claim without evidence |
-| `MISSING_EVIDENCE` | 15 | Expected artefacts missing |
-| `IMPLEMENTATION_GAP` | 10 | Code incomplete |
-| `NO_VERIFICATION` | 25 | No verification performed |
+| Reason               | Score | Description                |
+| -------------------- | ----- | -------------------------- |
+| `PRICE_CLAIM`        | 25    | Unverified price statement |
+| `LEGAL_CLAIM`        | 30    | Unverified legal statement |
+| `UNPROVEN_CLAIM`     | 20    | Claim without evidence     |
+| `MISSING_EVIDENCE`   | 15    | Expected artefacts missing |
+| `IMPLEMENTATION_GAP` | 10    | Code incomplete            |
+| `NO_VERIFICATION`    | 25    | No verification performed  |
 
 ---
 
@@ -492,6 +512,7 @@ function computeStopScore(reasons: StopReason[]): ScoreResult {
 **Regel:** Wenn `STOP_SCORE ≥ 70`, wird die Task **SOFORT BLOCKIERT**.
 
 **Ablauf:**
+
 1. Agent sendet Task-Result
 2. System berechnet STOP-Score
 3. Wenn Score ≥ 70:
@@ -533,6 +554,7 @@ interface GateDecision {
 **Endpoint:** `POST /api/enforcement/approve`
 
 **Request:**
+
 ```json
 {
   "taskId": "abc123",
@@ -542,6 +564,7 @@ interface GateDecision {
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -629,6 +652,7 @@ interface GateDecision {
 ### Input Validation
 
 **Zod Schemas:**
+
 ```typescript
 const TaskSchema = z.object({
   title: z.string().min(1).max(200),
@@ -644,6 +668,7 @@ const TaskSchema = z.object({
 **Status:** 🚧 Coming Soon (Agent 2 Task)
 
 **Planned:**
+
 - JWT-based authentication
 - Role-based access control (RBAC)
 - Admin vs User permissions
@@ -656,6 +681,7 @@ const TaskSchema = z.object({
 **Status:** 🚧 Coming Soon (Agent 2 Task)
 
 **Planned:**
+
 - Express Rate Limiter
 - IP-based limiting
 - Endpoint-specific limits
@@ -666,6 +692,7 @@ const TaskSchema = z.object({
 ### Audit Trail
 
 **All Actions Logged:**
+
 - Task creation
 - Task updates
 - STOP decisions
@@ -710,6 +737,7 @@ const TaskSchema = z.object({
 ### Infrastructure
 
 **Server:**
+
 - **IP:** 178.156.178.70
 - **OS:** Ubuntu 24.04
 - **CPU:** 8 cores (Dedicated)
@@ -717,6 +745,7 @@ const TaskSchema = z.object({
 - **Disk:** 226 GB
 
 **Stack:**
+
 - **Process Manager:** PM2
 - **Reverse Proxy:** Nginx
 - **Database:** SQLite
@@ -745,12 +774,14 @@ Details: **[Deployment Guide](./DEPLOYMENT.md)**
 ### Metrics
 
 **Target Metrics:**
+
 - API Response Time: < 100ms (p95)
 - Database Query Time: < 10ms (p95)
 - Frontend Load Time: < 2s
 - Task Processing Time: < 5s
 
 **Monitoring:**
+
 - PM2 Monit
 - Nginx Access Logs
 - SQLite Query Logs

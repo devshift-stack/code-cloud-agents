@@ -2,7 +2,9 @@
  * Database Module - SQLite persistence layer
  */
 
-import Database, { type Database as BetterSqlite3Database } from "better-sqlite3";
+import Database, {
+  type Database as BetterSqlite3Database,
+} from "better-sqlite3";
 import { randomUUID } from "crypto";
 import { initSettingsTables } from "./settings.js";
 import { initEmbeddingsTable } from "./embeddings.js";
@@ -10,7 +12,11 @@ import { initUsersTable } from "./users.js";
 import { initEmailVerificationTable } from "./email-verification.js";
 import { initPasswordResetTable } from "./password-reset.js";
 import { initBrainTables } from "./brain.js";
-import { initAuditEventsTable, createAuditService, type AuditService } from "./audit-events.js";
+import {
+  initAuditEventsTable,
+  createAuditService,
+  type AuditService,
+} from "./audit-events.js";
 
 export interface Task {
   id: string;
@@ -217,7 +223,15 @@ export function initDatabase(): Database {
         INSERT INTO tasks (id, title, description, priority, status, assignee, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `);
-      stmt.run(id, task.title, task.description ?? null, task.priority, task.status, task.assignee, task.created_at);
+      stmt.run(
+        id,
+        task.title,
+        task.description ?? null,
+        task.priority,
+        task.status,
+        task.assignee,
+        task.created_at,
+      );
       return { id, ...task };
     },
 
@@ -242,11 +256,15 @@ export function initDatabase(): Database {
         };
         const dbStatus = stateMap[options.state] ?? options.state;
 
-        const stmt = db.prepare("SELECT * FROM tasks WHERE status = ? ORDER BY created_at DESC LIMIT ?");
+        const stmt = db.prepare(
+          "SELECT * FROM tasks WHERE status = ? ORDER BY created_at DESC LIMIT ?",
+        );
         return stmt.all(dbStatus, limit) as Task[];
       }
 
-      const stmt = db.prepare("SELECT * FROM tasks ORDER BY created_at DESC LIMIT ?");
+      const stmt = db.prepare(
+        "SELECT * FROM tasks ORDER BY created_at DESC LIMIT ?",
+      );
       return stmt.all(limit) as Task[];
     },
 
@@ -254,12 +272,24 @@ export function initDatabase(): Database {
       const current = this.getTask(id);
       if (!current) return undefined;
 
-      const updated = { ...current, ...updates, updated_at: new Date().toISOString() };
+      const updated = {
+        ...current,
+        ...updates,
+        updated_at: new Date().toISOString(),
+      };
       const stmt = db.prepare(`
         UPDATE tasks SET title = ?, description = ?, priority = ?, status = ?, updated_at = ?, stop_score = ?
         WHERE id = ?
       `);
-      stmt.run(updated.title, updated.description ?? null, updated.priority, updated.status, updated.updated_at, updated.stop_score ?? null, id);
+      stmt.run(
+        updated.title,
+        updated.description ?? null,
+        updated.priority,
+        updated.status,
+        updated.updated_at,
+        updated.stop_score ?? null,
+        id,
+      );
       return updated;
     },
 
@@ -270,7 +300,18 @@ export function initDatabase(): Database {
         INSERT INTO audit_entries (id, task_id, decision, final_status, risk_level, stop_score, verified_artefacts, missing_invalid_parts, required_next_action, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
-      stmt.run(id, entry.task_id ?? null, entry.decision, entry.final_status, entry.risk_level, entry.stop_score, entry.verified_artefacts, entry.missing_invalid_parts, entry.required_next_action, created_at);
+      stmt.run(
+        id,
+        entry.task_id ?? null,
+        entry.decision,
+        entry.final_status,
+        entry.risk_level,
+        entry.stop_score,
+        entry.verified_artefacts,
+        entry.missing_invalid_parts,
+        entry.required_next_action,
+        created_at,
+      );
       return { id, created_at, ...entry };
     },
 
@@ -280,14 +321,22 @@ export function initDatabase(): Database {
     },
 
     listAuditEntries(limit = 50): AuditEntry[] {
-      const stmt = db.prepare("SELECT * FROM audit_entries ORDER BY created_at DESC LIMIT ?");
+      const stmt = db.prepare(
+        "SELECT * FROM audit_entries ORDER BY created_at DESC LIMIT ?",
+      );
       return stmt.all(limit) as AuditEntry[];
     },
 
     getStopScoreStats(): { total: number; stopped: number; avgScore: number } {
-      const totalStmt = db.prepare("SELECT COUNT(*) as count FROM audit_entries");
-      const stoppedStmt = db.prepare("SELECT COUNT(*) as count FROM audit_entries WHERE decision = 'STOP_REQUIRED'");
-      const avgStmt = db.prepare("SELECT AVG(stop_score) as avg FROM audit_entries");
+      const totalStmt = db.prepare(
+        "SELECT COUNT(*) as count FROM audit_entries",
+      );
+      const stoppedStmt = db.prepare(
+        "SELECT COUNT(*) as count FROM audit_entries WHERE decision = 'STOP_REQUIRED'",
+      );
+      const avgStmt = db.prepare(
+        "SELECT AVG(stop_score) as avg FROM audit_entries",
+      );
 
       const total = (totalStmt.get() as { count: number }).count;
       const stopped = (stoppedStmt.get() as { count: number }).count;

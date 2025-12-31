@@ -7,18 +7,20 @@
 ## 1. PROJEKT-ÜBERBLICK
 
 ### 1.1 Produktvision
+
 **Step2Job Cloud Agents** ist ein Supervisor-Dashboard zur Überwachung und Qualitätssicherung von KI-Agenten. Das System analysiert Gespräche in Echtzeit und warnt Supervisoren bei kritischen Vorfällen.
 
 ### 1.2 Zielgruppen
 
-| Persona | Rolle | Bedürfnisse |
-|---------|-------|-------------|
+| Persona              | Rolle                        | Bedürfnisse                                           |
+| -------------------- | ---------------------------- | ----------------------------------------------------- |
 | **Supervisor Sarah** | Team-Leiterin (5-10 Agenten) | Schneller Überblick, sofortige Alerts, Batch-Aktionen |
-| **Manager Michael** | Abteilungsleiter | Reports, Trends, KPIs, Export-Funktionen |
-| **Admin Anna** | System-Administratorin | Konfiguration, Benutzerverwaltung, Logs |
-| **Agent Alex** | KI-Agent-Operator | Eigene Performance sehen, Feedback verstehen |
+| **Manager Michael**  | Abteilungsleiter             | Reports, Trends, KPIs, Export-Funktionen              |
+| **Admin Anna**       | System-Administratorin       | Konfiguration, Benutzerverwaltung, Logs               |
+| **Agent Alex**       | KI-Agent-Operator            | Eigene Performance sehen, Feedback verstehen          |
 
 ### 1.3 Kernfunktionen
+
 1. **Live-Dashboard** - Echtzeit-Überwachung aller Agenten
 2. **Alert-Center** - Kritische Vorfälle sofort erkennen
 3. **Agent-Details** - Einzelne Agenten analysieren
@@ -32,56 +34,59 @@
 ### 2.1 Farbpalette
 
 #### Primärfarben
+
 ```css
 :root {
   /* Brand Colors */
-  --primary-50: #EEF2FF;
-  --primary-100: #E0E7FF;
-  --primary-200: #C7D2FE;
-  --primary-300: #A5B4FC;
-  --primary-400: #818CF8;
-  --primary-500: #6366F1;  /* Hauptfarbe */
-  --primary-600: #4F46E5;
-  --primary-700: #4338CA;
-  --primary-800: #3730A3;
-  --primary-900: #312E81;
+  --primary-50: #eef2ff;
+  --primary-100: #e0e7ff;
+  --primary-200: #c7d2fe;
+  --primary-300: #a5b4fc;
+  --primary-400: #818cf8;
+  --primary-500: #6366f1; /* Hauptfarbe */
+  --primary-600: #4f46e5;
+  --primary-700: #4338ca;
+  --primary-800: #3730a3;
+  --primary-900: #312e81;
 }
 ```
 
 #### Risk-Level Farben (KRITISCH - konsistent verwenden!)
+
 ```css
 :root {
   /* Risk Colors - Semantisch */
-  --risk-low: #10B981;        /* Grün - Erfolg */
-  --risk-low-bg: #D1FAE5;
-  --risk-low-border: #6EE7B7;
+  --risk-low: #10b981; /* Grün - Erfolg */
+  --risk-low-bg: #d1fae5;
+  --risk-low-border: #6ee7b7;
 
-  --risk-medium: #F59E0B;     /* Gelb/Orange - Warnung */
-  --risk-medium-bg: #FEF3C7;
-  --risk-medium-border: #FCD34D;
+  --risk-medium: #f59e0b; /* Gelb/Orange - Warnung */
+  --risk-medium-bg: #fef3c7;
+  --risk-medium-border: #fcd34d;
 
-  --risk-high: #F97316;       /* Orange - Gefahr */
-  --risk-high-bg: #FFEDD5;
-  --risk-high-border: #FDBA74;
+  --risk-high: #f97316; /* Orange - Gefahr */
+  --risk-high-bg: #ffedd5;
+  --risk-high-border: #fdba74;
 
-  --risk-critical: #EF4444;   /* Rot - Kritisch */
-  --risk-critical-bg: #FEE2E2;
-  --risk-critical-border: #FCA5A5;
+  --risk-critical: #ef4444; /* Rot - Kritisch */
+  --risk-critical-bg: #fee2e2;
+  --risk-critical-border: #fca5a5;
 }
 ```
 
 #### Neutrale Farben
+
 ```css
 :root {
-  --gray-50: #F9FAFB;
-  --gray-100: #F3F4F6;
-  --gray-200: #E5E7EB;
-  --gray-300: #D1D5DB;
-  --gray-400: #9CA3AF;
-  --gray-500: #6B7280;
-  --gray-600: #4B5563;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
   --gray-700: #374151;
-  --gray-800: #1F2937;
+  --gray-800: #1f2937;
   --gray-900: #111827;
 }
 ```
@@ -91,18 +96,19 @@
 ```css
 :root {
   /* Font Familie */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
   /* Font Sizes */
-  --text-xs: 0.75rem;     /* 12px */
-  --text-sm: 0.875rem;    /* 14px */
-  --text-base: 1rem;      /* 16px */
-  --text-lg: 1.125rem;    /* 18px */
-  --text-xl: 1.25rem;     /* 20px */
-  --text-2xl: 1.5rem;     /* 24px */
-  --text-3xl: 1.875rem;   /* 30px */
-  --text-4xl: 2.25rem;    /* 36px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
 
   /* Font Weights */
   --font-normal: 400;
@@ -119,38 +125,38 @@
 
 #### Typografie-Hierarchie
 
-| Element | Größe | Gewicht | Verwendung |
-|---------|-------|---------|------------|
-| H1 | 36px | Bold | Seitentitel |
-| H2 | 24px | Semibold | Sektionsüberschriften |
-| H3 | 20px | Semibold | Card-Titel |
-| H4 | 18px | Medium | Subsektionen |
-| Body | 16px | Normal | Fließtext |
-| Small | 14px | Normal | Sekundärtext |
-| Caption | 12px | Normal | Labels, Timestamps |
+| Element | Größe | Gewicht  | Verwendung            |
+| ------- | ----- | -------- | --------------------- |
+| H1      | 36px  | Bold     | Seitentitel           |
+| H2      | 24px  | Semibold | Sektionsüberschriften |
+| H3      | 20px  | Semibold | Card-Titel            |
+| H4      | 18px  | Medium   | Subsektionen          |
+| Body    | 16px  | Normal   | Fließtext             |
+| Small   | 14px  | Normal   | Sekundärtext          |
+| Caption | 12px  | Normal   | Labels, Timestamps    |
 
 ### 2.3 Abstände & Grid
 
 ```css
 :root {
   /* Spacing Scale (8px Basis) */
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
-  --space-16: 4rem;     /* 64px */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
 
   /* Border Radius */
-  --radius-sm: 0.25rem;   /* 4px */
-  --radius-md: 0.375rem;  /* 6px */
-  --radius-lg: 0.5rem;    /* 8px */
-  --radius-xl: 0.75rem;   /* 12px */
-  --radius-2xl: 1rem;     /* 16px */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem; /* 8px */
+  --radius-xl: 0.75rem; /* 12px */
+  --radius-2xl: 1rem; /* 16px */
   --radius-full: 9999px;
 
   /* Shadows */
@@ -197,6 +203,7 @@ Sidebar-Breite: 256px (collapsed: 64px)
 ```
 
 **Spezifikation:**
+
 - Padding: 4px 12px
 - Border-Radius: 9999px (Pill)
 - Font: 12px, Semibold, Uppercase
@@ -225,6 +232,7 @@ Sidebar-Breite: 256px (collapsed: 64px)
 ```
 
 **Spezifikation:**
+
 - Breite: 100% (Grid-responsive)
 - Min-Breite: 320px
 - Padding: 24px
@@ -257,6 +265,7 @@ Sidebar-Breite: 256px (collapsed: 64px)
 ```
 
 **Spezifikation:**
+
 - Border-Left: 4px solid (Risk-Farbe)
 - Background: Risk-Farbe-bg (10% Opacity)
 - Padding: 16px 20px
@@ -276,6 +285,7 @@ Sidebar-Breite: 256px (collapsed: 64px)
 ```
 
 **Spezifikation:**
+
 - Min-Breite: 160px
 - Padding: 20px
 - Trend-Indikator: Grün (positiv), Rot (negativ)
@@ -292,6 +302,7 @@ Success:    [████████████████]  Gefüllt, Green-
 ```
 
 **Größen:**
+
 - Small: 32px Höhe, 12px Font, 12px Padding
 - Medium: 40px Höhe, 14px Font, 16px Padding
 - Large: 48px Höhe, 16px Font, 20px Padding
@@ -327,6 +338,7 @@ States:
 ```
 
 **Spezifikation:**
+
 - Header: gray-50 bg, font-semibold
 - Rows: Alternating gray-50/white (optional)
 - Hover: primary-50 bg
@@ -652,10 +664,10 @@ Progress Bar (Batch-Operations):
 
 ```css
 /* Mobile First Approach */
---breakpoint-sm: 640px;   /* Small tablets */
---breakpoint-md: 768px;   /* Tablets */
---breakpoint-lg: 1024px;  /* Small laptops */
---breakpoint-xl: 1280px;  /* Desktops */
+--breakpoint-sm: 640px; /* Small tablets */
+--breakpoint-md: 768px; /* Tablets */
+--breakpoint-lg: 1024px; /* Small laptops */
+--breakpoint-xl: 1280px; /* Desktops */
 --breakpoint-2xl: 1536px; /* Large screens */
 ```
 
@@ -691,6 +703,7 @@ Progress Bar (Batch-Operations):
 ```
 
 **Mobile-Anpassungen:**
+
 - Bottom-Navigation statt Sidebar
 - Vollbreite Cards (stacked)
 - Swipe-Gesten für Tabs
@@ -722,10 +735,12 @@ Progress Bar (Batch-Operations):
 ## 7. ACCESSIBILITY (A11Y)
 
 ### 7.1 Farb-Kontrast
+
 - Alle Text/Hintergrund-Kombinationen: min. 4.5:1 (WCAG AA)
 - Risk-Level nicht nur durch Farbe, auch durch Icons/Text
 
 ### 7.2 Keyboard Navigation
+
 ```
 Tab-Reihenfolge:
 1. Skip to main content Link
@@ -744,9 +759,14 @@ Shortcuts:
 ```
 
 ### 7.3 Screen Reader Support
+
 ```html
 <!-- Risk Badge -->
-<span class="badge risk-critical" role="status" aria-label="Risk level: Critical">
+<span
+  class="badge risk-critical"
+  role="status"
+  aria-label="Risk level: Critical"
+>
   <span aria-hidden="true">✖</span>
   CRITICAL
 </span>
@@ -764,6 +784,7 @@ Shortcuts:
 ```
 
 ### 7.4 Focus Indicators
+
 ```css
 :focus-visible {
   outline: 2px solid var(--primary-500);
@@ -806,8 +827,9 @@ Shortcuts:
 
 /* Cards, Panels */
 .card {
-  transition: box-shadow var(--duration-normal) var(--ease-out),
-              transform var(--duration-normal) var(--ease-out);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
 }
 
 /* Modals, Dropdowns */
@@ -821,8 +843,13 @@ Shortcuts:
 ```css
 /* Critical Alert Pulse */
 @keyframes pulse-critical {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .alert-critical {
@@ -847,8 +874,12 @@ Shortcuts:
 
 /* Skeleton Loading Shimmer */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .skeleton {
@@ -866,13 +897,13 @@ Shortcuts:
 
 ```css
 [data-theme="dark"] {
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
   --bg-tertiary: #334155;
 
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #64748B;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
 
   --border-color: #334155;
 
@@ -900,32 +931,33 @@ Shortcuts:
 
 ### 10.1 Empfohlene Icons (Lucide/Heroicons)
 
-| Funktion | Icon | Code |
-|----------|------|------|
-| Dashboard | LayoutDashboard | `<LayoutDashboard />` |
-| Agents | Bot | `<Bot />` |
-| Alerts | Bell | `<Bell />` |
-| Reports | BarChart3 | `<BarChart3 />` |
-| Settings | Settings | `<Settings />` |
-| Risk LOW | CheckCircle | `<CheckCircle />` |
-| Risk MEDIUM | AlertTriangle | `<AlertTriangle />` |
-| Risk HIGH | AlertOctagon | `<AlertOctagon />` |
-| Risk CRITICAL | XCircle | `<XCircle />` |
-| Refresh | RefreshCw | `<RefreshCw />` |
-| Export | Download | `<Download />` |
-| Filter | Filter | `<Filter />` |
-| Search | Search | `<Search />` |
-| User | User | `<User />` |
-| Menu | Menu | `<Menu />` |
-| Close | X | `<X />` |
-| Expand | ChevronDown | `<ChevronDown />` |
-| External | ExternalLink | `<ExternalLink />` |
+| Funktion      | Icon            | Code                  |
+| ------------- | --------------- | --------------------- |
+| Dashboard     | LayoutDashboard | `<LayoutDashboard />` |
+| Agents        | Bot             | `<Bot />`             |
+| Alerts        | Bell            | `<Bell />`            |
+| Reports       | BarChart3       | `<BarChart3 />`       |
+| Settings      | Settings        | `<Settings />`        |
+| Risk LOW      | CheckCircle     | `<CheckCircle />`     |
+| Risk MEDIUM   | AlertTriangle   | `<AlertTriangle />`   |
+| Risk HIGH     | AlertOctagon    | `<AlertOctagon />`    |
+| Risk CRITICAL | XCircle         | `<XCircle />`         |
+| Refresh       | RefreshCw       | `<RefreshCw />`       |
+| Export        | Download        | `<Download />`        |
+| Filter        | Filter          | `<Filter />`          |
+| Search        | Search          | `<Search />`          |
+| User          | User            | `<User />`            |
+| Menu          | Menu            | `<Menu />`            |
+| Close         | X               | `<X />`               |
+| Expand        | ChevronDown     | `<ChevronDown />`     |
+| External      | ExternalLink    | `<ExternalLink />`    |
 
 ---
 
 ## 11. IMPLEMENTIERUNGS-CHECKLISTE
 
 ### Phase 1: Foundation
+
 - [ ] Design System in Figma/Sketch erstellen
 - [ ] Farbpalette definieren und testen
 - [ ] Typografie-Scale implementieren
@@ -933,6 +965,7 @@ Shortcuts:
 - [ ] Icon-Set auswählen und integrieren
 
 ### Phase 2: Komponenten
+
 - [ ] Button-Varianten
 - [ ] Input-Felder
 - [ ] Risk-Level Badges
@@ -946,6 +979,7 @@ Shortcuts:
 - [ ] Empty States
 
 ### Phase 3: Layouts
+
 - [ ] Haupt-Layout mit Sidebar
 - [ ] Dashboard-Seite
 - [ ] Agent-Liste
@@ -955,6 +989,7 @@ Shortcuts:
 - [ ] Settings-Seite
 
 ### Phase 4: Interaktionen
+
 - [ ] Hover/Focus States
 - [ ] Transitions/Animations
 - [ ] Keyboard Navigation
@@ -962,6 +997,7 @@ Shortcuts:
 - [ ] Real-time Updates (WebSocket)
 
 ### Phase 5: Polish
+
 - [ ] Dark Mode
 - [ ] Responsive Testing
 - [ ] Accessibility Audit
@@ -993,6 +1029,7 @@ Shortcuts:
 ### 12.2 Handoff-Format
 
 Für Developer-Handoff empfohlen:
+
 - **Figma** mit Dev Mode aktiviert
 - **Design Tokens** als JSON für CSS-Variables
 - **Storybook** für Komponenten-Dokumentation

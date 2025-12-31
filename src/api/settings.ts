@@ -12,7 +12,11 @@ import { Router } from "express";
 import { z } from "zod";
 import type { Database } from "../db/database.js";
 import { SettingsDB } from "../db/settings.js";
-import { requireAdmin, requireAuth, type AuthenticatedRequest } from "../auth/middleware.js";
+import {
+  requireAdmin,
+  requireAuth,
+  type AuthenticatedRequest,
+} from "../auth/middleware.js";
 
 // Default user settings
 const DEFAULT_USER_SETTINGS = {
@@ -105,7 +109,10 @@ export function createSettingsRouter(db: Database): Router {
 
       // Create default settings if not exists
       if (!userSettings) {
-        userSettings = settingsDB.createUserSettings(userId, DEFAULT_USER_SETTINGS);
+        userSettings = settingsDB.createUserSettings(
+          userId,
+          DEFAULT_USER_SETTINGS,
+        );
       }
 
       res.json({
@@ -153,7 +160,9 @@ export function createSettingsRouter(db: Database): Router {
 
       // Merge with existing or default settings
       let existingSettings = settingsDB.getUserSettings(userId);
-      let currentSettings = existingSettings ? JSON.parse(existingSettings.settings) : DEFAULT_USER_SETTINGS;
+      let currentSettings = existingSettings
+        ? JSON.parse(existingSettings.settings)
+        : DEFAULT_USER_SETTINGS;
 
       // Deep merge
       const newSettings = {
@@ -196,132 +205,152 @@ export function createSettingsRouter(db: Database): Router {
    * Delete user settings (reset to defaults)
    * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.delete("/user/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
-    // Owner check: Users can only delete their own settings
-    const authReq = req as AuthenticatedRequest;
-    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
-      return res.status(403).json({
-        success: false,
-        error: "Forbidden: You can only delete your own settings",
-      });
-    }
-    try {
-      const { userId } = req.params;
+  router.delete(
+    "/user/:userId",
+    requireAuth,
+    (req: AuthenticatedRequest, res) => {
+      // Owner check: Users can only delete their own settings
+      const authReq = req as AuthenticatedRequest;
+      if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+        return res.status(403).json({
+          success: false,
+          error: "Forbidden: You can only delete your own settings",
+        });
+      }
+      try {
+        const { userId } = req.params;
 
-      const success = settingsDB.deleteUserSettings(userId);
+        const success = settingsDB.deleteUserSettings(userId);
 
-      res.json({
-        success,
-        message: success ? "Settings deleted successfully" : "Settings not found",
-      });
-    } catch (error) {
-      console.error("Failed to delete user settings:", error);
-      res.status(500).json({
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  });
+        res.json({
+          success,
+          message: success
+            ? "Settings deleted successfully"
+            : "Settings not found",
+        });
+      } catch (error) {
+        console.error("Failed to delete user settings:", error);
+        res.status(500).json({
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    },
+  );
 
   /**
    * GET /api/settings/preferences/:userId
    * Get user preferences (subset of settings)
    * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.get("/preferences/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
-    // Owner check
-    const authReq = req as AuthenticatedRequest;
-    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
-      return res.status(403).json({
-        success: false,
-        error: "Forbidden: You can only access your own preferences",
-      });
-    }
-    try {
-      const { userId } = req.params;
-
-      let userSettings = settingsDB.getUserSettings(userId);
-
-      if (!userSettings) {
-        userSettings = settingsDB.createUserSettings(userId, DEFAULT_USER_SETTINGS);
+  router.get(
+    "/preferences/:userId",
+    requireAuth,
+    (req: AuthenticatedRequest, res) => {
+      // Owner check
+      const authReq = req as AuthenticatedRequest;
+      if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+        return res.status(403).json({
+          success: false,
+          error: "Forbidden: You can only access your own preferences",
+        });
       }
+      try {
+        const { userId } = req.params;
 
-      const settings = JSON.parse(userSettings.settings);
-      const preferences = settings.preferences || DEFAULT_USER_SETTINGS.preferences;
+        let userSettings = settingsDB.getUserSettings(userId);
 
-      res.json({
-        success: true,
-        preferences,
-      });
-    } catch (error) {
-      console.error("Failed to get preferences:", error);
-      res.status(500).json({
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  });
+        if (!userSettings) {
+          userSettings = settingsDB.createUserSettings(
+            userId,
+            DEFAULT_USER_SETTINGS,
+          );
+        }
+
+        const settings = JSON.parse(userSettings.settings);
+        const preferences =
+          settings.preferences || DEFAULT_USER_SETTINGS.preferences;
+
+        res.json({
+          success: true,
+          preferences,
+        });
+      } catch (error) {
+        console.error("Failed to get preferences:", error);
+        res.status(500).json({
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    },
+  );
 
   /**
    * PATCH /api/settings/preferences/:userId
    * Update user preferences (partial update)
    * Phase-1 Hardening: Requires authentication + owner check
    */
-  router.patch("/preferences/:userId", requireAuth, (req: AuthenticatedRequest, res) => {
-    // Owner check
-    const authReq = req as AuthenticatedRequest;
-    if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
-      return res.status(403).json({
-        success: false,
-        error: "Forbidden: You can only update your own preferences",
-      });
-    }
-    try {
-      const { userId } = req.params;
-
-      const parsed = PreferencesSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json({
+  router.patch(
+    "/preferences/:userId",
+    requireAuth,
+    (req: AuthenticatedRequest, res) => {
+      // Owner check
+      const authReq = req as AuthenticatedRequest;
+      if (!authReq.isAdmin && authReq.userId !== req.params.userId) {
+        return res.status(403).json({
           success: false,
-          error: "Invalid preferences format",
-          details: parsed.error.issues,
+          error: "Forbidden: You can only update your own preferences",
         });
       }
+      try {
+        const { userId } = req.params;
 
-      // Get current settings
-      let userSettings = settingsDB.getUserSettings(userId);
-      let currentSettings = userSettings ? JSON.parse(userSettings.settings) : DEFAULT_USER_SETTINGS;
+        const parsed = PreferencesSchema.safeParse(req.body);
+        if (!parsed.success) {
+          return res.status(400).json({
+            success: false,
+            error: "Invalid preferences format",
+            details: parsed.error.issues,
+          });
+        }
 
-      // Update preferences
-      const newSettings = {
-        ...currentSettings,
-        preferences: {
-          ...currentSettings.preferences,
-          ...parsed.data,
-        },
-      };
+        // Get current settings
+        let userSettings = settingsDB.getUserSettings(userId);
+        let currentSettings = userSettings
+          ? JSON.parse(userSettings.settings)
+          : DEFAULT_USER_SETTINGS;
 
-      // Update or create
-      let success: boolean;
-      if (userSettings) {
-        success = settingsDB.updateUserSettings(userId, newSettings, userId);
-      } else {
-        settingsDB.createUserSettings(userId, newSettings);
-        success = true;
+        // Update preferences
+        const newSettings = {
+          ...currentSettings,
+          preferences: {
+            ...currentSettings.preferences,
+            ...parsed.data,
+          },
+        };
+
+        // Update or create
+        let success: boolean;
+        if (userSettings) {
+          success = settingsDB.updateUserSettings(userId, newSettings, userId);
+        } else {
+          settingsDB.createUserSettings(userId, newSettings);
+          success = true;
+        }
+
+        res.json({
+          success,
+          preferences: newSettings.preferences,
+        });
+      } catch (error) {
+        console.error("Failed to update preferences:", error);
+        res.status(500).json({
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
-
-      res.json({
-        success,
-        preferences: newSettings.preferences,
-      });
-    } catch (error) {
-      console.error("Failed to update preferences:", error);
-      res.status(500).json({
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  });
+    },
+  );
 
   /**
    * GET /api/settings/system
@@ -362,7 +391,8 @@ export function createSettingsRouter(db: Database): Router {
 
       if (!setting) {
         // Return default if exists
-        const defaultValue = DEFAULT_SYSTEM_SETTINGS[key as keyof typeof DEFAULT_SYSTEM_SETTINGS];
+        const defaultValue =
+          DEFAULT_SYSTEM_SETTINGS[key as keyof typeof DEFAULT_SYSTEM_SETTINGS];
         if (defaultValue !== undefined) {
           return res.json({
             success: true,

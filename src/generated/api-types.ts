@@ -4,1239 +4,1239 @@
  */
 
 export interface paths {
-    "/api": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get API information
-         * @description Returns basic API metadata including version, status, and supervisor mode
-         */
-        get: operations["health_get_api"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/api": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Health check
-         * @description Returns health status of database, queue, and system uptime
-         */
-        get: operations["health_get_health"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get API information
+     * @description Returns basic API metadata including version, status, and supervisor mode
+     */
+    get: operations["health_get_api"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tasks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List all tasks
-         * @description Returns all tasks with their current status and metadata
-         */
-        get: operations["tasks_get_api_tasks"];
-        put?: never;
-        /**
-         * Create a new task
-         * @description Creates a new supervised task. The task will be evaluated by the EnforcementGate.
-         *     If STOP_REQUIRED, the task will be blocked until human approval.
-         */
-        post: operations["tasks_post_api_tasks"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Health check
+     * @description Returns health status of database, queue, and system uptime
+     */
+    get: operations["health_get_health"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/tasks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tasks/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get task by ID
-         * @description Returns details of a specific task including its status and logs
-         */
-        get: operations["tasks_get_api_tasks_id"];
-        put?: never;
-        /**
-         * Submit work for a task
-         * @description Submit completed work for evaluation. The EnforcementGate will calculate a STOP-Score.
-         *     If score ≥ 70, the task will be blocked.
-         */
-        post: operations["tasks_post_api_tasks_id"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List all tasks
+     * @description Returns all tasks with their current status and metadata
+     */
+    get: operations["tasks_get_api_tasks"];
+    put?: never;
+    /**
+     * Create a new task
+     * @description Creates a new supervised task. The task will be evaluated by the EnforcementGate.
+     *     If STOP_REQUIRED, the task will be blocked until human approval.
+     */
+    post: operations["tasks_post_api_tasks"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/tasks/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/audit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List audit entries
-         * @description Returns audit log entries with optional limit
-         */
-        get: operations["audit_get_api_audit"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get task by ID
+     * @description Returns details of a specific task including its status and logs
+     */
+    get: operations["tasks_get_api_tasks_id"];
+    put?: never;
+    /**
+     * Submit work for a task
+     * @description Submit completed work for evaluation. The EnforcementGate will calculate a STOP-Score.
+     *     If score ≥ 70, the task will be blocked.
+     */
+    post: operations["tasks_post_api_tasks_id"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/audit": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/audit/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get audit entry by ID
-         * @description Returns details of a specific audit entry
-         */
-        get: operations["audit_get_api_audit_id"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List audit entries
+     * @description Returns audit log entries with optional limit
+     */
+    get: operations["audit_get_api_audit"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/audit/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/enforcement/blocked": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get blocked tasks
-         * @description Returns all tasks currently blocked by the EnforcementGate awaiting human review
-         */
-        get: operations["enforcement_get_api_enforcement_blocked"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get audit entry by ID
+     * @description Returns details of a specific audit entry
+     */
+    get: operations["audit_get_api_audit_id"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/enforcement/blocked": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/enforcement/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Approve a blocked task
-         * @description Human approval to unblock a task. Requires approval reason and approver info.
-         *     This is a CRITICAL action that overrides the STOP-Score enforcement.
-         */
-        post: operations["enforcement_post_api_enforcement_approve"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get blocked tasks
+     * @description Returns all tasks currently blocked by the EnforcementGate awaiting human review
+     */
+    get: operations["enforcement_get_api_enforcement_blocked"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/enforcement/approve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/enforcement/reject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Reject a blocked task
-         * @description Human rejection of a blocked task. The task will be marked as stopped.
-         */
-        post: operations["enforcement_post_api_enforcement_reject"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Approve a blocked task
+     * @description Human approval to unblock a task. Requires approval reason and approver info.
+     *     This is a CRITICAL action that overrides the STOP-Score enforcement.
+     */
+    post: operations["enforcement_post_api_enforcement_approve"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/enforcement/reject": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/chat/send": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Send a chat message
-         * @description Send a message to an AI agent. The agent will process the message and return a response.
-         *     Supports multiple AI providers (Anthropic, OpenAI, Gemini).
-         */
-        post: operations["chat_post_api_chat_send"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Reject a blocked task
+     * @description Human rejection of a blocked task. The task will be marked as stopped.
+     */
+    post: operations["enforcement_post_api_enforcement_reject"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chat/send": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/chat/agents": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get available agents
-         * @description Returns list of available AI agents with their capabilities
-         */
-        get: operations["chat_get_api_chat_agents"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Send a chat message
+     * @description Send a message to an AI agent. The agent will process the message and return a response.
+     *     Supports multiple AI providers (Anthropic, OpenAI, Gemini).
+     */
+    post: operations["chat_post_api_chat_send"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chat/agents": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/demo/invites": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create demo invite (Admin only)
-         * @description Create a new demo invite code with specified limits.
-         *     **Requires:** Admin authentication (future implementation)
-         */
-        post: operations["demo_post_api_demo_invites"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get available agents
+     * @description Returns list of available AI agents with their capabilities
+     */
+    get: operations["chat_get_api_chat_agents"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/demo/invites": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/demo/redeem": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Redeem demo invite code
-         * @description Redeem an invite code to create a demo user account.
-         *     **Rate Limited:** 5 attempts per 15 minutes per IP
-         */
-        post: operations["demo_post_api_demo_redeem"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Create demo invite (Admin only)
+     * @description Create a new demo invite code with specified limits.
+     *     **Requires:** Admin authentication (future implementation)
+     */
+    post: operations["demo_post_api_demo_invites"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/demo/redeem": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/demo/stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get demo statistics (Admin only)
-         * @description Returns statistics about demo invites and users.
-         *     **Requires:** Admin authentication (future implementation)
-         */
-        get: operations["demo_get_api_demo_stats"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Redeem demo invite code
+     * @description Redeem an invite code to create a demo user account.
+     *     **Rate Limited:** 5 attempts per 15 minutes per IP
+     */
+    post: operations["demo_post_api_demo_redeem"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/demo/stats": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/demo/users/{userId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get demo user usage stats
-         * @description Returns usage statistics for a specific demo user
-         */
-        get: operations["demo_get_api_demo_users_userid"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get demo statistics (Admin only)
+     * @description Returns statistics about demo invites and users.
+     *     **Requires:** Admin authentication (future implementation)
+     */
+    get: operations["demo_get_api_demo_stats"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/demo/users/{userId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/slack/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Slack events webhook
-         * @description Receives events from Slack (messages, mentions, etc.).
-         *     **Requires:** Slack signature verification
-         */
-        post: operations["slack_post_api_slack_events"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get demo user usage stats
+     * @description Returns usage statistics for a specific demo user
+     */
+    get: operations["demo_get_api_demo_users_userid"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/slack/events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    get?: never;
+    put?: never;
+    /**
+     * Slack events webhook
+     * @description Receives events from Slack (messages, mentions, etc.).
+     *     **Requires:** Slack signature verification
+     */
+    post: operations["slack_post_api_slack_events"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        Task: {
-            /** @example abc123def456 */
-            id?: string;
-            /** @example Implement user authentication */
-            title?: string;
-            /** @example Add JWT-based authentication with login and logout endpoints */
-            description?: string;
-            /**
-             * @example high
-             * @enum {string}
-             */
-            priority?: "low" | "medium" | "high";
-            /**
-             * @example in_progress
-             * @enum {string}
-             */
-            status?: "pending" | "in_progress" | "completed" | "stopped";
-            /** @example cloud_assistant */
-            assignee?: string;
-            /**
-             * Format: date-time
-             * @example 2025-12-26T12:00:00.000Z
-             */
-            created_at?: string;
-            /**
-             * Format: date-time
-             * @example 2025-12-26T13:00:00.000Z
-             */
-            updated_at?: string;
-            /** @example 15 */
-            stop_score?: number;
-        };
-        AuditEntry: {
-            /** @example audit123 */
-            id?: string;
-            /** @example abc123 */
-            task_id?: string;
-            /**
-             * @example APPROVED
-             * @enum {string}
-             */
-            decision?: "APPROVED" | "STOP_REQUIRED";
-            /**
-             * @example COMPLETE
-             * @enum {string}
-             */
-            final_status?: "COMPLETE" | "COMPLETE_WITH_GAPS" | "STOP_REQUIRED";
-            /**
-             * @example LOW
-             * @enum {string}
-             */
-            risk_level?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-            /** @example 15 */
-            stop_score?: number;
-            /** @example ["src/auth/jwt.ts", "src/api/auth.ts"] */
-            verified_artefacts?: string;
-            /** @example [] */
-            missing_invalid_parts?: string;
-            /** @example Continue with next task */
-            required_next_action?: string;
-            /**
-             * Format: date-time
-             * @example 2025-12-26T12:00:00.000Z
-             */
-            created_at?: string;
-        };
-        Error: {
-            /** @example Invalid request */
-            error?: string;
-            /** @example {} */
-            details?: Record<string, never>;
-        };
+  schemas: {
+    Task: {
+      /** @example abc123def456 */
+      id?: string;
+      /** @example Implement user authentication */
+      title?: string;
+      /** @example Add JWT-based authentication with login and logout endpoints */
+      description?: string;
+      /**
+       * @example high
+       * @enum {string}
+       */
+      priority?: "low" | "medium" | "high";
+      /**
+       * @example in_progress
+       * @enum {string}
+       */
+      status?: "pending" | "in_progress" | "completed" | "stopped";
+      /** @example cloud_assistant */
+      assignee?: string;
+      /**
+       * Format: date-time
+       * @example 2025-12-26T12:00:00.000Z
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @example 2025-12-26T13:00:00.000Z
+       */
+      updated_at?: string;
+      /** @example 15 */
+      stop_score?: number;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    AuditEntry: {
+      /** @example audit123 */
+      id?: string;
+      /** @example abc123 */
+      task_id?: string;
+      /**
+       * @example APPROVED
+       * @enum {string}
+       */
+      decision?: "APPROVED" | "STOP_REQUIRED";
+      /**
+       * @example COMPLETE
+       * @enum {string}
+       */
+      final_status?: "COMPLETE" | "COMPLETE_WITH_GAPS" | "STOP_REQUIRED";
+      /**
+       * @example LOW
+       * @enum {string}
+       */
+      risk_level?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+      /** @example 15 */
+      stop_score?: number;
+      /** @example ["src/auth/jwt.ts", "src/api/auth.ts"] */
+      verified_artefacts?: string;
+      /** @example [] */
+      missing_invalid_parts?: string;
+      /** @example Continue with next task */
+      required_next_action?: string;
+      /**
+       * Format: date-time
+       * @example 2025-12-26T12:00:00.000Z
+       */
+      created_at?: string;
+    };
+    Error: {
+      /** @example Invalid request */
+      error?: string;
+      /** @example {} */
+      details?: Record<string, never>;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    health_get_api: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description API information */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example code-cloud-agents */
-                        name?: string;
-                        /** @example 0.1.0 */
-                        version?: string;
-                        /** @example running */
-                        status?: string;
-                        /** @example ENGINEERING_LEAD_SUPERVISOR */
-                        supervisor?: string;
-                        /** @example SUPERVISED */
-                        mode?: string;
-                    };
-                };
-            };
-        };
+  health_get_api: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    health_get_health: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description API information */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description System is healthy */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example healthy */
-                        status?: string;
-                        /** @example ok */
-                        database?: string;
-                        /** @example ok */
-                        queue?: string;
-                        /** @example 123.45 */
-                        uptime?: number;
-                    };
-                };
-            };
+        content: {
+          "application/json": {
+            /** @example code-cloud-agents */
+            name?: string;
+            /** @example 0.1.0 */
+            version?: string;
+            /** @example running */
+            status?: string;
+            /** @example ENGINEERING_LEAD_SUPERVISOR */
+            supervisor?: string;
+            /** @example SUPERVISED */
+            mode?: string;
+          };
         };
+      };
     };
-    tasks_get_api_tasks: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of tasks */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Task"][];
-                };
-            };
-        };
+  };
+  health_get_health: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    tasks_post_api_tasks: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description System is healthy */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example Implement user authentication */
-                    title: string;
-                    /** @example Add JWT-based authentication with login and logout endpoints */
-                    description?: string;
-                    /**
-                     * @default medium
-                     * @example high
-                     * @enum {string}
-                     */
-                    priority?: "low" | "medium" | "high";
-                    /**
-                     * @default cloud_assistant
-                     * @example cloud_assistant
-                     * @enum {string}
-                     */
-                    assignee?: "cloud_assistant";
-                    /** @example [] */
-                    artefacts?: string[];
-                };
-            };
+        content: {
+          "application/json": {
+            /** @example healthy */
+            status?: string;
+            /** @example ok */
+            database?: string;
+            /** @example ok */
+            queue?: string;
+            /** @example 123.45 */
+            uptime?: number;
+          };
         };
-        responses: {
-            /** @description Task created successfully */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Task"];
-                };
-            };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
+      };
     };
-    tasks_get_api_tasks_id: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Task ID
-                 * @example abc123def456
-                 */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Task details */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Task"];
-                };
-            };
-            /** @description Task not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
+  };
+  tasks_get_api_tasks: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    tasks_post_api_tasks_id: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Task ID */
-                id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description List of tasks */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example Implemented JWT authentication with express-jwt. Created /login and /logout endpoints. */
-                    content: string;
-                    /**
-                     * @example [
-                     *       "src/auth/jwt.ts",
-                     *       "src/api/auth.ts"
-                     *     ]
-                     */
-                    artefacts?: string[];
-                    /**
-                     * @example [
-                     *       "Authentication is secure",
-                     *       "All tests passing"
-                     *     ]
-                     */
-                    claims?: string[];
-                };
-            };
+        content: {
+          "application/json": components["schemas"]["Task"][];
         };
-        responses: {
-            /** @description Work evaluated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example approved */
-                        status?: string;
-                        /** @example 15 */
-                        stopScore?: number;
-                        /** @example APPROVED */
-                        decision?: string;
-                    };
-                };
-            };
-            /** @description Work blocked by EnforcementGate */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example blocked */
-                        status?: string;
-                        /** @example 75 */
-                        stopScore?: number;
-                        /**
-                         * @example [
-                         *       "UNPROVEN_CLAIM",
-                         *       "MISSING_EVIDENCE"
-                         *     ]
-                         */
-                        reasons?: string[];
-                    };
-                };
-            };
-        };
+      };
     };
-    audit_get_api_audit: {
-        parameters: {
-            query?: {
-                /**
-                 * @description Maximum number of entries to return
-                 * @example 50
-                 */
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of audit entries */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuditEntry"][];
-                };
-            };
-        };
+  };
+  tasks_post_api_tasks: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    audit_get_api_audit_id: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Audit entry ID */
-                id: string;
-            };
-            cookie?: never;
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example Implement user authentication */
+          title: string;
+          /** @example Add JWT-based authentication with login and logout endpoints */
+          description?: string;
+          /**
+           * @default medium
+           * @example high
+           * @enum {string}
+           */
+          priority?: "low" | "medium" | "high";
+          /**
+           * @default cloud_assistant
+           * @example cloud_assistant
+           * @enum {string}
+           */
+          assignee?: "cloud_assistant";
+          /** @example [] */
+          artefacts?: string[];
         };
-        requestBody?: never;
-        responses: {
-            /** @description Audit entry details */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuditEntry"];
-                };
-            };
-            /** @description Audit entry not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
+      };
     };
-    enforcement_get_api_enforcement_blocked: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Task created successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description List of blocked tasks */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example abc123 */
-                        taskId?: string;
-                        /** @example 75 */
-                        stopScore?: number;
-                        /**
-                         * @example [
-                         *       "UNPROVEN_CLAIM",
-                         *       "MISSING_EVIDENCE"
-                         *     ]
-                         */
-                        reasons?: string[];
-                        /**
-                         * Format: date-time
-                         * @example 2025-12-26T12:00:00.000Z
-                         */
-                        blockedAt?: string;
-                        /** @example Address: UNPROVEN_CLAIM, MISSING_EVIDENCE */
-                        requiredAction?: string;
-                    }[];
-                };
-            };
+        content: {
+          "application/json": components["schemas"]["Task"];
         };
+      };
+      /** @description Invalid request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
     };
-    enforcement_post_api_enforcement_approve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example abc123 */
-                    taskId: string;
-                    /** @example admin@example.com */
-                    approvedBy: string;
-                    /** @example Evidence verified manually, claims are valid */
-                    reason: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Task approved and unblocked */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Task approved, gate opened */
-                        message?: string;
-                        /** @example abc123 */
-                        taskId?: string;
-                    };
-                };
-            };
-            /** @description Task not found or not blocked */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
+  };
+  tasks_get_api_tasks_id: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description Task ID
+         * @example abc123def456
+         */
+        id: string;
+      };
+      cookie?: never;
     };
-    enforcement_post_api_enforcement_reject: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Task details */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example abc123 */
-                    taskId: string;
-                    /** @example admin@example.com */
-                    rejectedBy: string;
-                    /** @example Claims cannot be verified, evidence insufficient */
-                    reason: string;
-                };
-            };
+        content: {
+          "application/json": components["schemas"]["Task"];
         };
-        responses: {
-            /** @description Task rejected and stopped */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Task rejected and stopped */
-                        message?: string;
-                        /** @example abc123 */
-                        taskId?: string;
-                    };
-                };
-            };
-            /** @description Task not found or not blocked */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
+      };
+      /** @description Task not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
     };
-    chat_post_api_chat_send: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example Help me implement user authentication with JWT */
-                    message: string;
-                    /** @example user123 */
-                    userId: string;
-                    /**
-                     * @default emir
-                     * @example emir
-                     */
-                    agentName?: string;
-                    /**
-                     * @example anthropic
-                     * @enum {string}
-                     */
-                    provider?: "anthropic" | "openai" | "gemini";
-                    /** @example claude-3-5-sonnet-20241022 */
-                    model?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Message sent and response received */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example msg123 */
-                        id?: string;
-                        /** @example user123 */
-                        userId?: string;
-                        /** @example emir */
-                        agentName?: string;
-                        /** @example Help me implement user authentication with JWT */
-                        userMessage?: string;
-                        /** @example I'll help you implement JWT authentication... */
-                        agentResponse?: string;
-                        /**
-                         * Format: date-time
-                         * @example 2025-12-26T12:00:00.000Z
-                         */
-                        timestamp?: string;
-                    };
-                };
-            };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
+  };
+  tasks_post_api_tasks_id: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Task ID */
+        id: string;
+      };
+      cookie?: never;
     };
-    chat_get_api_chat_agents: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example Implemented JWT authentication with express-jwt. Created /login and /logout endpoints. */
+          content: string;
+          /**
+           * @example [
+           *       "src/auth/jwt.ts",
+           *       "src/api/auth.ts"
+           *     ]
+           */
+          artefacts?: string[];
+          /**
+           * @example [
+           *       "Authentication is secure",
+           *       "All tests passing"
+           *     ]
+           */
+          claims?: string[];
         };
-        requestBody?: never;
-        responses: {
-            /** @description List of available agents */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example emir */
-                        name?: string;
-                        /** @example Emir (Supervisor) */
-                        displayName?: string;
-                        /** @example Lead supervisor, coordinates all agents and makes final decisions */
-                        description?: string;
-                        /**
-                         * @example [
-                         *       "planning",
-                         *       "review",
-                         *       "coordination",
-                         *       "decision-making"
-                         *     ]
-                         */
-                        capabilities?: string[];
-                    }[];
-                };
-            };
-        };
+      };
     };
-    demo_post_api_demo_invites: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Work evaluated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example admin@example.com */
-                    createdBy: string;
-                    /**
-                     * @default 1
-                     * @example 10
-                     */
-                    maxRedemptions?: number;
-                    /**
-                     * @default 30
-                     * @example 7
-                     */
-                    expiresInDays?: number;
-                    /**
-                     * @default 10
-                     * @example 50
-                     */
-                    taskLimit?: number;
-                    /**
-                     * @default 100
-                     * @example 500
-                     */
-                    messageLimit?: number;
-                    /**
-                     * @default 5
-                     * @example 10
-                     */
-                    usdCredit?: number;
-                    /**
-                     * @default 5
-                     * @example 10
-                     */
-                    eurCredit?: number;
-                };
-            };
+        content: {
+          "application/json": {
+            /** @example approved */
+            status?: string;
+            /** @example 15 */
+            stopScore?: number;
+            /** @example APPROVED */
+            decision?: string;
+          };
         };
-        responses: {
-            /** @description Invite created successfully */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example inv123 */
-                        id?: string;
-                        /** @example DEMO8CHR */
-                        code?: string;
-                        /** @example 10 */
-                        maxRedemptions?: number;
-                        /**
-                         * Format: date-time
-                         * @example 2026-01-02T12:00:00.000Z
-                         */
-                        expiresAt?: string;
-                        /** @example http://localhost:3000/demo/redeem?code=DEMO8CHR */
-                        inviteUrl?: string;
-                    };
-                };
-            };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
+      };
+      /** @description Work blocked by EnforcementGate */
+      403: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          "application/json": {
+            /** @example blocked */
+            status?: string;
+            /** @example 75 */
+            stopScore?: number;
+            /**
+             * @example [
+             *       "UNPROVEN_CLAIM",
+             *       "MISSING_EVIDENCE"
+             *     ]
+             */
+            reasons?: string[];
+          };
+        };
+      };
     };
-    demo_post_api_demo_redeem: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example DEMO8CHR */
-                    code: string;
-                    /** @example johndoe */
-                    username: string;
-                    /** @example SecurePassword123 */
-                    password: string;
-                };
-            };
-        };
-        responses: {
-            /** @description User created successfully */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example user123 */
-                        userId?: string;
-                        /** @example johndoe */
-                        username?: string;
-                        limits?: {
-                            /** @example 50 */
-                            taskLimit?: number;
-                            /** @example 500 */
-                            messageLimit?: number;
-                            /** @example 10 */
-                            usdCredit?: number;
-                            /** @example 10 */
-                            eurCredit?: number;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request or invite code */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example Too many redemption attempts. Please try again later. */
-                        error?: string;
-                    };
-                };
-            };
-        };
+  };
+  audit_get_api_audit: {
+    parameters: {
+      query?: {
+        /**
+         * @description Maximum number of entries to return
+         * @example 50
+         */
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    demo_get_api_demo_stats: {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description Admin user ID
-                 * @example admin
-                 */
-                "X-User-ID"?: string;
-            };
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description List of audit entries */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Demo statistics */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 10 */
-                        totalInvites?: number;
-                        /** @example 25 */
-                        totalUsers?: number;
-                        /** @example 20 */
-                        activeUsers?: number;
-                        /** @example 150 */
-                        totalTasksCreated?: number;
-                        /** @example 500 */
-                        totalMessagesCreated?: number;
-                    };
-                };
-            };
+        content: {
+          "application/json": components["schemas"]["AuditEntry"][];
         };
+      };
     };
-    demo_get_api_demo_users_userid: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Demo user ID
-                 * @example user123
-                 */
-                userId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User usage statistics */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example user123 */
-                        userId?: string;
-                        /** @example johndoe */
-                        username?: string;
-                        limits?: {
-                            /** @example 50 */
-                            taskLimit?: number;
-                            /** @example 500 */
-                            messageLimit?: number;
-                            /** @example 10 */
-                            usdCredit?: number;
-                            /** @example 10 */
-                            eurCredit?: number;
-                        };
-                        usage?: {
-                            /** @example 12 */
-                            tasksCreated?: number;
-                            /** @example 45 */
-                            messagesCreated?: number;
-                            /** @example 2.5 */
-                            usdSpent?: number;
-                            /** @example 2.3 */
-                            eurSpent?: number;
-                        };
-                    };
-                };
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
+  };
+  audit_get_api_audit_id: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Audit entry ID */
+        id: string;
+      };
+      cookie?: never;
     };
-    slack_post_api_slack_events: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Audit entry details */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @example event_callback */
-                    type?: string;
-                    /** @example 3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P */
-                    challenge?: string;
-                    event?: Record<string, never>;
-                };
-            };
+        content: {
+          "application/json": components["schemas"]["AuditEntry"];
         };
-        responses: {
-            /** @description Event received and processed */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P */
-                        challenge?: string;
-                    };
-                };
-            };
-            /** @description Invalid signature */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Error"];
-                };
-            };
+      };
+      /** @description Audit entry not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
     };
+  };
+  enforcement_get_api_enforcement_blocked: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of blocked tasks */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example abc123 */
+            taskId?: string;
+            /** @example 75 */
+            stopScore?: number;
+            /**
+             * @example [
+             *       "UNPROVEN_CLAIM",
+             *       "MISSING_EVIDENCE"
+             *     ]
+             */
+            reasons?: string[];
+            /**
+             * Format: date-time
+             * @example 2025-12-26T12:00:00.000Z
+             */
+            blockedAt?: string;
+            /** @example Address: UNPROVEN_CLAIM, MISSING_EVIDENCE */
+            requiredAction?: string;
+          }[];
+        };
+      };
+    };
+  };
+  enforcement_post_api_enforcement_approve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example abc123 */
+          taskId: string;
+          /** @example admin@example.com */
+          approvedBy: string;
+          /** @example Evidence verified manually, claims are valid */
+          reason: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Task approved and unblocked */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example Task approved, gate opened */
+            message?: string;
+            /** @example abc123 */
+            taskId?: string;
+          };
+        };
+      };
+      /** @description Task not found or not blocked */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  enforcement_post_api_enforcement_reject: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example abc123 */
+          taskId: string;
+          /** @example admin@example.com */
+          rejectedBy: string;
+          /** @example Claims cannot be verified, evidence insufficient */
+          reason: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Task rejected and stopped */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example Task rejected and stopped */
+            message?: string;
+            /** @example abc123 */
+            taskId?: string;
+          };
+        };
+      };
+      /** @description Task not found or not blocked */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  chat_post_api_chat_send: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example Help me implement user authentication with JWT */
+          message: string;
+          /** @example user123 */
+          userId: string;
+          /**
+           * @default emir
+           * @example emir
+           */
+          agentName?: string;
+          /**
+           * @example anthropic
+           * @enum {string}
+           */
+          provider?: "anthropic" | "openai" | "gemini";
+          /** @example claude-3-5-sonnet-20241022 */
+          model?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Message sent and response received */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example msg123 */
+            id?: string;
+            /** @example user123 */
+            userId?: string;
+            /** @example emir */
+            agentName?: string;
+            /** @example Help me implement user authentication with JWT */
+            userMessage?: string;
+            /** @example I'll help you implement JWT authentication... */
+            agentResponse?: string;
+            /**
+             * Format: date-time
+             * @example 2025-12-26T12:00:00.000Z
+             */
+            timestamp?: string;
+          };
+        };
+      };
+      /** @description Invalid request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  chat_get_api_chat_agents: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of available agents */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example emir */
+            name?: string;
+            /** @example Emir (Supervisor) */
+            displayName?: string;
+            /** @example Lead supervisor, coordinates all agents and makes final decisions */
+            description?: string;
+            /**
+             * @example [
+             *       "planning",
+             *       "review",
+             *       "coordination",
+             *       "decision-making"
+             *     ]
+             */
+            capabilities?: string[];
+          }[];
+        };
+      };
+    };
+  };
+  demo_post_api_demo_invites: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example admin@example.com */
+          createdBy: string;
+          /**
+           * @default 1
+           * @example 10
+           */
+          maxRedemptions?: number;
+          /**
+           * @default 30
+           * @example 7
+           */
+          expiresInDays?: number;
+          /**
+           * @default 10
+           * @example 50
+           */
+          taskLimit?: number;
+          /**
+           * @default 100
+           * @example 500
+           */
+          messageLimit?: number;
+          /**
+           * @default 5
+           * @example 10
+           */
+          usdCredit?: number;
+          /**
+           * @default 5
+           * @example 10
+           */
+          eurCredit?: number;
+        };
+      };
+    };
+    responses: {
+      /** @description Invite created successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example inv123 */
+            id?: string;
+            /** @example DEMO8CHR */
+            code?: string;
+            /** @example 10 */
+            maxRedemptions?: number;
+            /**
+             * Format: date-time
+             * @example 2026-01-02T12:00:00.000Z
+             */
+            expiresAt?: string;
+            /** @example http://localhost:3000/demo/redeem?code=DEMO8CHR */
+            inviteUrl?: string;
+          };
+        };
+      };
+      /** @description Invalid request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  demo_post_api_demo_redeem: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example DEMO8CHR */
+          code: string;
+          /** @example johndoe */
+          username: string;
+          /** @example SecurePassword123 */
+          password: string;
+        };
+      };
+    };
+    responses: {
+      /** @description User created successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example user123 */
+            userId?: string;
+            /** @example johndoe */
+            username?: string;
+            limits?: {
+              /** @example 50 */
+              taskLimit?: number;
+              /** @example 500 */
+              messageLimit?: number;
+              /** @example 10 */
+              usdCredit?: number;
+              /** @example 10 */
+              eurCredit?: number;
+            };
+          };
+        };
+      };
+      /** @description Invalid request or invite code */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Rate limit exceeded */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example Too many redemption attempts. Please try again later. */
+            error?: string;
+          };
+        };
+      };
+    };
+  };
+  demo_get_api_demo_stats: {
+    parameters: {
+      query?: never;
+      header?: {
+        /**
+         * @description Admin user ID
+         * @example admin
+         */
+        "X-User-ID"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Demo statistics */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example 10 */
+            totalInvites?: number;
+            /** @example 25 */
+            totalUsers?: number;
+            /** @example 20 */
+            activeUsers?: number;
+            /** @example 150 */
+            totalTasksCreated?: number;
+            /** @example 500 */
+            totalMessagesCreated?: number;
+          };
+        };
+      };
+    };
+  };
+  demo_get_api_demo_users_userid: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description Demo user ID
+         * @example user123
+         */
+        userId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description User usage statistics */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example user123 */
+            userId?: string;
+            /** @example johndoe */
+            username?: string;
+            limits?: {
+              /** @example 50 */
+              taskLimit?: number;
+              /** @example 500 */
+              messageLimit?: number;
+              /** @example 10 */
+              usdCredit?: number;
+              /** @example 10 */
+              eurCredit?: number;
+            };
+            usage?: {
+              /** @example 12 */
+              tasksCreated?: number;
+              /** @example 45 */
+              messagesCreated?: number;
+              /** @example 2.5 */
+              usdSpent?: number;
+              /** @example 2.3 */
+              eurSpent?: number;
+            };
+          };
+        };
+      };
+      /** @description User not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  slack_post_api_slack_events: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @example event_callback */
+          type?: string;
+          /** @example 3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P */
+          challenge?: string;
+          event?: Record<string, never>;
+        };
+      };
+    };
+    responses: {
+      /** @description Event received and processed */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example 3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P */
+            challenge?: string;
+          };
+        };
+      };
+      /** @description Invalid signature */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
 }

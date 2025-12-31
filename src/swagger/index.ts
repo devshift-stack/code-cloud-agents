@@ -29,7 +29,11 @@ export function setupSwagger(app: Express): void {
     };
 
     // Mount Swagger UI
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+    app.use(
+      "/api-docs",
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerDocument, options),
+    );
 
     console.log("✅ Swagger UI available at /api-docs");
   } catch (error) {

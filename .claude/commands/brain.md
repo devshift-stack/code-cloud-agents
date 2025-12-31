@@ -5,12 +5,14 @@ Nutze die Brain API für Wissensmanagement.
 ## Verfügbare Aktionen:
 
 ### Suchen
+
 ```bash
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://localhost:3000/api/brain/search?q=QUERY"
 ```
 
 ### Text hinzufügen
+
 ```bash
 curl -s -X POST -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
@@ -19,12 +21,14 @@ curl -s -X POST -H "Authorization: Bearer $TOKEN" \
 ```
 
 ### Dokumente auflisten
+
 ```bash
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://localhost:3000/api/brain/docs"
 ```
 
 ### Statistiken
+
 ```bash
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://localhost:3000/api/brain/stats"

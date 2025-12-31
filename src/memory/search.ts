@@ -119,7 +119,9 @@ export class MemorySearch {
       // Calculate relevance (simple: count query occurrences)
       const lowerContent = row.content.toLowerCase();
       const lowerQuery = options.query.toLowerCase();
-      const occurrences = (lowerContent.match(new RegExp(lowerQuery, "g")) || []).length;
+      const occurrences = (
+        lowerContent.match(new RegExp(lowerQuery, "g")) || []
+      ).length;
       const relevance = Math.min(occurrences / 10, 1); // Normalize to 0-1
 
       // Generate snippet (context around first match)
@@ -195,7 +197,10 @@ export class MemorySearch {
   /**
    * Get conversation context (messages before and after)
    */
-  getContext(messageId: string, contextSize: number = 5): {
+  getContext(
+    messageId: string,
+    contextSize: number = 5,
+  ): {
     before: ChatMessage[];
     message: ChatMessage | null;
     after: ChatMessage[];
@@ -229,7 +234,11 @@ export class MemorySearch {
       ORDER BY timestamp DESC
       LIMIT ?
     `);
-    const beforeRows = beforeStmt.all(msgRow.chat_id, msgRow.timestamp, contextSize) as any[];
+    const beforeRows = beforeStmt.all(
+      msgRow.chat_id,
+      msgRow.timestamp,
+      contextSize,
+    ) as any[];
     const before = beforeRows.reverse().map((row) => ({
       id: row.id,
       chatId: row.chat_id,
@@ -249,7 +258,11 @@ export class MemorySearch {
       ORDER BY timestamp ASC
       LIMIT ?
     `);
-    const afterRows = afterStmt.all(msgRow.chat_id, msgRow.timestamp, contextSize) as any[];
+    const afterRows = afterStmt.all(
+      msgRow.chat_id,
+      msgRow.timestamp,
+      contextSize,
+    ) as any[];
     const after = afterRows.map((row) => ({
       id: row.id,
       chatId: row.chat_id,
@@ -268,14 +281,21 @@ export class MemorySearch {
   /**
    * Generate search snippet with highlighted query
    */
-  private generateSnippet(content: string, query: string, maxLength: number = 200): string {
+  private generateSnippet(
+    content: string,
+    query: string,
+    maxLength: number = 200,
+  ): string {
     const lowerContent = content.toLowerCase();
     const lowerQuery = query.toLowerCase();
     const index = lowerContent.indexOf(lowerQuery);
 
     if (index === -1) {
       // Query not found, return first N chars
-      return content.substring(0, maxLength) + (content.length > maxLength ? "..." : "");
+      return (
+        content.substring(0, maxLength) +
+        (content.length > maxLength ? "..." : "")
+      );
     }
 
     // Calculate start position (with context before match)
@@ -354,10 +374,13 @@ export class MemorySearch {
 
     const keywords = words
       .filter((word) => word.length > 3 && !commonWords.has(word))
-      .reduce((acc, word) => {
-        acc[word] = (acc[word] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+      .reduce(
+        (acc, word) => {
+          acc[word] = (acc[word] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
     // Sort by frequency and return top 5
     return Object.entries(keywords)
@@ -369,11 +392,17 @@ export class MemorySearch {
   /**
    * Get trending topics (most discussed keywords)
    */
-  getTrendingTopics(userId: string, limit: number = 10, days: number = 7): Array<{ keyword: string; count: number }> {
+  getTrendingTopics(
+    userId: string,
+    limit: number = 10,
+    days: number = 7,
+  ): Array<{ keyword: string; count: number }> {
     const rawDb = this.db.getRawDb();
 
     // Get recent messages
-    const dateFrom = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    const dateFrom = new Date(
+      Date.now() - days * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     const stmt = rawDb.prepare(`
       SELECT m.content FROM chat_messages m

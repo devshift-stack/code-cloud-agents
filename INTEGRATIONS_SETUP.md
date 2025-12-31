@@ -6,11 +6,11 @@
 
 ## 📋 Übersicht
 
-| Integration | Status | Setup Zeit | Features |
-|-------------|--------|------------|----------|
-| **GitHub** | ✅ Production Ready | 2 min | Issues, Repos, Status |
-| **Slack** | ✅ Production Ready | 3 min | Messages, Webhooks, Threads |
-| **Linear** | ✅ Production Ready | 2 min | Issues, Teams, Workflows |
+| Integration | Status              | Setup Zeit | Features                    |
+| ----------- | ------------------- | ---------- | --------------------------- |
+| **GitHub**  | ✅ Production Ready | 2 min      | Issues, Repos, Status       |
+| **Slack**   | ✅ Production Ready | 3 min      | Messages, Webhooks, Threads |
+| **Linear**  | ✅ Production Ready | 2 min      | Issues, Teams, Workflows    |
 
 ---
 
@@ -19,12 +19,14 @@
 ### 1. GitHub Setup
 
 **API Token erstellen:**
+
 1. https://github.com/settings/tokens
 2. "Generate new token (classic)"
 3. Scopes: ✅ `repo`, ✅ `write:org` (optional)
 4. Token kopieren
 
 **In .env:**
+
 ```bash
 GITHUB_ENABLED=true
 GITHUB_TOKEN=ghp_dein_token_hier
@@ -32,6 +34,7 @@ GITHUB_ORG=deine-org  # Optional
 ```
 
 **Test:**
+
 ```typescript
 import { createGitHubClient } from "./integrations/github/client.js";
 const github = createGitHubClient();
@@ -61,6 +64,7 @@ await github.getStatus();
 4. URL kopieren
 
 **In .env:**
+
 ```bash
 SLACK_ENABLED=true
 SLACK_TOKEN=xoxb-dein-token-hier          # Option A
@@ -68,6 +72,7 @@ SLACK_WEBHOOK_URL=https://hooks.slack...  # Option B (oder beide)
 ```
 
 **Test:**
+
 ```typescript
 import { createSlackClient } from "./integrations/slack/client.js";
 const slack = createSlackClient();
@@ -79,18 +84,21 @@ await slack.sendMessage({ channel: "#general", text: "Test!" });
 ### 3. Linear Setup
 
 **API Key erstellen:**
+
 1. https://linear.app/settings/api
 2. "Personal API keys" → "Create key"
 3. Name: `Cloud Agents`
 4. Key kopieren
 
 **In .env:**
+
 ```bash
 LINEAR_ENABLED=true
 LINEAR_API_KEY=lin_api_dein_key_hier
 ```
 
 **Test:**
+
 ```typescript
 import { createLinearClient } from "./integrations/linear/client.js";
 const linear = createLinearClient();
@@ -140,9 +148,12 @@ await slack.sendMessage({
   blocks: [
     {
       type: "section",
-      text: { type: "mrkdwn", text: "*Status:* Success\n*Duration:* 2.5 minutes" }
-    }
-  ]
+      text: {
+        type: "mrkdwn",
+        text: "*Status:* Success\n*Duration:* 2.5 minutes",
+      },
+    },
+  ],
 });
 ```
 
@@ -180,20 +191,20 @@ const linear = createLinearClient();
 // 1. GitHub Issue erstellt
 const githubIssue = await github.createIssue("owner/repo", {
   title: "Critical Bug",
-  body: "Production error"
+  body: "Production error",
 });
 
 // 2. Slack Notification
 await slack.sendMessage({
   channel: "#alerts",
-  text: `🚨 Critical issue: ${githubIssue.issue?.htmlUrl}`
+  text: `🚨 Critical issue: ${githubIssue.issue?.htmlUrl}`,
 });
 
 // 3. Linear Issue für Tracking
 await linear.createIssue({
   title: `[GitHub] Critical Bug`,
   description: `Source: ${githubIssue.issue?.htmlUrl}`,
-  priority: 1
+  priority: 1,
 });
 ```
 
@@ -206,7 +217,7 @@ const stopScore = 75;
 const linearIssue = await linear.createIssue({
   title: `🚨 STOP Required: ${taskName}`,
   description: `STOP Score: ${stopScore}/100`,
-  priority: 1
+  priority: 1,
 });
 
 // Slack Alert
@@ -218,17 +229,17 @@ await slack.sendMessage({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*Linear Issue:* ${linearIssue.issue?.url}\n*Action:* Manual review required`
-      }
-    }
-  ]
+        text: `*Linear Issue:* ${linearIssue.issue?.url}\n*Action:* Manual review required`,
+      },
+    },
+  ],
 });
 
 // GitHub Issue als Backup
 await github.createIssue("team/repo", {
   title: `STOP: ${taskName}`,
   body: `STOP Score: ${stopScore}\nLinear: ${linearIssue.issue?.url}`,
-  labels: ["stop-score", "urgent"]
+  labels: ["stop-score", "urgent"],
 });
 ```
 
@@ -288,27 +299,27 @@ console.log("Linear:", linearStatus.connected ? "✅" : "❌");
 
 ### GitHub
 
-| Error | Lösung |
-|-------|--------|
-| `invalid_auth` | Token neu generieren |
-| `Not Found` | Repo-Name prüfen oder Permissions fehlen |
-| `rate limit` | Warte 1 Stunde oder nutze authenticated token |
+| Error          | Lösung                                        |
+| -------------- | --------------------------------------------- |
+| `invalid_auth` | Token neu generieren                          |
+| `Not Found`    | Repo-Name prüfen oder Permissions fehlen      |
+| `rate limit`   | Warte 1 Stunde oder nutze authenticated token |
 
 ### Slack
 
-| Error | Lösung |
-|-------|--------|
-| `not_in_channel` | `/invite @Bot` im Channel |
+| Error               | Lösung                        |
+| ------------------- | ----------------------------- |
+| `not_in_channel`    | `/invite @Bot` im Channel     |
 | `channel_not_found` | Channel-Name prüfen (mit `#`) |
-| `invalid_auth` | Token neu generieren |
+| `invalid_auth`      | Token neu generieren          |
 
 ### Linear
 
-| Error | Lösung |
-|-------|--------|
-| `Invalid API key` | Key neu generieren |
-| `No teams found` | Mindestens ein Team erstellen |
-| `Unauthorized` | API key Permissions prüfen |
+| Error             | Lösung                        |
+| ----------------- | ----------------------------- |
+| `Invalid API key` | Key neu generieren            |
+| `No teams found`  | Mindestens ein Team erstellen |
+| `Unauthorized`    | API key Permissions prüfen    |
 
 ---
 

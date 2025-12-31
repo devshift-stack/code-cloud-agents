@@ -68,7 +68,9 @@ export function createWebhookRouter(): Router {
       }
 
       if (!registration.events || registration.events.length === 0) {
-        return res.status(400).json({ error: "Missing required field: events" });
+        return res
+          .status(400)
+          .json({ error: "Missing required field: events" });
       }
 
       // Generate secret if not provided
@@ -182,7 +184,9 @@ export function createWebhookRouter(): Router {
       const { webhookId } = req.body;
 
       if (!webhookId) {
-        return res.status(400).json({ error: "Missing required field: webhookId" });
+        return res
+          .status(400)
+          .json({ error: "Missing required field: webhookId" });
       }
 
       const webhook = webhookManager.get(webhookId);

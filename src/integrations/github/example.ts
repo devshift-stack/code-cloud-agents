@@ -10,12 +10,15 @@ import { createGitHubClient } from "./client.js";
 export async function exampleCreateIssue() {
   const github = createGitHubClient();
 
-  const result = await github.createIssue("dsactivi-2/Optimizecodecloudagents", {
-    title: "Test Issue from Agent",
-    body: "This is a test issue created by the GitHub integration.",
-    labels: ["bug", "enhancement"],
-    assignees: ["dsactivi"],
-  });
+  const result = await github.createIssue(
+    "dsactivi-2/Optimizecodecloudagents",
+    {
+      title: "Test Issue from Agent",
+      body: "This is a test issue created by the GitHub integration.",
+      labels: ["bug", "enhancement"],
+      assignees: ["dsactivi"],
+    },
+  );
 
   if (result.success && result.issue) {
     console.log(`✅ Issue created: ${result.issue.htmlUrl}`);
@@ -36,7 +39,9 @@ export async function exampleListRepos() {
   if (result.success && result.repos) {
     console.log(`✅ Found ${result.repos.length} repositories:`);
     result.repos.slice(0, 5).forEach((repo) => {
-      console.log(`   - ${repo.fullName} ${repo.private ? "(private)" : "(public)"}`);
+      console.log(
+        `   - ${repo.fullName} ${repo.private ? "(private)" : "(public)"}`,
+      );
     });
   } else {
     console.error(`❌ Failed: ${result.error}`);

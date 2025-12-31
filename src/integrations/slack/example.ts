@@ -89,7 +89,9 @@ export async function exampleSendRichMessage() {
 export async function exampleSendWebhook() {
   const slack = createSlackClient();
 
-  const result = await slack.sendWebhook("🚨 Critical error detected by Supervisor!");
+  const result = await slack.sendWebhook(
+    "🚨 Critical error detected by Supervisor!",
+  );
 
   if (result.success) {
     console.log(`✅ Webhook message sent`);

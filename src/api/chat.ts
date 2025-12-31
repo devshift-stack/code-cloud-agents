@@ -40,7 +40,7 @@ export function createChatRouter(chatManager: ChatManager): Router {
       const task = taskQueue.createTaskFromChat(
         request.message,
         request.userId,
-        response.chatId
+        response.chatId,
       );
       if (task) {
         console.log("[Chat] Created task from message:", task.id);
@@ -57,19 +57,25 @@ export function createChatRouter(chatManager: ChatManager): Router {
    * Get chat history
    * Requires authentication
    */
-  router.get("/:chatId/messages", requireAuth, (req: Request, res: Response) => {
-    try {
-      const { chatId } = req.params;
-      const limit = parseInt(req.query.limit as string) || 50;
-      const offset = parseInt(req.query.offset as string) || 0;
+  router.get(
+    "/:chatId/messages",
+    requireAuth,
+    (req: Request, res: Response) => {
+      try {
+        const { chatId } = req.params;
+        const limit = parseInt(req.query.limit as string) || 50;
+        const offset = parseInt(req.query.offset as string) || 0;
 
-      const history = chatManager.getChatHistory(chatId, limit, offset);
-      res.json(history);
-    } catch (error: any) {
-      console.error("Get chat history error:", error);
-      res.status(500).json({ error: error.message || "Internal server error" });
-    }
-  });
+        const history = chatManager.getChatHistory(chatId, limit, offset);
+        res.json(history);
+      } catch (error: any) {
+        console.error("Get chat history error:", error);
+        res
+          .status(500)
+          .json({ error: error.message || "Internal server error" });
+      }
+    },
+  );
 
   /**
    * GET /api/chat/list/:userId
@@ -138,31 +144,40 @@ export function createChatRouter(chatManager: ChatManager): Router {
       {
         name: "emir",
         displayName: "Emir (Supervisor)",
-        description: "Lead supervisor, coordinates all agents and makes final decisions",
+        description:
+          "Lead supervisor, coordinates all agents and makes final decisions",
         capabilities: ["planning", "review", "coordination", "decision-making"],
       },
       {
         name: "planner",
         displayName: "Planner",
-        description: "Creates detailed project plans with requirements and architecture",
+        description:
+          "Creates detailed project plans with requirements and architecture",
         capabilities: ["planning", "architecture", "requirements"],
       },
       {
         name: "berater",
         displayName: "Berater (Consultant)",
-        description: "Project intake specialist, asks precise questions about requirements",
-        capabilities: ["consultation", "requirements-gathering", "risk-analysis"],
+        description:
+          "Project intake specialist, asks precise questions about requirements",
+        capabilities: [
+          "consultation",
+          "requirements-gathering",
+          "risk-analysis",
+        ],
       },
       {
         name: "designer",
         displayName: "Designer",
-        description: "UI/UX designer, creates design concepts and ensures accessibility",
+        description:
+          "UI/UX designer, creates design concepts and ensures accessibility",
         capabilities: ["ui-design", "ux-design", "accessibility"],
       },
       {
         name: "coder",
         displayName: "Coder",
-        description: "Implements features according to plan and design specifications",
+        description:
+          "Implements features according to plan and design specifications",
         capabilities: ["coding", "implementation", "debugging"],
       },
       {
@@ -175,19 +190,23 @@ export function createChatRouter(chatManager: ChatManager): Router {
         name: "security",
         displayName: "Security",
         description: "Security review specialist, checks for vulnerabilities",
-        capabilities: ["security-review", "vulnerability-scanning", "secure-coding"],
+        capabilities: [
+          "security-review",
+          "vulnerability-scanning",
+          "secure-coding",
+        ],
       },
       {
         name: "docs",
         displayName: "Docs",
-        description: "Technical writer, creates README, guides, and API documentation",
+        description:
+          "Technical writer, creates README, guides, and API documentation",
         capabilities: ["documentation", "technical-writing", "api-docs"],
       },
     ];
 
     res.json({ agents });
   });
-
 
   // ===============================
   // Chat Threads API (for Dashboard)
@@ -199,7 +218,10 @@ export function createChatRouter(chatManager: ChatManager): Router {
    */
   router.get("/threads", requireAuth, (req: Request, res: Response) => {
     try {
-      const userId = (req as any).user?.id || (req as any).user?.userId || (req as any).userId;
+      const userId =
+        (req as any).user?.id ||
+        (req as any).user?.userId ||
+        (req as any).userId;
       if (!userId) {
         return res.status(401).json({ error: "Authentication required" });
       }
@@ -207,8 +229,9 @@ export function createChatRouter(chatManager: ChatManager): Router {
       const limit = parseInt(req.query.limit as string) || 50;
       const page = parseInt(req.query.page as string) || 1;
 
-      const result = chatManager.listChats(userId, page, limit); const chats = result.chats || [];
-      
+      const result = chatManager.listChats(userId, page, limit);
+      const chats = result.chats || [];
+
       const threads = chats.map((chat: any) => ({
         id: chat.id,
         title: chat.title,
@@ -233,7 +256,10 @@ export function createChatRouter(chatManager: ChatManager): Router {
    */
   router.post("/threads", requireAuth, (req: Request, res: Response) => {
     try {
-      const userId = (req as any).user?.id || (req as any).user?.userId || (req as any).userId;
+      const userId =
+        (req as any).user?.id ||
+        (req as any).user?.userId ||
+        (req as any).userId;
       if (!userId) {
         return res.status(401).json({ error: "Authentication required" });
       }
@@ -251,7 +277,7 @@ export function createChatRouter(chatManager: ChatManager): Router {
           agentId: chat.agentName || agentId,
           userId: chat.userId || userId,
           createdAt: chat.createdAt || new Date().toISOString(),
-        }
+        },
       });
     } catch (error: any) {
       console.error("Create thread error:", error);
@@ -263,32 +289,42 @@ export function createChatRouter(chatManager: ChatManager): Router {
    * GET /api/chat/threads/:id/messages
    * Get messages for a specific thread
    */
-  router.get("/threads/:id/messages", requireAuth, (req: Request, res: Response) => {
-    try {
-      const userId = (req as any).user?.id || (req as any).user?.userId || (req as any).userId;
-      if (!userId) {
-        return res.status(401).json({ error: "Authentication required" });
+  router.get(
+    "/threads/:id/messages",
+    requireAuth,
+    (req: Request, res: Response) => {
+      try {
+        const userId =
+          (req as any).user?.id ||
+          (req as any).user?.userId ||
+          (req as any).userId;
+        if (!userId) {
+          return res.status(401).json({ error: "Authentication required" });
+        }
+
+        const threadId = req.params.id;
+        const limit = parseInt(req.query.limit as string) || 100;
+        const offset = parseInt(req.query.offset as string) || 0;
+
+        const history = chatManager.getChatHistory(threadId, limit, offset);
+
+        const messages = (history.messages || []).map((msg: any) => ({
+          id: msg.id,
+          role: msg.role,
+          content: msg.content,
+          timestamp:
+            msg.timestamp || msg.created_at || new Date().toISOString(),
+        }));
+
+        res.json({ success: true, messages });
+      } catch (error: any) {
+        console.error("Get thread messages error:", error);
+        res
+          .status(500)
+          .json({ error: error.message || "Internal server error" });
       }
-
-      const threadId = req.params.id;
-      const limit = parseInt(req.query.limit as string) || 100;
-      const offset = parseInt(req.query.offset as string) || 0;
-
-      const history = chatManager.getChatHistory(threadId, limit, offset);
-      
-      const messages = (history.messages || []).map((msg: any) => ({
-        id: msg.id,
-        role: msg.role,
-        content: msg.content,
-        timestamp: msg.timestamp || msg.created_at || new Date().toISOString(),
-      }));
-
-      res.json({ success: true, messages });
-    } catch (error: any) {
-      console.error("Get thread messages error:", error);
-      res.status(500).json({ error: error.message || "Internal server error" });
-    }
-  });
+    },
+  );
 
   return router;
 }

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { useState, useEffect } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -11,24 +11,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
-import { Label } from './ui/label';
+} from "./ui/dialog";
+import { Label } from "./ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { toast } from 'sonner';
-import { Plus, CheckCircle2, Circle, XCircle, Clock } from 'lucide-react';
+} from "./ui/select";
+import { toast } from "sonner";
+import { Plus, CheckCircle2, Circle, XCircle, Clock } from "lucide-react";
 
 interface Task {
   id: string;
   title: string;
   description: string;
-  status: 'future' | 'active' | 'finished' | 'cancelled';
-  priority: 'low' | 'medium' | 'high';
+  status: "future" | "active" | "finished" | "cancelled";
+  priority: "low" | "medium" | "high";
   agent?: string;
   repository?: string;
   model?: string;
@@ -56,14 +56,14 @@ export function TaskBoard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newTask, setNewTask] = useState({
-    title: '',
-    description: '',
-    priority: 'medium' as Task['priority'],
-    agent: 'emir',
-    repository: '',
-    model: 'claude-3.5-sonnet',
+    title: "",
+    description: "",
+    priority: "medium" as Task["priority"],
+    agent: "emir",
+    repository: "",
+    model: "claude-3.5-sonnet",
     tags: [] as string[],
-    dueDate: '',
+    dueDate: "",
     artefacts: [] as string[],
   });
 
@@ -74,35 +74,47 @@ export function TaskBoard() {
 
   const fetchAgents = async () => {
     try {
-      const response = await fetch('/api/chat/agents');
-      if (!response.ok) throw new Error('Failed to fetch agents');
+      const response = await fetch("/api/chat/agents");
+      if (!response.ok) throw new Error("Failed to fetch agents");
       const data = await response.json();
       setAgents(data.agents || []);
     } catch (error) {
-      toast.error('Failed to load agents');
+      toast.error("Failed to load agents");
       // Fallback agents
       setAgents([
-        { name: 'emir', displayName: 'Emir (Supervisor)', description: 'Lead supervisor' },
-        { name: 'planner', displayName: 'Planner', description: 'Task planning' },
-        { name: 'coder', displayName: 'Coder', description: 'Code implementation' },
+        {
+          name: "emir",
+          displayName: "Emir (Supervisor)",
+          description: "Lead supervisor",
+        },
+        {
+          name: "planner",
+          displayName: "Planner",
+          description: "Task planning",
+        },
+        {
+          name: "coder",
+          displayName: "Coder",
+          description: "Code implementation",
+        },
       ]);
     }
   };
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch('/api/tasks/', {
+      const response = await fetch("/api/tasks/", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      if (!response.ok) throw new Error('Failed to fetch tasks');
+      if (!response.ok) throw new Error("Failed to fetch tasks");
 
       const data = await response.json();
       setTasks(data.tasks || []);
     } catch (error) {
-      toast.error('Failed to load tasks');
+      toast.error("Failed to load tasks");
     } finally {
       setIsLoading(false);
     }
@@ -110,94 +122,98 @@ export function TaskBoard() {
 
   const createTask = async () => {
     if (!newTask.title.trim()) {
-      toast.error('Please enter a task title');
+      toast.error("Please enter a task title");
       return;
     }
 
     try {
-      const response = await fetch('/api/tasks/', {
-        method: 'POST',
+      const response = await fetch("/api/tasks/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           ...newTask,
-          status: 'future',
+          status: "future",
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to create task');
+      if (!response.ok) throw new Error("Failed to create task");
 
       const data = await response.json();
       setTasks((prev) => [...prev, data.task]);
       setNewTask({
-        title: '',
-        description: '',
-        priority: 'medium',
-        agent: 'emir',
-        repository: '',
-        model: 'claude-3.5-sonnet',
+        title: "",
+        description: "",
+        priority: "medium",
+        agent: "emir",
+        repository: "",
+        model: "claude-3.5-sonnet",
         tags: [],
-        dueDate: '',
+        dueDate: "",
         artefacts: [],
       });
       setIsCreateDialogOpen(false);
-      toast.success('Task created successfully');
+      toast.success("Task created successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create task');
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create task",
+      );
     }
   };
 
-  const updateTaskStatus = async (taskId: string, status: Task['status']) => {
+  const updateTaskStatus = async (taskId: string, status: Task["status"]) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}/submit`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ status }),
       });
 
-      if (!response.ok) throw new Error('Failed to update task');
+      if (!response.ok) throw new Error("Failed to update task");
 
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === taskId ? { ...task, status, updatedAt: new Date().toISOString() } : task
-        )
+          task.id === taskId
+            ? { ...task, status, updatedAt: new Date().toISOString() }
+            : task,
+        ),
       );
-      toast.success('Task updated');
+      toast.success("Task updated");
     } catch (error) {
-      toast.error('Failed to update task');
+      toast.error("Failed to update task");
     }
   };
 
-  const getTasksByStatus = (status: Task['status']) => {
+  const getTasksByStatus = (status: Task["status"]) => {
     return tasks.filter((task) => task.status === status);
   };
 
-  const getStatusIcon = (status: Task['status']) => {
+  const getStatusIcon = (status: Task["status"]) => {
     switch (status) {
-      case 'future':
+      case "future":
         return <Circle className="w-4 h-4" />;
-      case 'active':
+      case "active":
         return <Clock className="w-4 h-4 text-blue-500" />;
-      case 'finished':
+      case "finished":
         return <CheckCircle2 className="w-4 h-4 text-green-500" />;
-      case 'cancelled':
+      case "cancelled":
         return <XCircle className="w-4 h-4 text-red-500" />;
     }
   };
 
-  const getPriorityColor = (priority: Task['priority']) => {
+  const getPriorityColor = (priority: Task["priority"]) => {
     switch (priority) {
-      case 'high':
-        return 'border-l-red-500';
-      case 'medium':
-        return 'border-l-yellow-500';
-      case 'low':
-        return 'border-l-green-500';
+      case "high":
+        return "border-l-red-500";
+      case "medium":
+        return "border-l-yellow-500";
+      case "low":
+        return "border-l-green-500";
     }
   };
 
@@ -216,7 +232,10 @@ export function TaskBoard() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Task Management</CardTitle>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button
                 size="sm"
@@ -255,7 +274,10 @@ export function TaskBoard() {
                     placeholder="Task description"
                     value={newTask.description}
                     onChange={(e) =>
-                      setNewTask((prev) => ({ ...prev, description: e.target.value }))
+                      setNewTask((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
                     }
                     data-testid="cloudagents.task.board.description.textarea"
                     data-otop-id="cloudagents.task.board.description.textarea"
@@ -265,7 +287,7 @@ export function TaskBoard() {
                   <Label htmlFor="priority">Priority</Label>
                   <Select
                     value={newTask.priority}
-                    onValueChange={(value: Task['priority']) =>
+                    onValueChange={(value: Task["priority"]) =>
                       setNewTask((prev) => ({ ...prev, priority: value }))
                     }
                   >
@@ -316,7 +338,10 @@ export function TaskBoard() {
                     placeholder="e.g. code-cloud-agents"
                     value={newTask.repository}
                     onChange={(e) =>
-                      setNewTask((prev) => ({ ...prev, repository: e.target.value }))
+                      setNewTask((prev) => ({
+                        ...prev,
+                        repository: e.target.value,
+                      }))
                     }
                     data-testid="cloudagents.task.board.repository.input"
                     data-otop-id="cloudagents.task.board.repository.input"
@@ -339,10 +364,16 @@ export function TaskBoard() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="claude-3.5-sonnet">Claude 3.5 Sonnet</SelectItem>
-                      <SelectItem value="claude-3-opus">Claude 3 Opus</SelectItem>
+                      <SelectItem value="claude-3.5-sonnet">
+                        Claude 3.5 Sonnet
+                      </SelectItem>
+                      <SelectItem value="claude-3-opus">
+                        Claude 3 Opus
+                      </SelectItem>
                       <SelectItem value="gpt-4">GPT-4</SelectItem>
-                      <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                      <SelectItem value="gpt-3.5-turbo">
+                        GPT-3.5 Turbo
+                      </SelectItem>
                       <SelectItem value="gemini-pro">Gemini Pro</SelectItem>
                     </SelectContent>
                   </Select>
@@ -354,10 +385,10 @@ export function TaskBoard() {
                   <Input
                     id="artefacts"
                     placeholder="file1.ts, file2.tsx, ..."
-                    value={newTask.artefacts.join(', ')}
+                    value={newTask.artefacts.join(", ")}
                     onChange={(e) => {
                       const artefacts = e.target.value
-                        .split(',')
+                        .split(",")
                         .map((s) => s.trim())
                         .filter(Boolean);
                       setNewTask((prev) => ({ ...prev, artefacts }));
@@ -393,20 +424,22 @@ export function TaskBoard() {
         <Tabs defaultValue="future" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="future">
-              Future ({getTasksByStatus('future').length})
+              Future ({getTasksByStatus("future").length})
             </TabsTrigger>
             <TabsTrigger value="active">
-              Active ({getTasksByStatus('active').length})
+              Active ({getTasksByStatus("active").length})
             </TabsTrigger>
             <TabsTrigger value="finished">
-              Finished ({getTasksByStatus('finished').length})
+              Finished ({getTasksByStatus("finished").length})
             </TabsTrigger>
             <TabsTrigger value="cancelled">
-              Cancelled ({getTasksByStatus('cancelled').length})
+              Cancelled ({getTasksByStatus("cancelled").length})
             </TabsTrigger>
           </TabsList>
 
-          {(['future', 'active', 'finished', 'cancelled'] as Task['status'][]).map((status) => (
+          {(
+            ["future", "active", "finished", "cancelled"] as Task["status"][]
+          ).map((status) => (
             <TabsContent key={status} value={status} className="space-y-2">
               {getTasksByStatus(status).length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
@@ -431,30 +464,37 @@ export function TaskBoard() {
                             </p>
                           )}
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <span className="capitalize">Priority: {task.priority}</span>
+                            <span className="capitalize">
+                              Priority: {task.priority}
+                            </span>
                             <span>
-                              Created: {new Date(task.createdAt).toLocaleDateString()}
+                              Created:{" "}
+                              {new Date(task.createdAt).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
                         <div className="flex gap-2 ml-4">
-                          {status === 'future' && (
+                          {status === "future" && (
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => updateTaskStatus(task.id, 'active')}
+                              onClick={() =>
+                                updateTaskStatus(task.id, "active")
+                              }
                               data-testid="cloudagents.task.board.task.start.button"
                               data-otop-id="cloudagents.task.board.task.start.button"
                             >
                               Start
                             </Button>
                           )}
-                          {status === 'active' && (
+                          {status === "active" && (
                             <>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateTaskStatus(task.id, 'finished')}
+                                onClick={() =>
+                                  updateTaskStatus(task.id, "finished")
+                                }
                                 data-testid="cloudagents.task.board.task.complete.button"
                                 data-otop-id="cloudagents.task.board.task.complete.button"
                               >
@@ -463,7 +503,9 @@ export function TaskBoard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateTaskStatus(task.id, 'cancelled')}
+                                onClick={() =>
+                                  updateTaskStatus(task.id, "cancelled")
+                                }
                                 data-testid="cloudagents.task.board.task.cancel.button"
                                 data-otop-id="cloudagents.task.board.task.cancel.button"
                               >

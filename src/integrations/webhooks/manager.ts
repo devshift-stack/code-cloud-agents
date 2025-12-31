@@ -69,7 +69,10 @@ class WebhookManager {
   /**
    * Update webhook configuration
    */
-  update(webhookId: string, updates: Partial<WebhookConfig>): WebhookConfig | undefined {
+  update(
+    webhookId: string,
+    updates: Partial<WebhookConfig>,
+  ): WebhookConfig | undefined {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) return undefined;
 
@@ -88,7 +91,11 @@ class WebhookManager {
   /**
    * Trigger webhooks for a specific event
    */
-  async trigger(event: WebhookEvent, data: unknown, metadata?: Record<string, unknown>): Promise<void> {
+  async trigger(
+    event: WebhookEvent,
+    data: unknown,
+    metadata?: Record<string, unknown>,
+  ): Promise<void> {
     const payload: WebhookPayload = {
       event,
       timestamp: new Date().toISOString(),
@@ -97,7 +104,7 @@ class WebhookManager {
     };
 
     const matchingWebhooks = Array.from(this.webhooks.values()).filter(
-      (webhook) => webhook.enabled && webhook.events.includes(event)
+      (webhook) => webhook.enabled && webhook.events.includes(event),
     );
 
     if (matchingWebhooks.length === 0) {
@@ -105,18 +112,23 @@ class WebhookManager {
       return;
     }
 
-    console.log(`📤 Triggering ${matchingWebhooks.length} webhook(s) for event: ${event}`);
+    console.log(
+      `📤 Triggering ${matchingWebhooks.length} webhook(s) for event: ${event}`,
+    );
 
     // Send webhooks in parallel
     await Promise.allSettled(
-      matchingWebhooks.map((webhook) => this.deliver(webhook, payload))
+      matchingWebhooks.map((webhook) => this.deliver(webhook, payload)),
     );
   }
 
   /**
    * Deliver a webhook payload
    */
-  private async deliver(webhook: WebhookConfig, payload: WebhookPayload): Promise<void> {
+  private async deliver(
+    webhook: WebhookConfig,
+    payload: WebhookPayload,
+  ): Promise<void> {
     const delivery: WebhookDelivery = {
       id: randomUUID(),
       webhookId: webhook.id,
@@ -135,7 +147,10 @@ class WebhookManager {
   /**
    * Send webhook with retry logic
    */
-  private async sendWithRetry(webhook: WebhookConfig, delivery: WebhookDelivery): Promise<void> {
+  private async sendWithRetry(
+    webhook: WebhookConfig,
+    delivery: WebhookDelivery,
+  ): Promise<void> {
     for (let attempt = 1; attempt <= webhook.retryAttempts; attempt++) {
       delivery.attempts = attempt;
       delivery.lastAttemptAt = new Date().toISOString();
@@ -171,19 +186,24 @@ class WebhookManager {
 
         if (response.ok) {
           delivery.status = "success";
-          console.log(`✅ Webhook delivered: ${webhook.name} (attempt ${attempt})`);
+          console.log(
+            `✅ Webhook delivered: ${webhook.name} (attempt ${attempt})`,
+          );
           this.deliveries.set(delivery.id, delivery);
           return;
         } else {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         delivery.error = errorMessage;
         delivery.status = "failed";
         this.deliveries.set(delivery.id, delivery);
 
-        console.warn(`⚠️  Webhook delivery failed: ${webhook.name} (attempt ${attempt}/${webhook.retryAttempts})`);
+        console.warn(
+          `⚠️  Webhook delivery failed: ${webhook.name} (attempt ${attempt}/${webhook.retryAttempts})`,
+        );
         console.warn(`   Error: ${errorMessage}`);
 
         if (attempt < webhook.retryAttempts) {
@@ -194,7 +214,9 @@ class WebhookManager {
       }
     }
 
-    console.error(`❌ Webhook delivery failed after ${webhook.retryAttempts} attempts: ${webhook.name}`);
+    console.error(
+      `❌ Webhook delivery failed after ${webhook.retryAttempts} attempts: ${webhook.name}`,
+    );
   }
 
   /**
@@ -203,7 +225,10 @@ class WebhookManager {
   getDeliveries(webhookId: string, limit = 50): WebhookDelivery[] {
     return Array.from(this.deliveries.values())
       .filter((delivery) => delivery.webhookId === webhookId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
       .slice(0, limit);
   }
 
@@ -212,7 +237,10 @@ class WebhookManager {
    */
   getAllDeliveries(limit = 100): WebhookDelivery[] {
     return Array.from(this.deliveries.values())
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
       .slice(0, limit);
   }
 

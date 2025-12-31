@@ -4,11 +4,17 @@
  * Dashboard for demo users showing usage, limits, and expiration
  */
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Progress } from './ui/progress';
-import { Alert, AlertDescription } from './ui/alert';
-import { Badge } from './ui/badge';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Progress } from "./ui/progress";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Badge } from "./ui/badge";
 import {
   DollarSign,
   MessageSquare,
@@ -19,7 +25,7 @@ import {
   Loader2,
   Calendar,
   User,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface DemoUser {
   id: string;
@@ -51,7 +57,7 @@ interface Props {
 export function DemoDashboard({ userId }: Props) {
   const [user, setUser] = useState<DemoUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadUserData();
@@ -65,14 +71,14 @@ export function DemoDashboard({ userId }: Props) {
       const response = await fetch(`/api/demo/users/${userId}`);
 
       if (!response.ok) {
-        throw new Error('Failed to load user data');
+        throw new Error("Failed to load user data");
       }
 
       const data = await response.json();
       setUser(data);
-      setError('');
+      setError("");
     } catch (err: any) {
-      setError(err.message || 'Failed to load data');
+      setError(err.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -90,7 +96,7 @@ export function DemoDashboard({ userId }: Props) {
     return (
       <Alert variant="destructive">
         <XCircle className="h-4 w-4" />
-        <AlertDescription>{error || 'User not found'}</AlertDescription>
+        <AlertDescription>{error || "User not found"}</AlertDescription>
       </Alert>
     );
   }
@@ -105,10 +111,14 @@ export function DemoDashboard({ userId }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Demo Dashboard</h1>
-          <p className="text-gray-500 dark:text-gray-400">Welcome back, {user.email}</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Welcome back, {user.email}
+          </p>
         </div>
-        <Badge variant={user.active && !user.blocked ? 'default' : 'destructive'}>
-          {user.active && !user.blocked ? 'Active' : 'Inactive'}
+        <Badge
+          variant={user.active && !user.blocked ? "default" : "destructive"}
+        >
+          {user.active && !user.blocked ? "Active" : "Inactive"}
         </Badge>
       </div>
 
@@ -116,7 +126,9 @@ export function DemoDashboard({ userId }: Props) {
       {user.blocked && (
         <Alert variant="destructive">
           <XCircle className="h-4 w-4" />
-          <AlertDescription>Your demo account has been blocked.</AlertDescription>
+          <AlertDescription>
+            Your demo account has been blocked.
+          </AlertDescription>
         </Alert>
       )}
 
@@ -124,7 +136,8 @@ export function DemoDashboard({ userId }: Props) {
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            Your demo expires in {user.daysRemaining} day{user.daysRemaining !== 1 ? 's' : ''}!
+            Your demo expires in {user.daysRemaining} day
+            {user.daysRemaining !== 1 ? "s" : ""}!
           </AlertDescription>
         </Alert>
       )}
@@ -133,8 +146,8 @@ export function DemoDashboard({ userId }: Props) {
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            {isLowCredits && 'Low on credits. '}
-            {isLowMessages && 'Low on messages. '}
+            {isLowCredits && "Low on credits. "}
+            {isLowMessages && "Low on messages. "}
             Consider upgrading to a paid plan.
           </AlertDescription>
         </Alert>
@@ -145,7 +158,9 @@ export function DemoDashboard({ userId }: Props) {
         {/* Credits Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Credits Remaining</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Credits Remaining
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -160,10 +175,10 @@ export function DemoDashboard({ userId }: Props) {
               className="mt-3"
               indicatorClassName={
                 user.credits.percentageUsed > 80
-                  ? 'bg-red-500'
+                  ? "bg-red-500"
                   : user.credits.percentageUsed > 60
-                    ? 'bg-yellow-500'
-                    : 'bg-green-500'
+                    ? "bg-yellow-500"
+                    : "bg-green-500"
               }
             />
             <p className="text-xs text-muted-foreground mt-2">
@@ -175,7 +190,9 @@ export function DemoDashboard({ userId }: Props) {
         {/* Messages Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Messages Remaining</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Messages Remaining
+            </CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -188,10 +205,10 @@ export function DemoDashboard({ userId }: Props) {
               className="mt-3"
               indicatorClassName={
                 user.messages.percentageUsed > 80
-                  ? 'bg-red-500'
+                  ? "bg-red-500"
                   : user.messages.percentageUsed > 60
-                    ? 'bg-yellow-500'
-                    : 'bg-green-500'
+                    ? "bg-yellow-500"
+                    : "bg-green-500"
               }
             />
             <p className="text-xs text-muted-foreground mt-2">
@@ -203,7 +220,9 @@ export function DemoDashboard({ userId }: Props) {
         {/* Days Remaining Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Days Remaining</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Days Remaining
+            </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -216,16 +235,18 @@ export function DemoDashboard({ userId }: Props) {
               className="mt-3"
               indicatorClassName={
                 user.daysRemaining <= 3
-                  ? 'bg-red-500'
+                  ? "bg-red-500"
                   : user.daysRemaining <= 7
-                    ? 'bg-yellow-500'
-                    : 'bg-green-500'
+                    ? "bg-yellow-500"
+                    : "bg-green-500"
               }
             />
             <p className="text-xs text-muted-foreground mt-2">
-              {user.daysRemaining <= 3 && 'Expiring soon!'}
-              {user.daysRemaining > 3 && user.daysRemaining <= 7 && 'Expiring this week'}
-              {user.daysRemaining > 7 && 'Active'}
+              {user.daysRemaining <= 3 && "Expiring soon!"}
+              {user.daysRemaining > 3 &&
+                user.daysRemaining <= 7 &&
+                "Expiring this week"}
+              {user.daysRemaining > 7 && "Active"}
             </p>
           </CardContent>
         </Card>
@@ -244,7 +265,9 @@ export function DemoDashboard({ userId }: Props) {
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Email</span>
               </div>
-              <span className="text-sm text-muted-foreground">{user.email}</span>
+              <span className="text-sm text-muted-foreground">
+                {user.email}
+              </span>
             </div>
 
             <div className="flex items-center justify-between">
@@ -276,8 +299,12 @@ export function DemoDashboard({ userId }: Props) {
                 )}
                 <span className="text-sm font-medium">Status</span>
               </div>
-              <Badge variant={user.active && !user.blocked ? 'default' : 'destructive'}>
-                {user.active && !user.blocked ? 'Active' : 'Inactive'}
+              <Badge
+                variant={
+                  user.active && !user.blocked ? "default" : "destructive"
+                }
+              >
+                {user.active && !user.blocked ? "Active" : "Inactive"}
               </Badge>
             </div>
           </div>
@@ -294,20 +321,17 @@ export function DemoDashboard({ userId }: Props) {
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                Monitor your credit usage to avoid running out early
-              </span>
+              <span>Monitor your credit usage to avoid running out early</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+              <span>Use shorter messages to conserve your message quota</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
               <span>
-                Use shorter messages to conserve your message quota
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                Upgrade to a paid plan before your demo expires to keep your data
+                Upgrade to a paid plan before your demo expires to keep your
+                data
               </span>
             </li>
           </ul>

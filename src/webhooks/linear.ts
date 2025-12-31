@@ -66,7 +66,11 @@ export interface LinearWebhookPayload {
  * @param secret - Linear webhook secret
  * @returns true if signature is valid
  */
-export function verifyLinearSignature(payload: string, signature: string, secret: string): boolean {
+export function verifyLinearSignature(
+  payload: string,
+  signature: string,
+  secret: string,
+): boolean {
   if (!signature) {
     return false;
   }
@@ -77,7 +81,10 @@ export function verifyLinearSignature(payload: string, signature: string, secret
 
   // Use crypto.timingSafeEqual to prevent timing attacks
   try {
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(calculatedSignature));
+    return crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(calculatedSignature),
+    );
   } catch {
     return false;
   }
@@ -90,7 +97,7 @@ function storeWebhookEvent(
   db: Database,
   eventType: LinearEventType,
   action: LinearEventAction,
-  payload: LinearWebhookPayload
+  payload: LinearWebhookPayload,
 ): void {
   // Store in audit log for tracking
   db.createAuditEntry({
@@ -117,7 +124,10 @@ function storeWebhookEvent(
 /**
  * Processes Linear Issue event
  */
-async function processIssueEvent(payload: LinearWebhookPayload, queue: QueueAdapter): Promise<void> {
+async function processIssueEvent(
+  payload: LinearWebhookPayload,
+  queue: QueueAdapter,
+): Promise<void> {
   console.log("📋 Linear Issue event:", {
     action: payload.action,
     id: payload.data.id,
@@ -136,7 +146,10 @@ async function processIssueEvent(payload: LinearWebhookPayload, queue: QueueAdap
 /**
  * Processes Linear Comment event
  */
-async function processCommentEvent(payload: LinearWebhookPayload, queue: QueueAdapter): Promise<void> {
+async function processCommentEvent(
+  payload: LinearWebhookPayload,
+  queue: QueueAdapter,
+): Promise<void> {
   console.log("💬 Linear Comment event:", {
     action: payload.action,
     id: payload.data.id,
@@ -153,7 +166,10 @@ async function processCommentEvent(payload: LinearWebhookPayload, queue: QueueAd
 /**
  * Processes Linear Project event
  */
-async function processProjectEvent(payload: LinearWebhookPayload, queue: QueueAdapter): Promise<void> {
+async function processProjectEvent(
+  payload: LinearWebhookPayload,
+  queue: QueueAdapter,
+): Promise<void> {
   console.log("📦 Linear Project event:", {
     action: payload.action,
     id: payload.data.id,
@@ -171,7 +187,10 @@ async function processProjectEvent(payload: LinearWebhookPayload, queue: QueueAd
 /**
  * Creates Linear webhook router
  */
-export function createLinearWebhookRouter(db: Database, queue: QueueAdapter): Router {
+export function createLinearWebhookRouter(
+  db: Database,
+  queue: QueueAdapter,
+): Router {
   const router = Router();
 
   // Use express.text() to get raw body for signature verification
@@ -189,7 +208,9 @@ export function createLinearWebhookRouter(db: Database, queue: QueueAdapter): Ro
 
       // Phase-1 Hardening: Signature verification is MANDATORY
       if (!secret) {
-        console.error("❌ LINEAR_WEBHOOK_SECRET not configured - rejecting webhook");
+        console.error(
+          "❌ LINEAR_WEBHOOK_SECRET not configured - rejecting webhook",
+        );
         return res.status(500).json({
           success: false,
           error: "Webhook secret not configured",
@@ -197,7 +218,8 @@ export function createLinearWebhookRouter(db: Database, queue: QueueAdapter): Ro
       }
 
       // req.body will be a string because we use express.text() middleware
-      const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+      const rawBody =
+        typeof req.body === "string" ? req.body : JSON.stringify(req.body);
       const isValid = verifyLinearSignature(rawBody, signature, secret);
 
       if (!isValid) {
@@ -209,7 +231,9 @@ export function createLinearWebhookRouter(db: Database, queue: QueueAdapter): Ro
       }
 
       // Parse JSON if body is string
-      const payload = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) as LinearWebhookPayload;
+      const payload = (
+        typeof req.body === "string" ? JSON.parse(req.body) : req.body
+      ) as LinearWebhookPayload;
 
       // Validate payload
       if (!payload.type || !payload.action) {
@@ -234,7 +258,9 @@ export function createLinearWebhookRouter(db: Database, queue: QueueAdapter): Ro
           await processProjectEvent(payload, queue);
           break;
         default:
-          console.log(`ℹ️ Unhandled Linear event: ${payload.type}.${payload.action}`);
+          console.log(
+            `ℹ️ Unhandled Linear event: ${payload.type}.${payload.action}`,
+          );
       }
 
       res.json({

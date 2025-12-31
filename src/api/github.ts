@@ -61,7 +61,8 @@ export function createGitHubRouter(): Router {
       if (!githubClient.isEnabled()) {
         return res.status(200).json({
           connected: false,
-          error: "GitHub integration is disabled. Set GITHUB_ENABLED=true in .env",
+          error:
+            "GitHub integration is disabled. Set GITHUB_ENABLED=true in .env",
         });
       }
 

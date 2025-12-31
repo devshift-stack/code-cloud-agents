@@ -5,7 +5,11 @@
 
 import { Router, type Request, type Response } from "express";
 import type { Database } from "../db/database.js";
-import { requireAdmin, requireAuth, type AuthenticatedRequest } from "../auth/middleware.js";
+import {
+  requireAdmin,
+  requireAuth,
+  type AuthenticatedRequest,
+} from "../auth/middleware.js";
 import {
   createUser,
   getUserById,
@@ -31,9 +35,16 @@ export function createUsersRouter(db: Database): Router {
   router.get("/", requireAdmin, async (req: Request, res: Response) => {
     try {
       const role = req.query.role as "admin" | "user" | "demo" | undefined;
-      const isActive = req.query.isActive === "true" ? true : req.query.isActive === "false" ? false : undefined;
+      const isActive =
+        req.query.isActive === "true"
+          ? true
+          : req.query.isActive === "false"
+            ? false
+            : undefined;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
-      const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+      const offset = req.query.offset
+        ? parseInt(req.query.offset as string)
+        : 0;
 
       const users = listUsers(rawDb, { role, isActive, limit, offset });
 
@@ -54,89 +65,101 @@ export function createUsersRouter(db: Database): Router {
    * GET /api/users/stats
    * Get user statistics (Admin only)
    */
-  router.get("/stats", requireAdmin, async (_req: AuthenticatedRequest, res: Response) => {
-    try {
-      const stats = getUserStats(rawDb);
+  router.get(
+    "/stats",
+    requireAdmin,
+    async (_req: AuthenticatedRequest, res: Response) => {
+      try {
+        const stats = getUserStats(rawDb);
 
-      res.json({
-        success: true,
-        stats,
-      });
-    } catch (error) {
-      console.error("[Users API] Stats error:", error);
-      res.status(500).json({
-        error: "Failed to get user stats",
-      });
-    }
-  });
+        res.json({
+          success: true,
+          stats,
+        });
+      } catch (error) {
+        console.error("[Users API] Stats error:", error);
+        res.status(500).json({
+          error: "Failed to get user stats",
+        });
+      }
+    },
+  );
 
   /**
    * GET /api/users/me
    * Get current user's profile
    */
-  router.get("/me", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const user = getUserById(rawDb, req.userId!);
+  router.get(
+    "/me",
+    requireAuth,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const user = getUserById(rawDb, req.userId!);
 
-      if (!user) {
-        return res.status(404).json({
-          error: "User not found",
+        if (!user) {
+          return res.status(404).json({
+            error: "User not found",
+          });
+        }
+
+        // Exclude password hash
+        const { passwordHash, ...userWithoutPassword } = user;
+
+        res.json({
+          success: true,
+          user: userWithoutPassword,
+        });
+      } catch (error) {
+        console.error("[Users API] Get me error:", error);
+        res.status(500).json({
+          error: "Failed to get user",
         });
       }
-
-      // Exclude password hash
-      const { passwordHash, ...userWithoutPassword } = user;
-
-      res.json({
-        success: true,
-        user: userWithoutPassword,
-      });
-    } catch (error) {
-      console.error("[Users API] Get me error:", error);
-      res.status(500).json({
-        error: "Failed to get user",
-      });
-    }
-  });
+    },
+  );
 
   /**
    * GET /api/users/:id
    * Get user by ID (Admin only, or own profile)
    */
-  router.get("/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { id } = req.params;
+  router.get(
+    "/:id",
+    requireAuth,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const { id } = req.params;
 
-      // Users can only view their own profile, admins can view any
-      if (!req.isAdmin && id !== req.userId) {
-        return res.status(403).json({
-          error: "Forbidden",
-          message: "You can only view your own profile",
+        // Users can only view their own profile, admins can view any
+        if (!req.isAdmin && id !== req.userId) {
+          return res.status(403).json({
+            error: "Forbidden",
+            message: "You can only view your own profile",
+          });
+        }
+
+        const user = getUserById(rawDb, id);
+
+        if (!user) {
+          return res.status(404).json({
+            error: "User not found",
+          });
+        }
+
+        // Exclude password hash
+        const { passwordHash, ...userWithoutPassword } = user;
+
+        res.json({
+          success: true,
+          user: userWithoutPassword,
+        });
+      } catch (error) {
+        console.error("[Users API] Get user error:", error);
+        res.status(500).json({
+          error: "Failed to get user",
         });
       }
-
-      const user = getUserById(rawDb, id);
-
-      if (!user) {
-        return res.status(404).json({
-          error: "User not found",
-        });
-      }
-
-      // Exclude password hash
-      const { passwordHash, ...userWithoutPassword } = user;
-
-      res.json({
-        success: true,
-        user: userWithoutPassword,
-      });
-    } catch (error) {
-      console.error("[Users API] Get user error:", error);
-      res.status(500).json({
-        error: "Failed to get user",
-      });
-    }
-  });
+    },
+  );
 
   /**
    * POST /api/users
@@ -196,136 +219,147 @@ export function createUsersRouter(db: Database): Router {
    * PATCH /api/users/:id
    * Update user (Admin only, or own profile with limited fields)
    */
-  router.patch("/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { email, role, displayName, isActive } = req.body;
+  router.patch(
+    "/:id",
+    requireAuth,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const { id } = req.params;
+        const { email, role, displayName, isActive } = req.body;
 
-      // Check permissions
-      const isOwnProfile = id === req.userId;
-      if (!req.isAdmin && !isOwnProfile) {
-        return res.status(403).json({
-          error: "Forbidden",
-          message: "You can only update your own profile",
+        // Check permissions
+        const isOwnProfile = id === req.userId;
+        if (!req.isAdmin && !isOwnProfile) {
+          return res.status(403).json({
+            error: "Forbidden",
+            message: "You can only update your own profile",
+          });
+        }
+
+        // Non-admins can't change role or isActive
+        if (!req.isAdmin && (role !== undefined || isActive !== undefined)) {
+          return res.status(403).json({
+            error: "Forbidden",
+            message: "You cannot change role or active status",
+          });
+        }
+
+        // Check if user exists
+        const user = getUserById(rawDb, id);
+        if (!user) {
+          return res.status(404).json({
+            error: "User not found",
+          });
+        }
+
+        // Update user
+        const updates: UserUpdateData = {};
+        if (email !== undefined) updates.email = email;
+        if (role !== undefined) updates.role = role;
+        if (displayName !== undefined) updates.displayName = displayName;
+        if (isActive !== undefined) updates.isActive = isActive;
+
+        const updatedUser = updateUser(rawDb, id, updates);
+
+        if (!updatedUser) {
+          return res.status(404).json({
+            error: "User not found",
+          });
+        }
+
+        // Exclude password hash
+        const { passwordHash, ...userWithoutPassword } = updatedUser;
+
+        res.json({
+          success: true,
+          user: userWithoutPassword,
+        });
+      } catch (error) {
+        console.error("[Users API] Update error:", error);
+        res.status(500).json({
+          error: "Failed to update user",
         });
       }
-
-      // Non-admins can't change role or isActive
-      if (!req.isAdmin && (role !== undefined || isActive !== undefined)) {
-        return res.status(403).json({
-          error: "Forbidden",
-          message: "You cannot change role or active status",
-        });
-      }
-
-      // Check if user exists
-      const user = getUserById(rawDb, id);
-      if (!user) {
-        return res.status(404).json({
-          error: "User not found",
-        });
-      }
-
-      // Update user
-      const updates: UserUpdateData = {};
-      if (email !== undefined) updates.email = email;
-      if (role !== undefined) updates.role = role;
-      if (displayName !== undefined) updates.displayName = displayName;
-      if (isActive !== undefined) updates.isActive = isActive;
-
-      const updatedUser = updateUser(rawDb, id, updates);
-
-      if (!updatedUser) {
-        return res.status(404).json({
-          error: "User not found",
-        });
-      }
-
-      // Exclude password hash
-      const { passwordHash, ...userWithoutPassword } = updatedUser;
-
-      res.json({
-        success: true,
-        user: userWithoutPassword,
-      });
-    } catch (error) {
-      console.error("[Users API] Update error:", error);
-      res.status(500).json({
-        error: "Failed to update user",
-      });
-    }
-  });
+    },
+  );
 
   /**
    * POST /api/users/:id/password
    * Change user password (Admin only, or own password)
    */
-  router.post("/:id/password", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { currentPassword, newPassword } = req.body;
+  router.post(
+    "/:id/password",
+    requireAuth,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const { id } = req.params;
+        const { currentPassword, newPassword } = req.body;
 
-      // Check permissions
-      const isOwnProfile = id === req.userId;
-      if (!req.isAdmin && !isOwnProfile) {
-        return res.status(403).json({
-          error: "Forbidden",
-          message: "You can only change your own password",
-        });
-      }
+        // Check permissions
+        const isOwnProfile = id === req.userId;
+        if (!req.isAdmin && !isOwnProfile) {
+          return res.status(403).json({
+            error: "Forbidden",
+            message: "You can only change your own password",
+          });
+        }
 
-      // Validation
-      if (!newPassword || newPassword.length < 8) {
-        return res.status(400).json({
-          error: "New password must be at least 8 characters",
-        });
-      }
-
-      // Check if user exists
-      const user = getUserById(rawDb, id);
-      if (!user) {
-        return res.status(404).json({
-          error: "User not found",
-        });
-      }
-
-      // Non-admins must provide current password
-      if (!req.isAdmin) {
-        if (!currentPassword) {
+        // Validation
+        if (!newPassword || newPassword.length < 8) {
           return res.status(400).json({
-            error: "Current password required",
+            error: "New password must be at least 8 characters",
           });
         }
 
-        // Verify current password
-        const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
-        if (!isValid) {
-          return res.status(401).json({
-            error: "Current password incorrect",
+        // Check if user exists
+        const user = getUserById(rawDb, id);
+        if (!user) {
+          return res.status(404).json({
+            error: "User not found",
           });
         }
-      }
 
-      // Change password
-      const success = await changeUserPassword(rawDb, id, newPassword);
+        // Non-admins must provide current password
+        if (!req.isAdmin) {
+          if (!currentPassword) {
+            return res.status(400).json({
+              error: "Current password required",
+            });
+          }
 
-      if (!success) {
-        return res.status(500).json({
+          // Verify current password
+          const isValid = await bcrypt.compare(
+            currentPassword,
+            user.passwordHash,
+          );
+          if (!isValid) {
+            return res.status(401).json({
+              error: "Current password incorrect",
+            });
+          }
+        }
+
+        // Change password
+        const success = await changeUserPassword(rawDb, id, newPassword);
+
+        if (!success) {
+          return res.status(500).json({
+            error: "Failed to change password",
+          });
+        }
+
+        res.json({
+          success: true,
+          message: "Password changed successfully",
+        });
+      } catch (error) {
+        console.error("[Users API] Change password error:", error);
+        res.status(500).json({
           error: "Failed to change password",
         });
       }
-
-      res.json({
-        success: true,
-        message: "Password changed successfully",
-      });
-    } catch (error) {
-      console.error("[Users API] Change password error:", error);
-      res.status(500).json({
-        error: "Failed to change password",
-      });
-    }
-  });
+    },
+  );
 
   /**
    * DELETE /api/users/:id

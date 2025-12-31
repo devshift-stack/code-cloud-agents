@@ -66,13 +66,17 @@ export class MetaSupervisor {
     const monitoringNotes: string[] = [];
     if (systemHealth) {
       if (systemHealth.status !== "healthy") {
-        monitoringNotes.push(`System ${targetSystem} is ${systemHealth.status}`);
+        monitoringNotes.push(
+          `System ${targetSystem} is ${systemHealth.status}`,
+        );
       }
       if (systemHealth.queueDepth > 10) {
         monitoringNotes.push(`High queue depth: ${systemHealth.queueDepth}`);
       }
       if (systemHealth.stopRate > 0.3) {
-        monitoringNotes.push(`High stop rate: ${(systemHealth.stopRate * 100).toFixed(1)}%`);
+        monitoringNotes.push(
+          `High stop rate: ${(systemHealth.stopRate * 100).toFixed(1)}%`,
+        );
       }
     }
 
@@ -145,11 +149,15 @@ export class MetaSupervisor {
       }
 
       if (health.stopRate > 0.5) {
-        alerts.push(`HIGH STOP RATE: System ${id} has ${(health.stopRate * 100).toFixed(1)}% stop rate`);
+        alerts.push(
+          `HIGH STOP RATE: System ${id} has ${(health.stopRate * 100).toFixed(1)}% stop rate`,
+        );
       }
 
       if (health.queueDepth > 50) {
-        alerts.push(`QUEUE OVERLOAD: System ${id} has ${health.queueDepth} pending tasks`);
+        alerts.push(
+          `QUEUE OVERLOAD: System ${id} has ${health.queueDepth} pending tasks`,
+        );
       }
     }
 

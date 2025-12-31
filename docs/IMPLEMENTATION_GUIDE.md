@@ -20,6 +20,7 @@ Dieser Guide beschreibt die nächsten Schritte nach Abschluss von Agent 3:
 ## 1. 🚀 HETZNER SERVER DEPLOYMENT
 
 ### Voraussetzungen
+
 - SSH-Zugriff zu `178.156.178.70`
 - Git Repository Access
 - PM2 installiert auf Server
@@ -108,6 +109,7 @@ curl http://localhost:3000/api/linear/status
 ### Webhook Configuration
 
 #### GitHub Webhooks
+
 1. Go to your GitHub repository → Settings → Webhooks
 2. Add webhook:
    - URL: `https://your-domain.com/api/webhooks/github`
@@ -116,6 +118,7 @@ curl http://localhost:3000/api/linear/status
    - Events: `push`, `pull_request`, `issues`
 
 #### Linear Webhooks
+
 1. Go to Linear → Settings → API → Webhooks
 2. Add webhook:
    - URL: `https://your-domain.com/api/webhooks/linear`
@@ -131,6 +134,7 @@ curl http://localhost:3000/api/linear/status
 Der Code ist bereits vollständig für OpenAI vorbereitet:
 
 **Verwendete Stellen:**
+
 1. `src/chat/manager.ts` - Chat-Funktionalität mit OpenAI
 2. `src/memory/embeddings.ts` - Semantic Search mit text-embedding-3-small
 
@@ -154,12 +158,14 @@ Der Code ist bereits vollständig für OpenAI vorbereitet:
 ### Environment Variable Setup
 
 **Auf dem Server:**
+
 ```bash
 # Add to .env file
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxx
 ```
 
 **Restart Server:**
+
 ```bash
 pm2 restart code-cloud-agents
 ```
@@ -167,6 +173,7 @@ pm2 restart code-cloud-agents
 ### Funktions-Check
 
 **Test Chat mit OpenAI:**
+
 ```bash
 curl -X POST http://localhost:3000/api/chat/send \
   -H "Content-Type: application/json" \
@@ -180,6 +187,7 @@ curl -X POST http://localhost:3000/api/chat/send \
 ```
 
 **Test Semantic Search:**
+
 ```bash
 # 1. Create chat and add message
 curl -X POST http://localhost:3000/api/memory/chats \
@@ -208,21 +216,25 @@ curl -X POST http://localhost:3000/api/memory/semantic/search \
 **OpenAI Pricing (as of 2025):**
 
 **text-embedding-3-small:**
+
 - Cost: $0.02 per 1M tokens
 - Usage: ~150 tokens per message
 - 10,000 messages = ~$0.03
 
 **GPT-4:**
+
 - Input: $30 per 1M tokens
 - Output: $60 per 1M tokens
 - Average conversation: ~$0.05-0.15
 
 **GPT-3.5-turbo (cheaper alternative):**
+
 - Input: $0.50 per 1M tokens
 - Output: $1.50 per 1M tokens
 - Average conversation: ~$0.001-0.005
 
 **Monitoring:**
+
 ```bash
 # Check usage in OpenAI Dashboard
 https://platform.openai.com/usage
@@ -270,21 +282,25 @@ Database (SQLite/PostgreSQL)
 ### Technology Stack Recommendations
 
 **Frontend Framework:**
+
 - **Next.js 14+** (recommended) - App Router, Server Components
 - **React 18+** - Hooks, Suspense
 - **TypeScript** - Type safety
 
 **UI Library:**
+
 - **Tailwind CSS** - Utility-first styling
 - **shadcn/ui** - High-quality components
 - **Radix UI** - Accessible primitives
 
 **State Management:**
+
 - **React Query (TanStack Query)** - Server state
 - **Zustand** - Client state
 - **WebSocket Context** - Real-time updates
 
 **API Client:**
+
 - **Axios** or **Fetch API**
 - **OpenAPI Generator** - Generate types from Swagger
 
@@ -307,19 +323,20 @@ npm install lucide-react class-variance-authority clsx tailwind-merge
 #### Step 2: API Client Setup
 
 **`src/lib/api.ts`:**
+
 ```typescript
-import axios from 'axios';
+import axios from "axios";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add auth token if available
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem("auth_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -332,16 +349,17 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Redirect to login
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 ```
 
 #### Step 3: Memory System Integration
 
 **Chat Component:**
+
 ```typescript
 // app/chat/[chatId]/page.tsx
 'use client';
@@ -436,9 +454,10 @@ export default function ChatPage({ params }: { params: { chatId: string } }) {
 #### Step 4: WebSocket Integration
 
 **WebSocket Hook:**
+
 ```typescript
 // hooks/useWebSocket.ts
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 export function useWebSocket(url: string, token: string) {
   const [isConnected, setIsConnected] = useState(false);
@@ -450,7 +469,7 @@ export function useWebSocket(url: string, token: string) {
     ws.current = new WebSocket(`${url}?token=${token}`);
 
     ws.current.onopen = () => {
-      console.log('WebSocket connected');
+      console.log("WebSocket connected");
       setIsConnected(true);
     };
 
@@ -460,12 +479,12 @@ export function useWebSocket(url: string, token: string) {
     };
 
     ws.current.onclose = () => {
-      console.log('WebSocket disconnected');
+      console.log("WebSocket disconnected");
       setIsConnected(false);
     };
 
     ws.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("WebSocket error:", error);
     };
 
     // Cleanup
@@ -485,6 +504,7 @@ export function useWebSocket(url: string, token: string) {
 ```
 
 **Usage:**
+
 ```typescript
 // app/dashboard/page.tsx
 'use client';
@@ -519,6 +539,7 @@ export default function Dashboard() {
 #### Step 5: Settings Management UI
 
 **Settings Page:**
+
 ```typescript
 // app/settings/page.tsx
 'use client';
@@ -623,6 +644,7 @@ frontend/
 ### Testing Strategy
 
 **Tools:**
+
 1. **k6** - Load testing
 2. **Artillery** - Load testing & monitoring
 3. **Apache Bench (ab)** - Quick benchmarks
@@ -631,6 +653,7 @@ frontend/
 ### k6 Load Testing
 
 **Installation:**
+
 ```bash
 brew install k6  # macOS
 # or
@@ -640,32 +663,33 @@ choco install k6  # Windows
 ```
 
 **Test Script (`load-test.js`):**
+
 ```javascript
-import http from 'k6/http';
-import { check, sleep } from 'k6';
+import http from "k6/http";
+import { check, sleep } from "k6";
 
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // Warm up
-    { duration: '1m', target: 50 },    // Ramp up to 50 users
-    { duration: '3m', target: 50 },    // Stay at 50 users
-    { duration: '30s', target: 100 },  // Spike to 100 users
-    { duration: '1m', target: 100 },   // Stay at 100 users
-    { duration: '30s', target: 0 },    // Ramp down
+    { duration: "30s", target: 10 }, // Warm up
+    { duration: "1m", target: 50 }, // Ramp up to 50 users
+    { duration: "3m", target: 50 }, // Stay at 50 users
+    { duration: "30s", target: 100 }, // Spike to 100 users
+    { duration: "1m", target: 100 }, // Stay at 100 users
+    { duration: "30s", target: 0 }, // Ramp down
   ],
   thresholds: {
-    http_req_duration: ['p(95)<500'], // 95% of requests must complete below 500ms
-    http_req_failed: ['rate<0.01'],   // Less than 1% errors
+    http_req_duration: ["p(95)<500"], // 95% of requests must complete below 500ms
+    http_req_failed: ["rate<0.01"], // Less than 1% errors
   },
 };
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = "http://localhost:3000";
 
 export default function () {
   // Test health endpoint
   let res = http.get(`${BASE_URL}/health`);
   check(res, {
-    'health status is 200': (r) => r.status === 200,
+    "health status is 200": (r) => r.status === 200,
   });
 
   sleep(1);
@@ -673,7 +697,7 @@ export default function () {
   // Test memory list
   res = http.get(`${BASE_URL}/api/memory/chats/test-user`);
   check(res, {
-    'memory list status is 200': (r) => r.status === 200,
+    "memory list status is 200": (r) => r.status === 200,
   });
 
   sleep(1);
@@ -682,15 +706,15 @@ export default function () {
   res = http.post(
     `${BASE_URL}/api/memory/chats`,
     JSON.stringify({
-      userId: 'test-user',
-      title: 'Load Test Chat',
+      userId: "test-user",
+      title: "Load Test Chat",
     }),
     {
-      headers: { 'Content-Type': 'application/json' },
-    }
+      headers: { "Content-Type": "application/json" },
+    },
   );
   check(res, {
-    'create chat status is 201': (r) => r.status === 201,
+    "create chat status is 201": (r) => r.status === 201,
   });
 
   sleep(2);
@@ -698,6 +722,7 @@ export default function () {
 ```
 
 **Run Test:**
+
 ```bash
 k6 run load-test.js
 ```
@@ -705,6 +730,7 @@ k6 run load-test.js
 ### Database Performance Testing
 
 **Query Performance:**
+
 ```sql
 -- Enable query timing
 PRAGMA timer=on;
@@ -728,61 +754,73 @@ LIMIT 10;
 ```
 
 **Benchmark Script (`benchmark-db.js`):**
+
 ```javascript
-const Database = require('better-sqlite3');
-const db = new Database('./data/app.sqlite');
+const Database = require("better-sqlite3");
+const db = new Database("./data/app.sqlite");
 
-console.time('1000 inserts');
-const stmt = db.prepare('INSERT INTO chat_messages (id, chat_id, role, content, timestamp) VALUES (?, ?, ?, ?, ?)');
+console.time("1000 inserts");
+const stmt = db.prepare(
+  "INSERT INTO chat_messages (id, chat_id, role, content, timestamp) VALUES (?, ?, ?, ?, ?)",
+);
 for (let i = 0; i < 1000; i++) {
-  stmt.run(`msg-${i}`, 'test-chat', 'user', `Message ${i}`, new Date().toISOString());
+  stmt.run(
+    `msg-${i}`,
+    "test-chat",
+    "user",
+    `Message ${i}`,
+    new Date().toISOString(),
+  );
 }
-console.timeEnd('1000 inserts');
+console.timeEnd("1000 inserts");
 
-console.time('1000 reads');
-const selectStmt = db.prepare('SELECT * FROM chat_messages WHERE chat_id = ?');
+console.time("1000 reads");
+const selectStmt = db.prepare("SELECT * FROM chat_messages WHERE chat_id = ?");
 for (let i = 0; i < 1000; i++) {
-  selectStmt.get('test-chat');
+  selectStmt.get("test-chat");
 }
-console.timeEnd('1000 reads');
+console.timeEnd("1000 reads");
 ```
 
 ### WebSocket Load Testing
 
 **WebSocket Test (`ws-load-test.js`):**
+
 ```javascript
-import ws from 'k6/ws';
-import { check } from 'k6';
+import ws from "k6/ws";
+import { check } from "k6";
 
 export const options = {
   stages: [
-    { duration: '30s', target: 50 },
-    { duration: '1m', target: 100 },
-    { duration: '30s', target: 0 },
+    { duration: "30s", target: 50 },
+    { duration: "1m", target: 100 },
+    { duration: "30s", target: 0 },
   ],
 };
 
 export default function () {
-  const url = 'ws://localhost:3000/ws?token=test-token';
-  const params = { tags: { name: 'WebSocket' } };
+  const url = "ws://localhost:3000/ws?token=test-token";
+  const params = { tags: { name: "WebSocket" } };
 
   const response = ws.connect(url, params, function (socket) {
-    socket.on('open', () => {
-      console.log('Connected');
+    socket.on("open", () => {
+      console.log("Connected");
 
       // Send test message
-      socket.send(JSON.stringify({
-        type: 'chat_message',
-        payload: { message: 'Hello' }
-      }));
+      socket.send(
+        JSON.stringify({
+          type: "chat_message",
+          payload: { message: "Hello" },
+        }),
+      );
     });
 
-    socket.on('message', (data) => {
-      console.log('Message received:', data);
+    socket.on("message", (data) => {
+      console.log("Message received:", data);
     });
 
-    socket.on('close', () => {
-      console.log('Disconnected');
+    socket.on("close", () => {
+      console.log("Disconnected");
     });
 
     socket.setTimeout(() => {
@@ -790,24 +828,27 @@ export default function () {
     }, 10000);
   });
 
-  check(response, { 'status is 101': (r) => r && r.status === 101 });
+  check(response, { "status is 101": (r) => r && r.status === 101 });
 }
 ```
 
 ### Performance Targets
 
 **API Endpoints:**
+
 - **Response Time:** < 100ms (p95)
 - **Throughput:** 1000 requests/second
 - **Error Rate:** < 0.1%
 - **Concurrent Users:** 500+
 
 **Database:**
+
 - **Read:** < 10ms per query
 - **Write:** < 50ms per query
 - **Index Usage:** 100% for WHERE clauses
 
 **WebSocket:**
+
 - **Connection Time:** < 500ms
 - **Message Latency:** < 50ms
 - **Concurrent Connections:** 1000+
@@ -819,11 +860,13 @@ export default function () {
 ### Monitoring Stack
 
 **Option 1: Self-Hosted (Recommended for Start)**
+
 - **Prometheus** - Metrics collection
 - **Grafana** - Visualization
 - **Loki** - Log aggregation
 
 **Option 2: Cloud (Scalable)**
+
 - **Datadog** - All-in-one
 - **New Relic** - APM
 - **Sentry** - Error tracking
@@ -831,6 +874,7 @@ export default function () {
 ### Prometheus Setup
 
 **Install Prometheus:**
+
 ```bash
 # macOS
 brew install prometheus
@@ -842,22 +886,24 @@ cd prometheus-*
 ```
 
 **Configure (`prometheus.yml`):**
+
 ```yaml
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'code-cloud-agents'
+  - job_name: "code-cloud-agents"
     static_configs:
-      - targets: ['localhost:3000']
-    metrics_path: '/metrics'
+      - targets: ["localhost:3000"]
+    metrics_path: "/metrics"
 ```
 
 **Add Metrics to Express App:**
+
 ```typescript
 // src/monitoring/metrics.ts
-import promClient from 'prom-client';
+import promClient from "prom-client";
 
 // Create registry
 export const register = new promClient.Registry();
@@ -867,42 +913,43 @@ promClient.collectDefaultMetrics({ register });
 
 // Custom metrics
 export const httpRequestDuration = new promClient.Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'Duration of HTTP requests in seconds',
-  labelNames: ['method', 'route', 'status'],
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status"],
   buckets: [0.1, 0.5, 1, 2, 5],
   registers: [register],
 });
 
 export const chatMessagesTotal = new promClient.Counter({
-  name: 'chat_messages_total',
-  help: 'Total number of chat messages',
-  labelNames: ['user_id', 'agent_name'],
+  name: "chat_messages_total",
+  help: "Total number of chat messages",
+  labelNames: ["user_id", "agent_name"],
   registers: [register],
 });
 
 export const embeddingsGenerated = new promClient.Counter({
-  name: 'embeddings_generated_total',
-  help: 'Total number of embeddings generated',
+  name: "embeddings_generated_total",
+  help: "Total number of embeddings generated",
   registers: [register],
 });
 
 export const openaiApiCalls = new promClient.Counter({
-  name: 'openai_api_calls_total',
-  help: 'Total OpenAI API calls',
-  labelNames: ['model', 'status'],
+  name: "openai_api_calls_total",
+  help: "Total OpenAI API calls",
+  labelNames: ["model", "status"],
   registers: [register],
 });
 ```
 
 **Add to Express:**
+
 ```typescript
 // src/index.ts
-import { register, httpRequestDuration } from './monitoring/metrics.js';
+import { register, httpRequestDuration } from "./monitoring/metrics.js";
 
 // Metrics endpoint
-app.get('/metrics', async (req, res) => {
-  res.setHeader('Content-Type', register.contentType);
+app.get("/metrics", async (req, res) => {
+  res.setHeader("Content-Type", register.contentType);
   const metrics = await register.metrics();
   res.send(metrics);
 });
@@ -910,10 +957,14 @@ app.get('/metrics', async (req, res) => {
 // Metrics middleware
 app.use((req, res, next) => {
   const start = Date.now();
-  res.on('finish', () => {
+  res.on("finish", () => {
     const duration = (Date.now() - start) / 1000;
     httpRequestDuration
-      .labels(req.method, req.route?.path || req.path, res.statusCode.toString())
+      .labels(
+        req.method,
+        req.route?.path || req.path,
+        res.statusCode.toString(),
+      )
       .observe(duration);
   });
   next();
@@ -923,6 +974,7 @@ app.use((req, res, next) => {
 ### Grafana Dashboard
 
 **Install Grafana:**
+
 ```bash
 # macOS
 brew install grafana
@@ -934,11 +986,13 @@ brew services start grafana
 **Access:** http://localhost:3000 (default: admin/admin)
 
 **Add Prometheus Data Source:**
+
 1. Configuration → Data Sources → Add Prometheus
 2. URL: http://localhost:9090
 3. Save & Test
 
 **Create Dashboard:**
+
 ```json
 {
   "dashboard": {
@@ -984,15 +1038,17 @@ brew services start grafana
 ### Error Tracking (Sentry)
 
 **Install Sentry:**
+
 ```bash
 npm install @sentry/node @sentry/profiling-node
 ```
 
 **Setup:**
+
 ```typescript
 // src/monitoring/sentry.ts
-import * as Sentry from '@sentry/node';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
+import * as Sentry from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
 export function initSentry(app: Express) {
   Sentry.init({
@@ -1019,9 +1075,14 @@ export function sentryErrorHandler(app: Express) {
 ### Analytics Events
 
 **Track Key Events:**
+
 ```typescript
 // src/monitoring/analytics.ts
-import { chatMessagesTotal, embeddingsGenerated, openaiApiCalls } from './metrics.js';
+import {
+  chatMessagesTotal,
+  embeddingsGenerated,
+  openaiApiCalls,
+} from "./metrics.js";
 
 export function trackChatMessage(userId: string, agentName: string) {
   chatMessagesTotal.labels(userId, agentName).inc();
@@ -1031,29 +1092,33 @@ export function trackEmbeddingGeneration() {
   embeddingsGenerated.inc();
 }
 
-export function trackOpenAICall(model: string, status: 'success' | 'error') {
+export function trackOpenAICall(model: string, status: "success" | "error") {
   openaiApiCalls.labels(model, status).inc();
 }
 ```
 
 **Use in Code:**
+
 ```typescript
 // src/memory/embeddings.ts
-import { trackEmbeddingGeneration, trackOpenAICall } from '../monitoring/analytics.js';
+import {
+  trackEmbeddingGeneration,
+  trackOpenAICall,
+} from "../monitoring/analytics.js";
 
 async function generateEmbedding(text: string): Promise<number[]> {
   try {
     const response = await this.openai.embeddings.create({
-      model: 'text-embedding-3-small',
+      model: "text-embedding-3-small",
       input: text,
     });
 
-    trackOpenAICall('text-embedding-3-small', 'success');
+    trackOpenAICall("text-embedding-3-small", "success");
     trackEmbeddingGeneration();
 
     return response.data[0].embedding;
   } catch (error) {
-    trackOpenAICall('text-embedding-3-small', 'error');
+    trackOpenAICall("text-embedding-3-small", "error");
     throw error;
   }
 }
@@ -1062,41 +1127,49 @@ async function generateEmbedding(text: string): Promise<number[]> {
 ### Logging Strategy
 
 **Structured Logging with Winston:**
+
 ```bash
 npm install winston
 ```
 
 ```typescript
 // src/monitoring/logger.ts
-import winston from 'winston';
+import winston from "winston";
 
 export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: process.env.LOG_LEVEL || "info",
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
+    new winston.transports.File({ filename: "logs/combined.log" }),
   ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple(),
-  }));
+if (process.env.NODE_ENV !== "production") {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    }),
+  );
 }
 ```
 
 **Usage:**
-```typescript
-import { logger } from './monitoring/logger.js';
 
-logger.info('Chat message received', { userId, chatId, messageLength: content.length });
-logger.error('OpenAI API error', { error: error.message, model, userId });
-logger.warn('Rate limit approaching', { userId, currentRate, limit });
+```typescript
+import { logger } from "./monitoring/logger.js";
+
+logger.info("Chat message received", {
+  userId,
+  chatId,
+  messageLength: content.length,
+});
+logger.error("OpenAI API error", { error: error.message, model, userId });
+logger.warn("Rate limit approaching", { userId, currentRate, limit });
 ```
 
 ---
@@ -1104,6 +1177,7 @@ logger.warn('Rate limit approaching', { userId, currentRate, limit });
 ## 📝 ZUSAMMENFASSUNG
 
 ### Completed ✅
+
 1. ✅ Agent 3 - Alle 7 Tasks vollständig implementiert
 2. ✅ Deployment Report erstellt
 3. ✅ Implementation Guide erstellt
@@ -1111,20 +1185,14 @@ logger.warn('Rate limit approaching', { userId, currentRate, limit });
 ### Next Steps 🟢
 
 **Immediate:**
+
 1. Hetzner Server Deployment (manual SSH)
 2. Environment Variables Setup
 3. Webhook Configuration
 
-**Short-term:**
-4. OpenAI API Key Setup (already prepared)
-5. Frontend Development (Next.js + React Query)
-6. Performance Testing (k6 + Artillery)
-7. Monitoring Setup (Prometheus + Grafana)
+**Short-term:** 4. OpenAI API Key Setup (already prepared) 5. Frontend Development (Next.js + React Query) 6. Performance Testing (k6 + Artillery) 7. Monitoring Setup (Prometheus + Grafana)
 
-**Medium-term:**
-8. Error Tracking (Sentry)
-9. Analytics Dashboard
-10. Load Testing & Optimization
+**Medium-term:** 8. Error Tracking (Sentry) 9. Analytics Dashboard 10. Load Testing & Optimization
 
 ---
 

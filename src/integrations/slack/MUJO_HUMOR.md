@@ -42,18 +42,21 @@ Mujo spricht jetzt in deiner Sprache und macht Witze!
 ### 1. Mujo & Hase (Klassisch)
 
 **Deutsch:**
+
 ```
 Hase: "Mujo, warum ist dein Code so kompliziert?"
 Mujo: "Damit mich keiner fragt, ob ich's erklären kann!"
 ```
 
 **English:**
+
 ```
 Haso: "Mujo, why is the server down?"
 Mujo: "It's not down, it's just taking a coffee break!"
 ```
 
 **Bosnisch:**
+
 ```
 Mujo i Haso prave aplikaciju. Haso pita: "Jesi testirao?"
 Mujo: "Jesam, radi na mom računaru!"
@@ -64,6 +67,7 @@ Mujo: "Jesam, radi na mom računaru!"
 ### 2. Bosnier & Türken (Respektvoll)
 
 **Deutsch:**
+
 ```
 Ein Bosnier und ein Türke gründen ein Startup.
 Bosnier macht den Code, Türke macht den Döner.
@@ -71,6 +75,7 @@ Beide sind erfolgreich!
 ```
 
 **English:**
+
 ```
 A Bosnian and a Turkish developer walk into a meeting.
 They both say: "It works on my machine!"
@@ -78,6 +83,7 @@ They both say: "It works on my machine!"
 ```
 
 **Bosnisch:**
+
 ```
 Bosanac i Turcin prave aplikaciju.
 Bosanac: "Kod je gotov!"
@@ -90,6 +96,7 @@ Bug: "Ja sam tu cijelo vrijeme!" 😄
 ### 3. Chuck Norris Style (über Mujo)
 
 **Deutsch:**
+
 - Mujo schreibt keinen Code. Er denkt an die Lösung und die Computer programmieren sich selbst.
 - Mujo testet nicht in Production. Production testet in Mujo.
 - Wenn Mujo deployed, sagen die Server "Danke".
@@ -100,6 +107,7 @@ Bug: "Ja sam tu cijelo vrijeme!" 😄
 - Mujo braucht keinen Debugger. Bugs debuggen sich selbst wenn sie Mujo sehen.
 
 **English:**
+
 - Mujo doesn't write code. Code writes itself out of respect.
 - Mujo doesn't deploy to production. Production deploys to Mujo.
 - Mujo's merge conflicts resolve themselves.
@@ -107,6 +115,7 @@ Bug: "Ja sam tu cijelo vrijeme!" 😄
 - Mujo doesn't have a STOP score. STOP scores have Mujo.
 
 **Bosnisch:**
+
 - Mujo ne piše kod. Kod se piše sam kad vidi Mujo.
 - Mujo ne testuje u produkciji. Produkcija testuje kod Mujo.
 - Kad Mujo deployuje, serveri kažu 'hvala'.
@@ -118,18 +127,21 @@ Bug: "Ja sam tu cijelo vrijeme!" 😄
 ### 4. Tech Jokes
 
 **Deutsch:**
+
 ```
 Wie viele Programmierer braucht man, um eine Glühbirne zu wechseln?
 Keinen. Das ist ein Hardware-Problem!
 ```
 
 **English:**
+
 ```
 Why do programmers prefer dark mode?
 Because light attracts bugs!
 ```
 
 **Bosnisch:**
+
 ```
 Zašto programeri vole tamu?
 Jer svjetlo privlači bugove!
@@ -160,9 +172,9 @@ import {
 ```typescript
 // German joke
 const joke = getRandomJoke("de", "mujo-hase");
-console.log(joke.setup);      // "Hase: 'Mujo, was ist ein Bug?'"
-console.log(joke.punchline);  // "Mujo: 'Ein undokumentiertes Feature!'"
-console.log(joke.rating);     // "safe"
+console.log(joke.setup); // "Hase: 'Mujo, was ist ein Bug?'"
+console.log(joke.punchline); // "Mujo: 'Ein undokumentiertes Feature!'"
+console.log(joke.rating); // "safe"
 
 // English Chuck Norris style
 const chuckJoke = getRandomJoke("en", "chuck-norris");
@@ -175,6 +187,7 @@ console.log(randomJoke.punchline);
 ```
 
 **Parameters:**
+
 - `language`: `"de"` | `"en"` | `"bs"` (default: `"de"`)
 - `category`: `"mujo-hase"` | `"bosnier-turken"` | `"chuck-norris"` | `"tech"` (optional)
 - `rating`: `"safe"` | `"professional"` | `"casual"` (default: `"professional"`)
@@ -218,6 +231,7 @@ console.log(withHumor);
 ```
 
 **Context Types:**
+
 - `"alert"` - Keine Witze bei CRITICAL alerts
 - `"info"` - 20% Chance für Witz
 - `"success"` - 30% Chance für Chuck Norris style
@@ -250,16 +264,12 @@ import { createSupervisorNotifications } from "./src/supervisor/index.js";
 
 const notifications = createSupervisorNotifications({
   channel: "#alerts",
-  language: "de",      // Mujo spricht Deutsch
-  humor: true,         // Witze aktiviert
+  language: "de", // Mujo spricht Deutsch
+  humor: true, // Witze aktiviert
 });
 
 // Footer enthält automatisch Mujo's Signature
-await notifications.sendCustomMessage(
-  "Test",
-  "Hallo Welt!",
-  "info"
-);
+await notifications.sendCustomMessage("Test", "Hallo Welt!", "info");
 
 // Footer in Slack:
 // "🤖 Mujo - Dein mehrsprachiger Supervisor Bot (DE/EN/BS) | Supervisor System | 2025-12-26 15:30:00"
@@ -272,21 +282,25 @@ await notifications.sendCustomMessage(
 Alle Witze haben ein Rating:
 
 ### `"safe"` ✅
+
 - Komplett harmlos
 - Für alle Audiences
 - Keine kontroversen Themen
 
 ### `"professional"` ⚙️
+
 - Business-appropriate
 - Tech-Humor
 - Standard für Supervisor Notifications
 
 ### `"casual"` 😄
+
 - Lockerer Humor
 - Für informelle Chats
 - Nicht in kritischen Alerts
 
 **Filterung:**
+
 ```typescript
 // Nur "safe" Witze
 const safeJoke = getRandomJoke("de", undefined, "safe");
@@ -359,6 +373,7 @@ npx tsx test-mujo-humor.js
 ```
 
 **Testet:**
+
 1. ✅ Mujo & Hase Witze (DE/EN/BS)
 2. ✅ Bosnier & Türken Witze
 3. ✅ Chuck Norris Style Witze (DE/EN/BS)
@@ -368,6 +383,7 @@ npx tsx test-mujo-humor.js
 7. ✅ Send Joke to Slack (optional)
 
 **Output:**
+
 ```
 😄 Testing Mujo's Humor System
 
@@ -431,7 +447,7 @@ cron.schedule("0 9 * * *", async () => {
   await notifications.sendCustomMessage(
     "😄 Guten Morgen!",
     joke.setup ? `${joke.setup}\n\n${joke.punchline}` : joke.punchline,
-    "info"
+    "info",
   );
 });
 ```
@@ -468,7 +484,7 @@ const notifications = createSupervisorNotifications({
 });
 
 // Oder in .env:
-MUJO_HUMOR_ENABLED=false
+MUJO_HUMOR_ENABLED = false;
 ```
 
 ---
@@ -480,6 +496,7 @@ MUJO_HUMOR_ENABLED=false
 Gibt einen zufälligen Witz zurück.
 
 **Parameters:**
+
 - `language`: `"de"` | `"en"` | `"bs"` (required)
 - `category`: `"mujo-hase"` | `"bosnier-turken"` | `"chuck-norris"` | `"tech"` (optional)
 - `rating`: `"safe"` | `"professional"` | `"casual"` (default: `"professional"`)
@@ -503,6 +520,7 @@ interface Joke {
 Gibt eine zufällige Begrüßung zurück.
 
 **Parameters:**
+
 - `language`: `"de"` | `"en"` | `"bs"` (default: `"de"`)
 
 **Returns:** `string`
@@ -514,6 +532,7 @@ Gibt eine zufällige Begrüßung zurück.
 Gibt einen zufälligen Abschied zurück.
 
 **Parameters:**
+
 - `language`: `"de"` | `"en"` | `"bs"` (default: `"de"`)
 
 **Returns:** `string`
@@ -525,6 +544,7 @@ Gibt einen zufälligen Abschied zurück.
 Fügt Humor zu einer Message hinzu (chance-based).
 
 **Parameters:**
+
 - `message`: `string` - Original message
 - `context`: `"alert"` | `"info"` | `"success"` | `"greeting"` | `"farewell"` (default: `"info"`)
 - `language`: `"de"` | `"en"` | `"bs"` (default: `"de"`)
@@ -532,6 +552,7 @@ Fügt Humor zu einer Message hinzu (chance-based).
 **Returns:** `string` - Message mit oder ohne Humor
 
 **Behavior:**
+
 - `alert` + CRITICAL: no humor
 - `success`: 30% chance for Chuck Norris joke
 - `info`: 20% chance for random joke
@@ -545,6 +566,7 @@ Fügt Humor zu einer Message hinzu (chance-based).
 Gibt Mujo's Signature zurück.
 
 **Parameters:**
+
 - `language`: `"de"` | `"en"` | `"bs"` (default: `"de"`)
 
 **Returns:** `string`
@@ -554,12 +576,14 @@ Gibt Mujo's Signature zurück.
 ## Best Practices
 
 1. **Sprache konsistent wählen** - Eine Sprache pro Channel
+
    ```typescript
    const de = createSupervisorNotifications({ language: "de" });
    const en = createSupervisorNotifications({ language: "en" });
    ```
 
 2. **Humor in kritischen Alerts aus** - Automatisch deaktiviert bei CRITICAL
+
    ```typescript
    // CRITICAL alerts: no humor (automatic)
    if (stopScore.severity === "CRITICAL") {
@@ -568,13 +592,14 @@ Gibt Mujo's Signature zurück.
    ```
 
 3. **Professional Rating nutzen** - Standard für Business
+
    ```typescript
    const joke = getRandomJoke("de", undefined, "professional");
    ```
 
 4. **Testing mit verschiedenen Sprachen** - Multi-language support
    ```typescript
-   ["de", "en", "bs"].forEach(lang => {
+   ["de", "en", "bs"].forEach((lang) => {
      const joke = getRandomJoke(lang as Language);
      console.log(`${lang}: ${joke.punchline}`);
    });
@@ -589,6 +614,7 @@ Gibt Mujo's Signature zurück.
 **Problem:** `addHumor()` gibt immer nur Original zurück
 
 **Lösung:**
+
 - `addHumor()` ist chance-based (20-30%)
 - Mehrmals testen oder direkt `getRandomJoke()` nutzen
 
@@ -599,6 +625,7 @@ Gibt Mujo's Signature zurück.
 **Problem:** Witze in falscher Sprache
 
 **Lösung:**
+
 ```bash
 # In .env setzen
 MUJO_LANGUAGE=de  # oder en, oder bs
@@ -611,6 +638,7 @@ MUJO_LANGUAGE=de  # oder en, oder bs
 **Problem:** Witze zu casual
 
 **Lösung:**
+
 ```typescript
 const joke = getRandomJoke("de", undefined, "safe");
 // Nur "safe" Witze
@@ -624,8 +652,7 @@ Neue Witze hinzufügen in `src/integrations/slack/humor.ts`:
 
 ```typescript
 const MUJO_HASE_JOKES: Joke[] = [
-  ...
-  {
+  ...{
     category: "mujo-hase",
     language: "de",
     setup: "Hase fragt Mujo: '...'",

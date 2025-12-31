@@ -105,8 +105,7 @@ export const USD_TO_EUR_RATE = 0.92; // Approximate rate
 export function getModelPricing(model: string): ModelPricing | undefined {
   return MODEL_PRICING.find(
     (p) =>
-      p.model === model ||
-      model.toLowerCase().includes(p.model.toLowerCase())
+      p.model === model || model.toLowerCase().includes(p.model.toLowerCase()),
   );
 }
 
@@ -116,7 +115,7 @@ export function getModelPricing(model: string): ModelPricing | undefined {
 export function calculateCost(
   model: string,
   inputTokens: number,
-  outputTokens: number
+  outputTokens: number,
 ): { costUSD: number; costEUR: number } {
   const pricing = getModelPricing(model);
 

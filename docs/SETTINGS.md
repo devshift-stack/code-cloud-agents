@@ -70,6 +70,7 @@ CREATE TABLE settings_history (
 ### Default Settings
 
 **User Settings:**
+
 ```typescript
 {
   theme: "auto",           // "light" | "dark" | "auto"
@@ -88,6 +89,7 @@ CREATE TABLE settings_history (
 ```
 
 **System Settings:**
+
 ```typescript
 {
   appName: "Code Cloud Agents",
@@ -111,6 +113,7 @@ Returns user settings with automatic defaults if not exists.
 **Endpoint:** `GET /api/settings/user/:userId`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -118,7 +121,11 @@ Returns user settings with automatic defaults if not exists.
     "theme": "auto",
     "language": "en",
     "notifications": { "email": true, "push": true, "inApp": true },
-    "preferences": { "showAgentStatus": true, "showSystemNotifications": true, "autoSaveInterval": 30 }
+    "preferences": {
+      "showAgentStatus": true,
+      "showSystemNotifications": true,
+      "autoSaveInterval": 30
+    }
   },
   "metadata": {
     "createdAt": "2025-12-26T10:00:00.000Z",
@@ -134,6 +141,7 @@ Updates user settings with deep merge.
 **Endpoint:** `PUT /api/settings/user/:userId`
 
 **Request Body:**
+
 ```json
 {
   "theme": "dark",
@@ -144,6 +152,7 @@ Updates user settings with deep merge.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -151,12 +160,17 @@ Updates user settings with deep merge.
     "theme": "dark",
     "language": "en",
     "notifications": { "email": true, "push": false, "inApp": true },
-    "preferences": { "showAgentStatus": true, "showSystemNotifications": true, "autoSaveInterval": 30 }
+    "preferences": {
+      "showAgentStatus": true,
+      "showSystemNotifications": true,
+      "autoSaveInterval": 30
+    }
   }
 }
 ```
 
 **Validation Rules:**
+
 - `theme`: Must be "light", "dark", or "auto"
 - `language`: Must be "en", "de", or "bs"
 - `notifications`: email, push, inApp must be booleans
@@ -169,6 +183,7 @@ Resets user to defaults by deleting their settings.
 **Endpoint:** `DELETE /api/settings/user/:userId`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -187,6 +202,7 @@ Preferences are a subset of user settings for quick access.
 **Endpoint:** `GET /api/settings/preferences/:userId`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -205,6 +221,7 @@ Partial update of preferences only.
 **Endpoint:** `PATCH /api/settings/preferences/:userId`
 
 **Request Body:**
+
 ```json
 {
   "autoSaveInterval": 60
@@ -212,6 +229,7 @@ Partial update of preferences only.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -234,6 +252,7 @@ Partial update of preferences only.
 **Endpoint:** `GET /api/settings/system`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -256,6 +275,7 @@ Partial update of preferences only.
 **Example:** `GET /api/settings/system/maxConcurrentAgents`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -269,6 +289,7 @@ Partial update of preferences only.
 ```
 
 If setting doesn't exist, returns default:
+
 ```json
 {
   "success": true,
@@ -285,6 +306,7 @@ Partial update of system settings.
 **Endpoint:** `PUT /api/settings/system`
 
 **Request Body:**
+
 ```json
 {
   "maintenanceMode": true,
@@ -294,6 +316,7 @@ Partial update of system settings.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -306,6 +329,7 @@ Partial update of system settings.
 ```
 
 **Validation Rules:**
+
 - `appName`: 1-100 characters
 - `maxConcurrentAgents`: 1-10
 - `defaultAgentTimeout`: 60-3600 seconds
@@ -322,6 +346,7 @@ Every settings change is logged for audit purposes.
 **Endpoint:** `GET /api/settings/history/user/:userId?limit=50`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -347,6 +372,7 @@ Every settings change is logged for audit purposes.
 **Example:** `GET /api/settings/history/system/maintenanceMode?limit=10`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -371,33 +397,33 @@ Every settings change is logged for audit purposes.
 
 ### User Settings
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/settings/user/:userId` | Get user settings | User |
-| PUT | `/api/settings/user/:userId` | Update user settings | User |
+| Method | Endpoint                     | Description          | Auth |
+| ------ | ---------------------------- | -------------------- | ---- |
+| GET    | `/api/settings/user/:userId` | Get user settings    | User |
+| PUT    | `/api/settings/user/:userId` | Update user settings | User |
 | DELETE | `/api/settings/user/:userId` | Delete user settings | User |
 
 ### Preferences
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/settings/preferences/:userId` | Get preferences | User |
-| PATCH | `/api/settings/preferences/:userId` | Update preferences | User |
+| Method | Endpoint                            | Description        | Auth |
+| ------ | ----------------------------------- | ------------------ | ---- |
+| GET    | `/api/settings/preferences/:userId` | Get preferences    | User |
+| PATCH  | `/api/settings/preferences/:userId` | Update preferences | User |
 
 ### System Settings
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/settings/system` | Get all system settings | Admin |
-| GET | `/api/settings/system/:key` | Get specific setting | Admin |
-| PUT | `/api/settings/system` | Update system settings | Admin |
+| Method | Endpoint                    | Description             | Auth  |
+| ------ | --------------------------- | ----------------------- | ----- |
+| GET    | `/api/settings/system`      | Get all system settings | Admin |
+| GET    | `/api/settings/system/:key` | Get specific setting    | Admin |
+| PUT    | `/api/settings/system`      | Update system settings  | Admin |
 
 ### History
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/settings/history/user/:userId` | Get user history | User |
-| GET | `/api/settings/history/system/:key` | Get system history | Admin |
+| Method | Endpoint                             | Description        | Auth  |
+| ------ | ------------------------------------ | ------------------ | ----- |
+| GET    | `/api/settings/history/user/:userId` | Get user history   | User  |
+| GET    | `/api/settings/history/system/:key`  | Get system history | Admin |
 
 ---
 
@@ -414,11 +440,14 @@ const getUserSettings = async (userId: string) => {
 };
 
 // Update theme to dark mode
-const updateTheme = async (userId: string, theme: "light" | "dark" | "auto") => {
+const updateTheme = async (
+  userId: string,
+  theme: "light" | "dark" | "auto",
+) => {
   const response = await fetch(`/api/settings/user/${userId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ theme })
+    body: JSON.stringify({ theme }),
   });
   return response.json();
 };
@@ -428,7 +457,7 @@ const updateAutoSave = async (userId: string, interval: number) => {
   const response = await fetch(`/api/settings/preferences/${userId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ autoSaveInterval: interval })
+    body: JSON.stringify({ autoSaveInterval: interval }),
   });
   return response.json();
 };
@@ -447,8 +476,8 @@ const enableMaintenance = async (adminEmail: string) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       maintenanceMode: true,
-      _updatedBy: adminEmail
-    })
+      _updatedBy: adminEmail,
+    }),
   });
   return response.json();
 };
@@ -583,8 +612,12 @@ const requireAdmin = (req, res, next) => {
 };
 
 // Apply to routes
-router.get("/user/:userId", requireAuth, (req, res) => { /* ... */ });
-router.get("/system", requireAdmin, (req, res) => { /* ... */ });
+router.get("/user/:userId", requireAuth, (req, res) => {
+  /* ... */
+});
+router.get("/system", requireAdmin, (req, res) => {
+  /* ... */
+});
 ```
 
 ### Best Practices
@@ -655,6 +688,7 @@ If user settings don't exist, they are automatically created with defaults on fi
 ### History Logging
 
 All changes are logged with:
+
 - Old value (null for creation)
 - New value
 - Changed by (user ID or admin email)
@@ -672,6 +706,7 @@ All endpoints return consistent error format:
 ```
 
 HTTP status codes:
+
 - 200: Success
 - 201: Created
 - 400: Bad request (validation error)

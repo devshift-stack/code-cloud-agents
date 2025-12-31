@@ -44,7 +44,7 @@ console.log(`Stop Required: ${stopScore.stopRequired ? "YES" : "NO"}`);
 const stopResult = await notifications.sendStopScoreAlert(
   "Database Migration",
   stopScore,
-  "Task involves schema changes without proper test coverage"
+  "Task involves schema changes without proper test coverage",
 );
 
 if (stopResult.success) {
@@ -75,7 +75,7 @@ console.log(`Queue Depth: ${systemHealth.queueDepth}`);
 
 const healthResult = await notifications.sendSystemHealthAlert(
   "code-cloud-agents",
-  systemHealth
+  systemHealth,
 );
 
 if (healthResult.success) {
@@ -102,7 +102,7 @@ console.log(`Risks: ${proposal.risks.length}`);
 
 const taskResult = await notifications.sendTaskCompletionNotification(
   "TASK-001",
-  proposal
+  proposal,
 );
 
 if (taskResult.success) {
@@ -119,7 +119,7 @@ console.log("━━━━━━━━━━━━━━━━━━━━━━�
 const customResult = await notifications.sendCustomMessage(
   "🎉 Supervisor Integration Complete",
   `Mujo bot is now connected with the Supervisor system!\n\n*Features:*\n• STOP Score Alerts\n• System Health Monitoring\n• Task Completion Notifications\n• Custom Supervisor Messages\n\n*Status:* ✅ OPERATIONAL`,
-  "info"
+  "info",
 );
 
 if (customResult.success) {

@@ -84,7 +84,9 @@ export class WebSocketManager {
 
     this.clients.set(clientId, client);
 
-    console.log(`🔌 WebSocket client connected: ${clientId} (total: ${this.clients.size})`);
+    console.log(
+      `🔌 WebSocket client connected: ${clientId} (total: ${this.clients.size})`,
+    );
 
     // Simple token-based auth (in production, verify JWT here)
     if (token) {
@@ -160,7 +162,10 @@ export class WebSocketManager {
           console.log(`Received message from ${clientId}:`, message.type);
       }
     } catch (error) {
-      console.error(`Failed to parse WebSocket message from ${clientId}:`, error);
+      console.error(
+        `Failed to parse WebSocket message from ${clientId}:`,
+        error,
+      );
       this.sendMessage(client.ws, {
         type: "error",
         data: { error: "Invalid message format" },
@@ -175,7 +180,9 @@ export class WebSocketManager {
     const client = this.clients.get(clientId);
     if (!client) return;
 
-    console.log(`🔌 WebSocket client disconnected: ${clientId} (remaining: ${this.clients.size - 1})`);
+    console.log(
+      `🔌 WebSocket client disconnected: ${clientId} (remaining: ${this.clients.size - 1})`,
+    );
 
     // Broadcast user offline
     if (client.userId) {
@@ -200,7 +207,7 @@ export class WebSocketManager {
         JSON.stringify({
           ...message,
           timestamp: new Date().toISOString(),
-        })
+        }),
       );
     }
   }
@@ -208,7 +215,10 @@ export class WebSocketManager {
   /**
    * Broadcast message to all connected clients
    */
-  public broadcast(message: WSMessage, filter?: (client: ConnectedClient) => boolean): void {
+  public broadcast(
+    message: WSMessage,
+    filter?: (client: ConnectedClient) => boolean,
+  ): void {
     const payload = JSON.stringify({
       ...message,
       timestamp: new Date().toISOString(),
@@ -278,7 +288,7 @@ export class WebSocketManager {
   public sendNotification(
     level: "info" | "success" | "warning" | "error",
     message: string,
-    userId?: string
+    userId?: string,
   ): void {
     const notification: WSMessage = {
       type: "notification",

@@ -141,7 +141,7 @@ export function detectLanguage(message: string): Language {
  */
 export function generateResponse(
   message: string,
-  preferredLanguage?: Language
+  preferredLanguage?: Language,
 ): BotResponse {
   const messageLower = message.toLowerCase().trim();
 
@@ -392,7 +392,8 @@ Pazim na vaš sistem i javljam kad nešto krene po zlu - i usput bacim neki vic!
     messageLower.includes("šta si ti")
   ) {
     const responses = WHO_IS_MUJO_RESPONSES[language];
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    const randomResponse =
+      responses[Math.floor(Math.random() * responses.length)];
     return {
       text: randomResponse,
       language,
@@ -424,7 +425,8 @@ Pazim na vaš sistem i javljam kad nešto krene po zlu - i usput bacim neki vic!
     messageLower.includes("hvala")
   ) {
     const responses = DEFAULT_RESPONSES.thanks[language];
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    const randomResponse =
+      responses[Math.floor(Math.random() * responses.length)];
     return {
       text: randomResponse,
       language,
@@ -493,7 +495,7 @@ export function cleanMessage(message: string): string {
  */
 export function getSmartResponse(
   message: string,
-  preferredLanguage?: Language
+  preferredLanguage?: Language,
 ): BotResponse {
   // Clean the message
   const cleaned = cleanMessage(message);

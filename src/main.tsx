@@ -21,7 +21,7 @@ Sentry.init({
 createRoot(document.getElementById("root")!).render(
   <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
     <App />
-  </Sentry.ErrorBoundary>
+  </Sentry.ErrorBoundary>,
 );
 
 // Error fallback component
@@ -30,7 +30,9 @@ function ErrorFallback() {
     <div className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-4">Etwas ist schiefgelaufen</h1>
-        <p className="text-gray-400 mb-4">Ein unerwarteter Fehler ist aufgetreten.</p>
+        <p className="text-gray-400 mb-4">
+          Ein unerwarteter Fehler ist aufgetreten.
+        </p>
         <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"

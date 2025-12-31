@@ -1,24 +1,24 @@
-import { useState, useEffect, useRef } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { ScrollArea } from './ui/scroll-area';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useState, useEffect, useRef } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { toast } from 'sonner';
-import { Send, Bot, User } from 'lucide-react';
+} from "./ui/select";
+import { toast } from "sonner";
+import { Send, Bot, User } from "lucide-react";
 
 /**
  * Get stored user from localStorage
  */
 function getStoredUser(): { id: string; role: string } | null {
   try {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem("user");
     if (!userStr) return null;
     return JSON.parse(userStr);
   } catch {
@@ -28,7 +28,7 @@ function getStoredUser(): { id: string; role: string } | null {
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: string;
   agentName?: string;
@@ -47,9 +47,9 @@ interface Agent {
  */
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState('emir');
+  const [selectedAgent, setSelectedAgent] = useState("emir");
   const [agents, setAgents] = useState<Agent[]>([]);
   const [chatId, setChatId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -68,22 +68,46 @@ export function ChatInterface() {
 
   const fetchAgents = async () => {
     try {
-      const response = await fetch('/api/chat/agents');
-      if (!response.ok) throw new Error('Failed to fetch agents');
+      const response = await fetch("/api/chat/agents");
+      if (!response.ok) throw new Error("Failed to fetch agents");
       const data = await response.json();
       setAgents(data.agents || []);
     } catch (error) {
-      toast.error('Failed to load agents');
+      toast.error("Failed to load agents");
       // Fallback agents
       setAgents([
-        { name: 'emir', displayName: 'Emir (Supervisor)', description: 'Lead supervisor' },
-        { name: 'planner', displayName: 'Planner', description: 'Task planning' },
-        { name: 'berater', displayName: 'Berater', description: 'Technical advisory' },
-        { name: 'designer', displayName: 'Designer', description: 'UI/UX design' },
-        { name: 'coder', displayName: 'Coder', description: 'Code implementation' },
-        { name: 'tester', displayName: 'Tester', description: 'Testing & QA' },
-        { name: 'security', displayName: 'Security', description: 'Security review' },
-        { name: 'docs', displayName: 'Docs', description: 'Documentation' },
+        {
+          name: "emir",
+          displayName: "Emir (Supervisor)",
+          description: "Lead supervisor",
+        },
+        {
+          name: "planner",
+          displayName: "Planner",
+          description: "Task planning",
+        },
+        {
+          name: "berater",
+          displayName: "Berater",
+          description: "Technical advisory",
+        },
+        {
+          name: "designer",
+          displayName: "Designer",
+          description: "UI/UX design",
+        },
+        {
+          name: "coder",
+          displayName: "Coder",
+          description: "Code implementation",
+        },
+        { name: "tester", displayName: "Tester", description: "Testing & QA" },
+        {
+          name: "security",
+          displayName: "Security",
+          description: "Security review",
+        },
+        { name: "docs", displayName: "Docs", description: "Documentation" },
       ]);
     }
   };
@@ -93,28 +117,28 @@ export function ChatInterface() {
 
     const storedUser = getStoredUser();
     if (!storedUser) {
-      toast.error('Please log in to send messages');
+      toast.error("Please log in to send messages");
       return;
     }
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: 'user',
+      role: "user",
       content: input,
       timestamp: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+    setInput("");
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat/send', {
-        method: 'POST',
+      const response = await fetch("/api/chat/send", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': storedUser.id,
-          'x-user-role': storedUser.role,
+          "Content-Type": "application/json",
+          "x-user-id": storedUser.id,
+          "x-user-role": storedUser.role,
         },
         body: JSON.stringify({
           userId: storedUser.id,
@@ -127,7 +151,7 @@ export function ChatInterface() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to send message');
+        throw new Error(errorData.error || "Failed to send message");
       }
 
       const data = await response.json();
@@ -139,7 +163,7 @@ export function ChatInterface() {
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: 'assistant',
+        role: "assistant",
         content: data.content || data.response,
         timestamp: new Date().toISOString(),
         agentName: selectedAgent,
@@ -147,7 +171,9 @@ export function ChatInterface() {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to send message');
+      toast.error(
+        error instanceof Error ? error.message : "Failed to send message",
+      );
 
       // Remove user message on error
       setMessages((prev) => prev.filter((m) => m.id !== userMessage.id));
@@ -157,7 +183,7 @@ export function ChatInterface() {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -169,7 +195,10 @@ export function ChatInterface() {
         <div className="flex items-center justify-between">
           <CardTitle>AI Chat</CardTitle>
           <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-            <SelectTrigger className="w-[200px]" data-testid="cloudagents.chat.agent.select">
+            <SelectTrigger
+              className="w-[200px]"
+              data-testid="cloudagents.chat.agent.select"
+            >
               <SelectValue placeholder="Select Agent" />
             </SelectTrigger>
             <SelectContent>
@@ -201,17 +230,17 @@ export function ChatInterface() {
               <div
                 key={message.id}
                 className={`flex items-start gap-3 ${
-                  message.role === 'user' ? 'flex-row-reverse' : ''
+                  message.role === "user" ? "flex-row-reverse" : ""
                 }`}
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                    message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
                   }`}
                 >
-                  {message.role === 'user' ? (
+                  {message.role === "user" ? (
                     <User className="w-4 h-4" />
                   ) : (
                     <Bot className="w-4 h-4" />
@@ -219,22 +248,27 @@ export function ChatInterface() {
                 </div>
                 <div
                   className={`flex flex-col gap-1 max-w-[80%] ${
-                    message.role === 'user' ? 'items-end' : 'items-start'
+                    message.role === "user" ? "items-end" : "items-start"
                   }`}
                 >
-                  {message.agentName && message.role === 'assistant' && (
+                  {message.agentName && message.role === "assistant" && (
                     <span className="text-xs text-muted-foreground">
-                      {agents.find((a) => a.name === message.agentName)?.displayName}
+                      {
+                        agents.find((a) => a.name === message.agentName)
+                          ?.displayName
+                      }
                     </span>
                   )}
                   <div
                     className={`rounded-lg px-4 py-2 ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <p className="text-sm whitespace-pre-wrap">
+                      {message.content}
+                    </p>
                   </div>
                   <span className="text-xs text-muted-foreground">
                     {new Date(message.timestamp).toLocaleTimeString()}
@@ -266,7 +300,11 @@ export function ChatInterface() {
               disabled={isLoading}
               data-testid="cloudagents.chat.message.input"
             />
-            <Button onClick={handleSend} disabled={isLoading || !input.trim()} data-testid="cloudagents.chat.send.button">
+            <Button
+              onClick={handleSend}
+              disabled={isLoading || !input.trim()}
+              data-testid="cloudagents.chat.send.button"
+            >
               <Send className="w-4 h-4" />
             </Button>
           </div>

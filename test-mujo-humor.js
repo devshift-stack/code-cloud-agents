@@ -144,7 +144,7 @@ if (notifications.isEnabled()) {
     await notifications.sendCustomMessage(
       "😄 Mujo's Witz des Tages",
       randomJoke.punchline,
-      "info"
+      "info",
     );
     console.log("✅ Joke sent to Slack!");
   }

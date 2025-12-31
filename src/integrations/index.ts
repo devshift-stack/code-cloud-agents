@@ -5,19 +5,45 @@
  * Do not use in production without explicit approval.
  */
 
-export { createGitHubClient, type GitHubClient, type GitHubIssue } from "./github/client.js";
-export { createSlackClient, type SlackClient, type SlackMessage } from "./slack/client.js";
-export { createLinearClient, type LinearClient, type LinearIssue } from "./linear/client.js";
-export { createWhatsAppClient, type WhatsAppClient, type WhatsAppMessage } from "./whatsapp/client.js";
-export { createVoiceClient, type VoiceClient, type VoiceCall } from "./voice/client.js";
+export {
+  createGitHubClient,
+  type GitHubClient,
+  type GitHubIssue,
+} from "./github/client.js";
+export {
+  createSlackClient,
+  type SlackClient,
+  type SlackMessage,
+} from "./slack/client.js";
+export {
+  createLinearClient,
+  type LinearClient,
+  type LinearIssue,
+} from "./linear/client.js";
+export {
+  createWhatsAppClient,
+  type WhatsAppClient,
+  type WhatsAppMessage,
+} from "./whatsapp/client.js";
+export {
+  createVoiceClient,
+  type VoiceClient,
+  type VoiceCall,
+} from "./voice/client.js";
 export { createGoogleClient, type GoogleClient } from "./google/client.js";
 export { createICloudClient, type ICloudClient } from "./icloud/client.js";
-export { createPineconeClient, type PineconeClient, type PineconeVector } from "./pinecone/client.js";
+export {
+  createPineconeClient,
+  type PineconeClient,
+  type PineconeVector,
+} from "./pinecone/client.js";
 
 /**
  * Get status of all integrations
  */
-export async function getAllIntegrationStatus(): Promise<Record<string, { enabled: boolean; connected: boolean }>> {
+export async function getAllIntegrationStatus(): Promise<
+  Record<string, { enabled: boolean; connected: boolean }>
+> {
   return {
     github: {
       enabled: process.env.GITHUB_ENABLED === "true",

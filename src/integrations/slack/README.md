@@ -66,18 +66,21 @@ Gehe zu: https://api.slack.com/messaging/webhooks
 ### 5. .env konfigurieren
 
 **Mit Bot Token (empfohlen):**
+
 ```bash
 SLACK_ENABLED=true
 SLACK_TOKEN=xoxb-dein-token-hier
 ```
 
 **Mit Webhook (einfacher):**
+
 ```bash
 SLACK_ENABLED=true
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
 ```
 
 **Beide (flexibel):**
+
 ```bash
 SLACK_ENABLED=true
 SLACK_TOKEN=xoxb-dein-token-hier
@@ -201,6 +204,7 @@ if (status.connected) {
 Erstellt Slack Client Instanz.
 
 **Parameters:**
+
 - `config?` (optional)
   - `token: string` - Bot User OAuth Token
   - `webhookUrl?: string` - Incoming Webhook URL
@@ -214,6 +218,7 @@ Erstellt Slack Client Instanz.
 Sendet Nachricht in Channel (benötigt Bot Token).
 
 **Parameters:**
+
 - `message: SlackMessage`
   - `channel: string` - Channel name (#general) oder ID
   - `text: string` - Nachricht Text (Markdown unterstützt)
@@ -230,6 +235,7 @@ Sendet Nachricht in Channel (benötigt Bot Token).
 Sendet einfache Nachricht via Webhook (kein Token nötig).
 
 **Parameters:**
+
 - `text: string` - Nachricht Text
 
 **Returns:** `Promise<{ success: boolean; error?: string }>`
@@ -401,30 +407,35 @@ if (!result.success) {
 
 ### Häufige Fehler
 
-| Error | Bedeutung | Lösung |
-|-------|-----------|--------|
-| `channel_not_found` | Channel existiert nicht | Channel-Name prüfen |
-| `not_in_channel` | Bot ist nicht im Channel | `/invite @Bot` im Channel |
-| `invalid_auth` | Token ungültig | Token neu generieren |
-| `missing_scope` | Permission fehlt | Bot Scope hinzufügen |
+| Error               | Bedeutung                | Lösung                    |
+| ------------------- | ------------------------ | ------------------------- |
+| `channel_not_found` | Channel existiert nicht  | Channel-Name prüfen       |
+| `not_in_channel`    | Bot ist nicht im Channel | `/invite @Bot` im Channel |
+| `invalid_auth`      | Token ungültig           | Token neu generieren      |
+| `missing_scope`     | Permission fehlt         | Bot Scope hinzufügen      |
 
 ---
 
 ## Troubleshooting
 
 ### Error: "Slack integration disabled"
+
 → Setze `SLACK_ENABLED=true` in `.env`
 
 ### Error: "Slack token not configured"
+
 → Setze `SLACK_TOKEN=xoxb-...` in `.env`
 
 ### Error: "not_in_channel"
+
 → Lade Bot in Channel ein: `/invite @Cloud Agents`
 
 ### Error: "channel_not_found"
+
 → Prüfe Channel-Name (muss `#` haben oder Channel-ID nutzen)
 
 ### Error: "invalid_auth"
+
 → Token abgelaufen oder ungültig. Neu generieren.
 
 ---

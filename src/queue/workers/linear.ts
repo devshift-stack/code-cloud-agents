@@ -60,7 +60,9 @@ export interface LinearProjectJobData {
 async function handleIssueEvent(job: QueueJob, db: Database): Promise<void> {
   const data = job.data as unknown as LinearIssueJobData;
 
-  console.log(`📋 Processing Linear issue event: ${data.data.title} (${data.action})`);
+  console.log(
+    `📋 Processing Linear issue event: ${data.data.title} (${data.action})`,
+  );
 
   // Log to audit trail
   db.createAuditEntry({
@@ -155,7 +157,9 @@ async function handleCommentEvent(job: QueueJob, db: Database): Promise<void> {
 async function handleProjectEvent(job: QueueJob, db: Database): Promise<void> {
   const data = job.data as unknown as LinearProjectJobData;
 
-  console.log(`📁 Processing Linear project event: ${data.data.name} (${data.action})`);
+  console.log(
+    `📁 Processing Linear project event: ${data.data.name} (${data.action})`,
+  );
 
   // Log to audit trail
   db.createAuditEntry({
@@ -181,7 +185,9 @@ async function handleProjectEvent(job: QueueJob, db: Database): Promise<void> {
     console.log(`   ✨ New project created: ${data.data.name}`);
     // TODO: Send notifications, create GitHub project, etc.
   } else if (data.action === "update") {
-    console.log(`   📝 Project updated: ${data.data.name} (${data.data.state})`);
+    console.log(
+      `   📝 Project updated: ${data.data.name} (${data.data.state})`,
+    );
     // TODO: Update linked GitHub project, notify team, etc.
   }
 

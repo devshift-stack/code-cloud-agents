@@ -35,7 +35,11 @@ function extractJwtPayload(req: Request): TokenPayload | null {
  */
 function isSystemId(userId: string | undefined): boolean {
   if (!userId) return false;
-  return userId.startsWith("system-") || userId === "health-check" || userId === "diagnostics";
+  return (
+    userId.startsWith("system-") ||
+    userId === "health-check" ||
+    userId === "diagnostics"
+  );
 }
 
 /**
@@ -46,12 +50,19 @@ function isSystemId(userId: string | undefined): boolean {
  * Usage:
  *   router.post("/admin-only", requireAdmin, handler);
  */
-export function requireAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+export function requireAdmin(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): void {
   const payload = extractJwtPayload(req);
 
   // Check if JWT is valid
   if (!payload) {
-    log.warn("Auth failed: invalid or missing JWT", { endpoint: req.path, method: req.method });
+    log.warn("Auth failed: invalid or missing JWT", {
+      endpoint: req.path,
+      method: req.method,
+    });
     res.status(401).json({
       error: "Authentication required",
       message: "Valid JWT token required in Authorization header",
@@ -69,7 +80,11 @@ export function requireAdmin(req: AuthenticatedRequest, res: Response, next: Nex
 
   // Check if user has admin role
   if (role !== "admin") {
-    log.warn("Auth failed: insufficient privileges", { userId, role, endpoint: req.path });
+    log.warn("Auth failed: insufficient privileges", {
+      userId,
+      role,
+      endpoint: req.path,
+    });
     res.status(403).json({
       error: "Admin access required",
       message: "This endpoint requires admin privileges",
@@ -93,7 +108,11 @@ export function requireAdmin(req: AuthenticatedRequest, res: Response, next: Nex
  * Extracts userId and role from JWT token
  * Returns 401 if not authenticated
  */
-export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+export function requireAuth(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): void {
   const payload = extractJwtPayload(req);
 
   if (!payload) {
@@ -116,7 +135,11 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
  * Optional authentication (JWT-based)
  * Adds user info if valid JWT available, but doesn't block
  */
-export function optionalAuth(req: AuthenticatedRequest, _res: Response, next: NextFunction): void {
+export function optionalAuth(
+  req: AuthenticatedRequest,
+  _res: Response,
+  next: NextFunction,
+): void {
   const payload = extractJwtPayload(req);
 
   if (payload) {
@@ -132,9 +155,14 @@ export function optionalAuth(req: AuthenticatedRequest, _res: Response, next: Ne
  * Cron job authentication
  * Validates cron API key
  */
-export function requireCronAuth(req: Request, res: Response, next: NextFunction): void {
+export function requireCronAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   const apiKey = req.headers["x-api-key"] as string;
-  const expectedKey = process.env.CRON_API_KEY || "dev-cron-key-change-in-production";
+  const expectedKey =
+    process.env.CRON_API_KEY || "dev-cron-key-change-in-production";
 
   if (!apiKey) {
     res.status(401).json({
@@ -147,7 +175,10 @@ export function requireCronAuth(req: Request, res: Response, next: NextFunction)
 
   if (apiKey !== expectedKey) {
     console.error(`[SECURITY] Invalid cron API key attempt from ${req.ip}`);
-    log.error("Security: Invalid cron API key", { ip: req.ip, endpoint: req.path });
+    log.error("Security: Invalid cron API key", {
+      ip: req.ip,
+      endpoint: req.path,
+    });
     res.status(403).json({
       error: "Invalid API key",
       code: "FORBIDDEN",
@@ -171,10 +202,15 @@ export function createRateLimiter(maxRequests: number, windowMs: number) {
     const userRequests = requests.get(identifier) || [];
 
     // Remove old requests outside window
-    const validRequests = userRequests.filter(time => now - time < windowMs);
+    const validRequests = userRequests.filter((time) => now - time < windowMs);
 
     if (validRequests.length >= maxRequests) {
-      log.warn("Rate limit exceeded", { ip: identifier, requests: validRequests.length, maxRequests, endpoint: req.path });
+      log.warn("Rate limit exceeded", {
+        ip: identifier,
+        requests: validRequests.length,
+        maxRequests,
+        endpoint: req.path,
+      });
       res.status(429).json({
         error: "Rate limit exceeded",
         message: `Max ${maxRequests} requests per ${windowMs / 1000}s`,
@@ -196,10 +232,18 @@ export function createRateLimiter(maxRequests: number, windowMs: number) {
  */
 export function createDatabaseAuth(_db: Database) {
   return {
-    requireAdmin: (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    requireAdmin: (
+      req: AuthenticatedRequest,
+      res: Response,
+      next: NextFunction,
+    ) => {
       requireAdmin(req, res, next);
     },
-    requireAuth: (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    requireAuth: (
+      req: AuthenticatedRequest,
+      res: Response,
+      next: NextFunction,
+    ) => {
       requireAuth(req, res, next);
     },
   };

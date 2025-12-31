@@ -123,7 +123,11 @@ export class EmbeddingsManager {
   /**
    * Semantic search using cosine similarity
    */
-  async semanticSearch(query: string, userId: string, limit: number = 10): Promise<SemanticSearchResult[]> {
+  async semanticSearch(
+    query: string,
+    userId: string,
+    limit: number = 10,
+  ): Promise<SemanticSearchResult[]> {
     if (!this.enabled) {
       return [];
     }
@@ -175,7 +179,10 @@ export class EmbeddingsManager {
   /**
    * Find similar messages to a given message
    */
-  async findSimilarMessages(messageId: string, limit: number = 10): Promise<SemanticSearchResult[]> {
+  async findSimilarMessages(
+    messageId: string,
+    limit: number = 10,
+  ): Promise<SemanticSearchResult[]> {
     if (!this.enabled) {
       return [];
     }
@@ -213,7 +220,10 @@ export class EmbeddingsManager {
     // Calculate cosine similarity
     const results: SemanticSearchResult[] = rows.map((row) => {
       const embedding = JSON.parse(row.embedding);
-      const similarity = this.cosineSimilarity(refEmbedding.embedding, embedding);
+      const similarity = this.cosineSimilarity(
+        refEmbedding.embedding,
+        embedding,
+      );
 
       return {
         messageId: row.message_id,
@@ -260,7 +270,10 @@ export class EmbeddingsManager {
         // Rate limiting: wait 100ms between requests
         await new Promise((resolve) => setTimeout(resolve, 100));
       } catch (error) {
-        console.error(`Failed to generate embedding for message ${row.id}:`, error);
+        console.error(
+          `Failed to generate embedding for message ${row.id}:`,
+          error,
+        );
       }
     }
 
@@ -300,7 +313,9 @@ export class EmbeddingsManager {
    */
   deleteEmbedding(messageId: string): boolean {
     const rawDb = this.db.getRawDb();
-    const stmt = rawDb.prepare("DELETE FROM message_embeddings WHERE message_id = ?");
+    const stmt = rawDb.prepare(
+      "DELETE FROM message_embeddings WHERE message_id = ?",
+    );
     const result = stmt.run(messageId);
     return result.changes > 0;
   }
@@ -332,7 +347,9 @@ export class EmbeddingsManager {
   } {
     const rawDb = this.db.getRawDb();
 
-    const totalStmt = rawDb.prepare("SELECT COUNT(*) as count FROM message_embeddings");
+    const totalStmt = rawDb.prepare(
+      "SELECT COUNT(*) as count FROM message_embeddings",
+    );
     const totalRow = totalStmt.get() as any;
 
     const modelStmt = rawDb.prepare(`

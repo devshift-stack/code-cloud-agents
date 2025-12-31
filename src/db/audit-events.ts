@@ -121,7 +121,7 @@ export function createAuditService(db: BetterSqlite3Database) {
         input.userId ?? null,
         severity,
         input.message,
-        meta
+        meta,
       );
 
       return {
@@ -142,17 +142,19 @@ export function createAuditService(db: BetterSqlite3Database) {
      */
     get(id: string): AuditEvent | undefined {
       const stmt = db.prepare("SELECT * FROM audit_events WHERE id = ?");
-      const row = stmt.get(id) as {
-        id: string;
-        ts: string;
-        kind: string;
-        agent_id: string | null;
-        task_id: string | null;
-        user_id: string | null;
-        severity: string;
-        message: string;
-        meta: string | null;
-      } | undefined;
+      const row = stmt.get(id) as
+        | {
+            id: string;
+            ts: string;
+            kind: string;
+            agent_id: string | null;
+            task_id: string | null;
+            user_id: string | null;
+            severity: string;
+            message: string;
+            meta: string | null;
+          }
+        | undefined;
 
       if (!row) return undefined;
 
@@ -203,7 +205,8 @@ export function createAuditService(db: BetterSqlite3Database) {
         params.push(options.since);
       }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+      const whereClause =
+        conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
       const query = `SELECT * FROM audit_events ${whereClause} ORDER BY ts DESC LIMIT ? OFFSET ?`;
       params.push(limit, offset);
 
@@ -237,24 +240,35 @@ export function createAuditService(db: BetterSqlite3Database) {
      * Get event statistics
      */
     stats(): AuditEventStats {
-      const totalStmt = db.prepare("SELECT COUNT(*) as count FROM audit_events");
+      const totalStmt = db.prepare(
+        "SELECT COUNT(*) as count FROM audit_events",
+      );
       const total = (totalStmt.get() as { count: number }).count;
 
-      const kindStmt = db.prepare("SELECT kind, COUNT(*) as count FROM audit_events GROUP BY kind");
+      const kindStmt = db.prepare(
+        "SELECT kind, COUNT(*) as count FROM audit_events GROUP BY kind",
+      );
       const kindRows = kindStmt.all() as Array<{ kind: string; count: number }>;
       const byKind: Record<string, number> = {};
       for (const row of kindRows) {
         byKind[row.kind] = row.count;
       }
 
-      const sevStmt = db.prepare("SELECT severity, COUNT(*) as count FROM audit_events GROUP BY severity");
-      const sevRows = sevStmt.all() as Array<{ severity: string; count: number }>;
+      const sevStmt = db.prepare(
+        "SELECT severity, COUNT(*) as count FROM audit_events GROUP BY severity",
+      );
+      const sevRows = sevStmt.all() as Array<{
+        severity: string;
+        count: number;
+      }>;
       const bySeverity: Record<string, number> = {};
       for (const row of sevRows) {
         bySeverity[row.severity] = row.count;
       }
 
-      const lastStmt = db.prepare("SELECT ts FROM audit_events ORDER BY ts DESC LIMIT 1");
+      const lastStmt = db.prepare(
+        "SELECT ts FROM audit_events ORDER BY ts DESC LIMIT 1",
+      );
       const lastRow = lastStmt.get() as { ts: string } | undefined;
 
       return {

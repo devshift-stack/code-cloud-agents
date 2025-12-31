@@ -41,10 +41,10 @@ npm run generate:api
 ### 3. Frontend nutzt generated types
 
 ```tsx
-import api from '@/lib/api-client';
+import api from "@/lib/api-client";
 
 // Type-safe API call
-const { data, error } = await api.GET('/api/tasks');
+const { data, error } = await api.GET("/api/tasks");
 ```
 
 ---
@@ -54,13 +54,13 @@ const { data, error } = await api.GET('/api/tasks');
 ### GET Request (List)
 
 ```tsx
-import api from '@/lib/api-client';
+import api from "@/lib/api-client";
 
 async function loadTasks() {
-  const { data, error } = await api.GET('/api/tasks');
+  const { data, error } = await api.GET("/api/tasks");
 
   if (error) {
-    console.error('Failed to load tasks');
+    console.error("Failed to load tasks");
     return;
   }
 
@@ -71,19 +71,19 @@ async function loadTasks() {
 ### POST Request (Create)
 
 ```tsx
-import api from '@/lib/api-client';
+import api from "@/lib/api-client";
 
 async function createTask(title: string) {
-  const { data, error } = await api.POST('/api/tasks', {
+  const { data, error } = await api.POST("/api/tasks", {
     body: {
       title,
-      description: 'New task',
-      status: 'pending',
+      description: "New task",
+      status: "pending",
     },
   });
 
   if (error) {
-    throw new Error('Failed to create task');
+    throw new Error("Failed to create task");
   }
 
   return data; // Type: Task
@@ -93,17 +93,17 @@ async function createTask(title: string) {
 ### DELETE Request
 
 ```tsx
-import api from '@/lib/api-client';
+import api from "@/lib/api-client";
 
 async function deleteTask(id: string) {
-  const { error } = await api.DELETE('/api/tasks/{id}', {
+  const { error } = await api.DELETE("/api/tasks/{id}", {
     params: {
       path: { id },
     },
   });
 
   if (error) {
-    throw new Error('Failed to delete task');
+    throw new Error("Failed to delete task");
   }
 }
 ```
@@ -111,18 +111,18 @@ async function deleteTask(id: string) {
 ### With React State
 
 ```tsx
-import { useEffect, useState } from 'react';
-import api from '@/lib/api-client';
-import type { components } from '@/generated/api-types';
+import { useEffect, useState } from "react";
+import api from "@/lib/api-client";
+import type { components } from "@/generated/api-types";
 
-type Task = components['schemas']['Task'];
+type Task = components["schemas"]["Task"];
 
 function TasksList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.GET('/api/tasks').then(({ data }) => {
+    api.GET("/api/tasks").then(({ data }) => {
       setTasks(data || []);
       setLoading(false);
     });
@@ -148,15 +148,15 @@ API client automatically adds `Authorization` header from localStorage:
 
 ```tsx
 // Login
-const { data } = await api.POST('/api/auth/login', {
+const { data } = await api.POST("/api/auth/login", {
   body: { email, password },
 });
-localStorage.setItem('token', data.token);
+localStorage.setItem("token", data.token);
 
 // Now all requests include: Authorization: Bearer <token>
 
 // Logout
-localStorage.removeItem('token');
+localStorage.removeItem("token");
 ```
 
 ---
@@ -178,7 +178,7 @@ Edit `src/lib/api-client.ts`:
 ```tsx
 const customMiddleware: Middleware = {
   async onRequest({ request }) {
-    request.headers.set('X-Custom-Header', 'value');
+    request.headers.set("X-Custom-Header", "value");
     return request;
   },
 };

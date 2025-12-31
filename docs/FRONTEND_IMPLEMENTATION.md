@@ -3,6 +3,7 @@
 ## Empfohlener Tech-Stack
 
 ### Framework & Build
+
 ```json
 {
   "framework": "Next.js 14+ (App Router)",
@@ -105,12 +106,12 @@ npx shadcn-ui@latest add alert toast sonner skeleton
 ```typescript
 // lib/types.ts
 
-export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type RiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 export interface Agent {
   id: string;
   name: string;
-  status: 'online' | 'offline' | 'paused' | 'review';
+  status: "online" | "offline" | "paused" | "review";
   supervisor?: string;
   createdAt: string;
 }
@@ -201,26 +202,31 @@ export interface SupervisorDashboard {
 
 ```tsx
 // components/dashboard/risk-badge.tsx
-import { cva, type VariantProps } from 'class-variance-authority';
-import { CheckCircle, AlertTriangle, AlertOctagon, XCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { RiskLevel } from '@/lib/types';
+import { cva, type VariantProps } from "class-variance-authority";
+import {
+  CheckCircle,
+  AlertTriangle,
+  AlertOctagon,
+  XCircle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { RiskLevel } from "@/lib/types";
 
 const badgeVariants = cva(
-  'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase',
+  "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase",
   {
     variants: {
       risk: {
-        LOW: 'bg-green-100 text-green-800 border border-green-200',
-        MEDIUM: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-        HIGH: 'bg-orange-100 text-orange-800 border border-orange-200',
-        CRITICAL: 'bg-red-100 text-red-800 border border-red-200 animate-pulse',
+        LOW: "bg-green-100 text-green-800 border border-green-200",
+        MEDIUM: "bg-yellow-100 text-yellow-800 border border-yellow-200",
+        HIGH: "bg-orange-100 text-orange-800 border border-orange-200",
+        CRITICAL: "bg-red-100 text-red-800 border border-red-200 animate-pulse",
       },
     },
     defaultVariants: {
-      risk: 'LOW',
+      risk: "LOW",
     },
-  }
+  },
 );
 
 const icons: Record<RiskLevel, React.ComponentType<{ className?: string }>> = {
@@ -236,7 +242,11 @@ interface RiskBadgeProps extends VariantProps<typeof badgeVariants> {
   className?: string;
 }
 
-export function RiskBadge({ level, showIcon = true, className }: RiskBadgeProps) {
+export function RiskBadge({
+  level,
+  showIcon = true,
+  className,
+}: RiskBadgeProps) {
   const Icon = icons[level];
 
   return (
@@ -256,9 +266,9 @@ export function RiskBadge({ level, showIcon = true, className }: RiskBadgeProps)
 
 ```tsx
 // components/dashboard/stat-card.tsx
-import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Card, CardContent } from "@/components/ui/card";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   title: string;
@@ -284,12 +294,12 @@ export function StatCard({
   };
 
   const getTrendColor = () => {
-    if (!trend) return 'text-gray-500';
-    return trend > 0 ? 'text-green-600' : 'text-red-600';
+    if (!trend) return "text-gray-500";
+    return trend > 0 ? "text-green-600" : "text-red-600";
   };
 
   return (
-    <Card className={cn('', className)}>
+    <Card className={cn("", className)}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-gray-500">{title}</p>
@@ -298,7 +308,9 @@ export function StatCard({
         <div className="mt-2 flex items-baseline gap-2">
           <p className="text-3xl font-bold text-gray-900">{value}</p>
           {trend !== undefined && (
-            <div className={cn('flex items-center gap-1 text-sm', getTrendColor())}>
+            <div
+              className={cn("flex items-center gap-1 text-sm", getTrendColor())}
+            >
               {getTrendIcon()}
               <span>{Math.abs(trend)}%</span>
             </div>
@@ -317,12 +329,17 @@ export function StatCard({
 
 ```tsx
 // components/dashboard/agent-card.tsx
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { RiskBadge } from './risk-badge';
-import { Bot, Pause, Eye } from 'lucide-react';
-import type { Agent, AgentStatistics } from '@/lib/types';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { RiskBadge } from "./risk-badge";
+import { Bot, Pause, Eye } from "lucide-react";
+import type { Agent, AgentStatistics } from "@/lib/types";
 
 interface AgentCardProps {
   agent: Agent;
@@ -331,23 +348,36 @@ interface AgentCardProps {
   onPause?: () => void;
 }
 
-export function AgentCard({ agent, stats, onViewDetails, onPause }: AgentCardProps) {
+export function AgentCard({
+  agent,
+  stats,
+  onViewDetails,
+  onPause,
+}: AgentCardProps) {
   const getStatusColor = () => {
     switch (agent.status) {
-      case 'online': return 'bg-green-500';
-      case 'offline': return 'bg-gray-400';
-      case 'paused': return 'bg-yellow-500';
-      case 'review': return 'bg-red-500';
-      default: return 'bg-gray-400';
+      case "online":
+        return "bg-green-500";
+      case "offline":
+        return "bg-gray-400";
+      case "paused":
+        return "bg-yellow-500";
+      case "review":
+        return "bg-red-500";
+      default:
+        return "bg-gray-400";
     }
   };
 
   const riskLevel = stats?.average_risk
-    ? stats.average_risk <= 0 ? 'LOW'
-    : stats.average_risk <= 1 ? 'MEDIUM'
-    : stats.average_risk <= 2 ? 'HIGH'
-    : 'CRITICAL'
-    : 'LOW';
+    ? stats.average_risk <= 0
+      ? "LOW"
+      : stats.average_risk <= 1
+        ? "MEDIUM"
+        : stats.average_risk <= 2
+          ? "HIGH"
+          : "CRITICAL"
+    : "LOW";
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -366,7 +396,9 @@ export function AgentCard({ agent, stats, onViewDetails, onPause }: AgentCardPro
           </div>
           <div className="flex items-center gap-2">
             <span className={`h-2.5 w-2.5 rounded-full ${getStatusColor()}`} />
-            <span className="text-sm text-gray-500 capitalize">{agent.status}</span>
+            <span className="text-sm text-gray-500 capitalize">
+              {agent.status}
+            </span>
           </div>
         </div>
       </CardHeader>
@@ -388,39 +420,53 @@ export function AgentCard({ agent, stats, onViewDetails, onPause }: AgentCardPro
                 <p className="text-xs text-gray-500">Avg. Risk</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">{stats.stop_rate}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.stop_rate}
+                </p>
                 <p className="text-xs text-gray-500">Stop Rate</p>
               </div>
             </div>
 
             <div className="mt-4 space-y-2">
-              <p className="text-sm font-medium text-gray-700">Risk Distribution</p>
+              <p className="text-sm font-medium text-gray-700">
+                Risk Distribution
+              </p>
               <div className="space-y-1">
-                {(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const).map((level) => {
-                  const count = stats.risk_distribution[level] || 0;
-                  const total = Object.values(stats.risk_distribution).reduce((a, b) => a + b, 0);
-                  const percentage = total > 0 ? (count / total) * 100 : 0;
+                {(["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const).map(
+                  (level) => {
+                    const count = stats.risk_distribution[level] || 0;
+                    const total = Object.values(stats.risk_distribution).reduce(
+                      (a, b) => a + b,
+                      0,
+                    );
+                    const percentage = total > 0 ? (count / total) * 100 : 0;
 
-                  return (
-                    <div key={level} className="flex items-center gap-2">
-                      <div className="w-20 text-xs text-gray-500">{level}</div>
-                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${
-                            level === 'LOW' ? 'bg-green-500' :
-                            level === 'MEDIUM' ? 'bg-yellow-500' :
-                            level === 'HIGH' ? 'bg-orange-500' :
-                            'bg-red-500'
-                          }`}
-                          style={{ width: `${percentage}%` }}
-                        />
+                    return (
+                      <div key={level} className="flex items-center gap-2">
+                        <div className="w-20 text-xs text-gray-500">
+                          {level}
+                        </div>
+                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              level === "LOW"
+                                ? "bg-green-500"
+                                : level === "MEDIUM"
+                                  ? "bg-yellow-500"
+                                  : level === "HIGH"
+                                    ? "bg-orange-500"
+                                    : "bg-red-500"
+                            }`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                        <div className="w-8 text-xs text-gray-500 text-right">
+                          {Math.round(percentage)}%
+                        </div>
                       </div>
-                      <div className="w-8 text-xs text-gray-500 text-right">
-                        {Math.round(percentage)}%
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  },
+                )}
               </div>
             </div>
           </>
@@ -436,10 +482,10 @@ export function AgentCard({ agent, stats, onViewDetails, onPause }: AgentCardPro
           variant="outline"
           size="sm"
           onClick={onPause}
-          disabled={agent.status === 'paused'}
+          disabled={agent.status === "paused"}
         >
           <Pause className="h-4 w-4 mr-2" />
-          {agent.status === 'paused' ? 'Paused' : 'Pause'}
+          {agent.status === "paused" ? "Paused" : "Pause"}
         </Button>
       </CardFooter>
     </Card>
@@ -451,14 +497,14 @@ export function AgentCard({ agent, stats, onViewDetails, onPause }: AgentCardPro
 
 ```tsx
 // components/dashboard/alert-item.tsx
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RiskBadge } from './risk-badge';
-import { Eye, Pause, Check, Clock } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { de } from 'date-fns/locale';
-import type { Alert } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { RiskBadge } from "./risk-badge";
+import { Eye, Pause, Check, Clock } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { de } from "date-fns/locale";
+import type { Alert } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface AlertItemProps {
   alert: Alert;
@@ -467,28 +513,33 @@ interface AlertItemProps {
   onDismiss?: () => void;
 }
 
-export function AlertItem({ alert, onView, onPauseAgent, onDismiss }: AlertItemProps) {
+export function AlertItem({
+  alert,
+  onView,
+  onPauseAgent,
+  onDismiss,
+}: AlertItemProps) {
   const borderColor = {
-    LOW: 'border-l-green-500',
-    MEDIUM: 'border-l-yellow-500',
-    HIGH: 'border-l-orange-500',
-    CRITICAL: 'border-l-red-500',
+    LOW: "border-l-green-500",
+    MEDIUM: "border-l-yellow-500",
+    HIGH: "border-l-orange-500",
+    CRITICAL: "border-l-red-500",
   }[alert.risk_level];
 
   const bgColor = {
-    LOW: 'bg-green-50/50',
-    MEDIUM: 'bg-yellow-50/50',
-    HIGH: 'bg-orange-50/50',
-    CRITICAL: 'bg-red-50/50',
+    LOW: "bg-green-50/50",
+    MEDIUM: "bg-yellow-50/50",
+    HIGH: "bg-orange-50/50",
+    CRITICAL: "bg-red-50/50",
   }[alert.risk_level];
 
   return (
     <Card
       className={cn(
-        'border-l-4 transition-all hover:shadow-md',
+        "border-l-4 transition-all hover:shadow-md",
         borderColor,
         bgColor,
-        !alert.read && 'ring-2 ring-primary-200'
+        !alert.read && "ring-2 ring-primary-200",
       )}
     >
       <CardContent className="p-4">
@@ -504,10 +555,18 @@ export function AlertItem({ alert, onView, onPauseAgent, onDismiss }: AlertItemP
         </div>
 
         <div className="mb-3">
-          <h4 className={cn('font-semibold text-gray-900', !alert.read && 'font-bold')}>
+          <h4
+            className={cn(
+              "font-semibold text-gray-900",
+              !alert.read && "font-bold",
+            )}
+          >
             {alert.agent_id}
             {alert.contact_name && (
-              <span className="font-normal text-gray-500"> - {alert.contact_name}</span>
+              <span className="font-normal text-gray-500">
+                {" "}
+                - {alert.contact_name}
+              </span>
             )}
           </h4>
         </div>
@@ -515,7 +574,10 @@ export function AlertItem({ alert, onView, onPauseAgent, onDismiss }: AlertItemP
         {alert.violations.length > 0 && (
           <ul className="mb-3 space-y-1">
             {alert.violations.map((violation, i) => (
-              <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
+              <li
+                key={i}
+                className="text-sm text-gray-600 flex items-start gap-2"
+              >
                 <span className="text-gray-400">•</span>
                 {violation}
               </li>
@@ -534,7 +596,7 @@ export function AlertItem({ alert, onView, onPauseAgent, onDismiss }: AlertItemP
             <Eye className="h-4 w-4 mr-1" />
             View Full
           </Button>
-          {alert.risk_level === 'CRITICAL' && (
+          {alert.risk_level === "CRITICAL" && (
             <Button size="sm" variant="destructive" onClick={onPauseAgent}>
               <Pause className="h-4 w-4 mr-1" />
               Pause Agent
@@ -555,7 +617,7 @@ export function AlertItem({ alert, onView, onPauseAgent, onDismiss }: AlertItemP
 
 ```tsx
 // components/dashboard/performance-chart.tsx
-'use client';
+"use client";
 
 import {
   LineChart,
@@ -566,8 +628,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DataPoint {
   date: string;
@@ -583,7 +645,7 @@ interface PerformanceChartProps {
 
 export function PerformanceChart({
   data,
-  title = 'Performance Trend',
+  title = "Performance Trend",
 }: PerformanceChartProps) {
   return (
     <Card>
@@ -597,19 +659,19 @@ export function PerformanceChart({
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 12, fill: '#6B7280' }}
-                tickLine={{ stroke: '#E5E7EB' }}
+                tick={{ fontSize: 12, fill: "#6B7280" }}
+                tickLine={{ stroke: "#E5E7EB" }}
               />
               <YAxis
-                tick={{ fontSize: 12, fill: '#6B7280' }}
-                tickLine={{ stroke: '#E5E7EB' }}
+                tick={{ fontSize: 12, fill: "#6B7280" }}
+                tickLine={{ stroke: "#E5E7EB" }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #E5E7EB',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                  backgroundColor: "white",
+                  border: "1px solid #E5E7EB",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                 }}
               />
               <Legend />
@@ -619,7 +681,7 @@ export function PerformanceChart({
                 name="Avg Risk"
                 stroke="#6366F1"
                 strokeWidth={2}
-                dot={{ fill: '#6366F1', strokeWidth: 2 }}
+                dot={{ fill: "#6366F1", strokeWidth: 2 }}
               />
               <Line
                 type="monotone"
@@ -627,7 +689,7 @@ export function PerformanceChart({
                 name="Critical Incidents"
                 stroke="#EF4444"
                 strokeWidth={2}
-                dot={{ fill: '#EF4444', strokeWidth: 2 }}
+                dot={{ fill: "#EF4444", strokeWidth: 2 }}
               />
               <Line
                 type="monotone"
@@ -635,7 +697,7 @@ export function PerformanceChart({
                 name="Stop Rate %"
                 stroke="#10B981"
                 strokeWidth={2}
-                dot={{ fill: '#10B981', strokeWidth: 2 }}
+                dot={{ fill: "#10B981", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -654,10 +716,10 @@ export function PerformanceChart({
 
 ```tsx
 // components/layout/sidebar.tsx
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Bot,
@@ -665,17 +727,17 @@ import {
   BarChart3,
   Settings,
   ChevronLeft,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Agents', href: '/agents', icon: Bot },
-  { name: 'Alerts', href: '/alerts', icon: Bell },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Agents", href: "/agents", icon: Bot },
+  { name: "Alerts", href: "/alerts", icon: Bell },
+  { name: "Reports", href: "/reports", icon: BarChart3 },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -685,8 +747,8 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300',
-        collapsed ? 'w-16' : 'w-64'
+        "fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300",
+        collapsed ? "w-16" : "w-64",
       )}
     >
       {/* Logo */}
@@ -698,10 +760,13 @@ export function Sidebar() {
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className={cn(collapsed && 'mx-auto')}
+          className={cn(collapsed && "mx-auto")}
         >
           <ChevronLeft
-            className={cn('h-5 w-5 transition-transform', collapsed && 'rotate-180')}
+            className={cn(
+              "h-5 w-5 transition-transform",
+              collapsed && "rotate-180",
+            )}
           />
         </Button>
       </div>
@@ -715,11 +780,11 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive
-                  ? 'bg-primary-50 text-primary-600'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
-                collapsed && 'justify-center px-2'
+                  ? "bg-primary-50 text-primary-600"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                collapsed && "justify-center px-2",
               )}
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -737,19 +802,19 @@ export function Sidebar() {
 
 ```tsx
 // components/layout/header.tsx
-'use client';
+"use client";
 
-import { Bell, User, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Bell, User, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useAlertStore } from '@/stores/alert-store';
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAlertStore } from "@/stores/alert-store";
 
 export function Header() {
   const unreadCount = useAlertStore((state) => state.unreadCount);
@@ -775,7 +840,7 @@ export function Header() {
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
-              {unreadCount > 9 ? '9+' : unreadCount}
+              {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
         </Button>
@@ -812,8 +877,8 @@ export function Header() {
 
 ```typescript
 // stores/alert-store.ts
-import { create } from 'zustand';
-import type { Alert } from '@/lib/types';
+import { create } from "zustand";
+import type { Alert } from "@/lib/types";
 
 interface AlertState {
   alerts: Alert[];
@@ -836,9 +901,7 @@ export const useAlertStore = create<AlertState>((set) => ({
 
   markAsRead: (id) =>
     set((state) => ({
-      alerts: state.alerts.map((a) =>
-        a.id === id ? { ...a, read: true } : a
-      ),
+      alerts: state.alerts.map((a) => (a.id === id ? { ...a, read: true } : a)),
       unreadCount: Math.max(0, state.unreadCount - 1),
     })),
 
@@ -862,21 +925,21 @@ export const useAlertStore = create<AlertState>((set) => ({
 
 ```typescript
 // hooks/use-agents.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import type { Agent, AgentStatistics } from '@/lib/types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import type { Agent, AgentStatistics } from "@/lib/types";
 
 export function useAgents() {
   return useQuery({
-    queryKey: ['agents'],
-    queryFn: () => api.get<Agent[]>('/api/agents'),
+    queryKey: ["agents"],
+    queryFn: () => api.get<Agent[]>("/api/agents"),
     refetchInterval: 30000, // Refresh every 30s
   });
 }
 
 export function useAgentStats(agentId: string) {
   return useQuery({
-    queryKey: ['agent-stats', agentId],
+    queryKey: ["agent-stats", agentId],
     queryFn: () => api.get<AgentStatistics>(`/api/agents/${agentId}/stats`),
     enabled: !!agentId,
   });
@@ -886,10 +949,9 @@ export function usePauseAgent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (agentId: string) =>
-      api.post(`/api/agents/${agentId}/pause`),
+    mutationFn: (agentId: string) => api.post(`/api/agents/${agentId}/pause`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['agents'] });
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
     },
   });
 }
@@ -899,12 +961,12 @@ export function usePauseAgent() {
 
 ```typescript
 // hooks/use-websocket.ts
-import { useEffect, useRef, useCallback } from 'react';
-import { useAlertStore } from '@/stores/alert-store';
-import type { Alert } from '@/lib/types';
+import { useEffect, useRef, useCallback } from "react";
+import { useAlertStore } from "@/stores/alert-store";
+import type { Alert } from "@/lib/types";
 
 interface WebSocketMessage {
-  type: 'alert.new' | 'agent.status' | 'score.update';
+  type: "alert.new" | "agent.status" | "score.update";
   payload: any;
 }
 
@@ -916,31 +978,31 @@ export function useWebSocket(url: string) {
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
-      console.log('WebSocket connected');
+      console.log("WebSocket connected");
     };
 
     ws.onmessage = (event) => {
       const message: WebSocketMessage = JSON.parse(event.data);
 
       switch (message.type) {
-        case 'alert.new':
+        case "alert.new":
           addAlert(message.payload as Alert);
           // Show toast notification
-          if (message.payload.risk_level === 'CRITICAL') {
+          if (message.payload.risk_level === "CRITICAL") {
             // Trigger toast
           }
           break;
-        case 'agent.status':
+        case "agent.status":
           // Update agent status in query cache
           break;
-        case 'score.update':
+        case "score.update":
           // Update dashboard stats
           break;
       }
     };
 
     ws.onclose = () => {
-      console.log('WebSocket disconnected, reconnecting...');
+      console.log("WebSocket disconnected, reconnecting...");
       setTimeout(connect, 3000);
     };
 
@@ -964,7 +1026,7 @@ export function useWebSocket(url: string) {
 
 ```typescript
 // lib/api.ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 class ApiClient {
   private baseUrl: string;
@@ -975,14 +1037,14 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
     });
@@ -1000,20 +1062,20 @@ class ApiClient {
 
   post<T>(endpoint: string, data?: any): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   put<T>(endpoint: string, data: any): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(data),
     });
   }
 
   delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
+    return this.request<T>(endpoint, { method: "DELETE" });
   }
 }
 
@@ -1026,43 +1088,43 @@ export const api = new ApiClient(BASE_URL);
 
 ```typescript
 // tailwind.config.ts
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: ['class'],
+  darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
         primary: {
-          50: '#EEF2FF',
-          100: '#E0E7FF',
-          200: '#C7D2FE',
-          300: '#A5B4FC',
-          400: '#818CF8',
-          500: '#6366F1',
-          600: '#4F46E5',
-          700: '#4338CA',
-          800: '#3730A3',
-          900: '#312E81',
+          50: "#EEF2FF",
+          100: "#E0E7FF",
+          200: "#C7D2FE",
+          300: "#A5B4FC",
+          400: "#818CF8",
+          500: "#6366F1",
+          600: "#4F46E5",
+          700: "#4338CA",
+          800: "#3730A3",
+          900: "#312E81",
         },
         risk: {
-          low: '#10B981',
-          medium: '#F59E0B',
-          high: '#F97316',
-          critical: '#EF4444',
+          low: "#10B981",
+          medium: "#F59E0B",
+          high: "#F97316",
+          critical: "#EF4444",
         },
       },
       animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require("tailwindcss-animate")],
 };
 
 export default config;

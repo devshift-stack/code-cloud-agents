@@ -3,7 +3,13 @@
  */
 
 import { randomUUID } from "crypto";
-import type { CostEntry, UserLimit, UserUsage, LimitStatus, CostSummary } from "./types.ts";
+import type {
+  CostEntry,
+  UserLimit,
+  UserUsage,
+  LimitStatus,
+  CostSummary,
+} from "./types.ts";
 import { calculateCost, formatCost } from "./pricing.ts";
 
 class CostTracker {
@@ -14,11 +20,16 @@ class CostTracker {
   /**
    * Log a cost entry
    */
-  log(entry: Omit<CostEntry, "id" | "timestamp" | "totalTokens" | "costUSD" | "costEUR">): CostEntry {
+  log(
+    entry: Omit<
+      CostEntry,
+      "id" | "timestamp" | "totalTokens" | "costUSD" | "costEUR"
+    >,
+  ): CostEntry {
     const { costUSD, costEUR } = calculateCost(
       entry.model,
       entry.inputTokens,
-      entry.outputTokens
+      entry.outputTokens,
     );
 
     const costEntry: CostEntry = {
@@ -33,7 +44,7 @@ class CostTracker {
     this.costs.set(costEntry.id, costEntry);
 
     console.log(
-      `💰 Cost logged: ${entry.userId} | ${entry.model} | ${formatCost(costUSD, "USD")} / ${formatCost(costEUR, "EUR")}`
+      `💰 Cost logged: ${entry.userId} | ${entry.model} | ${formatCost(costUSD, "USD")} / ${formatCost(costEUR, "EUR")}`,
     );
 
     // Update usage cache
@@ -60,7 +71,7 @@ class CostTracker {
     this.userLimits.set(limit.userId, userLimit);
 
     console.log(
-      `✅ User limit set: ${limit.userId} | ${formatCost(limit.monthlyLimitUSD, "USD")} / ${formatCost(limit.monthlyLimitEUR, "EUR")}`
+      `✅ User limit set: ${limit.userId} | ${formatCost(limit.monthlyLimitUSD, "USD")} / ${formatCost(limit.monthlyLimitEUR, "EUR")}`,
     );
 
     return userLimit;
@@ -184,8 +195,10 @@ class CostTracker {
     const usage = this.getUserUsage(userId);
     if (!usage) return null;
 
-    const percentageUsedUSD = (usage.totalCostUSD / limit.monthlyLimitUSD) * 100;
-    const percentageUsedEUR = (usage.totalCostEUR / limit.monthlyLimitEUR) * 100;
+    const percentageUsedUSD =
+      (usage.totalCostUSD / limit.monthlyLimitUSD) * 100;
+    const percentageUsedEUR =
+      (usage.totalCostEUR / limit.monthlyLimitEUR) * 100;
     const remainingUSD = limit.monthlyLimitUSD - usage.totalCostUSD;
     const remainingEUR = limit.monthlyLimitEUR - usage.totalCostEUR;
 
@@ -213,11 +226,11 @@ class CostTracker {
 
     if (isOverLimit) {
       console.warn(
-        `⚠️  User ${userId} is OVER LIMIT: ${formatCost(usage.totalCostUSD, "USD")} / ${formatCost(limit.monthlyLimitUSD, "USD")}`
+        `⚠️  User ${userId} is OVER LIMIT: ${formatCost(usage.totalCostUSD, "USD")} / ${formatCost(limit.monthlyLimitUSD, "USD")}`,
       );
     } else if (shouldNotify) {
       console.warn(
-        `⚠️  User ${userId} reached ${percentageUsedUSD.toFixed(1)}% of limit`
+        `⚠️  User ${userId} reached ${percentageUsedUSD.toFixed(1)}% of limit`,
       );
     }
 
@@ -229,7 +242,7 @@ class CostTracker {
    */
   getSummary(startDate: string, endDate: string): CostSummary {
     const relevantCosts = Array.from(this.costs.values()).filter(
-      (cost) => cost.timestamp >= startDate && cost.timestamp <= endDate
+      (cost) => cost.timestamp >= startDate && cost.timestamp <= endDate,
     );
 
     const summary: CostSummary = {
@@ -294,7 +307,10 @@ class CostTracker {
    */
   getAllCosts(limit = 1000): CostEntry[] {
     return Array.from(this.costs.values())
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      )
       .slice(0, limit);
   }
 

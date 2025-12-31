@@ -76,7 +76,10 @@ function initRedis(): void {
     });
 
     redisClient.on("error", (err: Error) => {
-      console.warn("⚠️ Redis connection error, falling back to in-memory rate limiting:", err.message);
+      console.warn(
+        "⚠️ Redis connection error, falling back to in-memory rate limiting:",
+        err.message,
+      );
       redisAvailable = false;
     });
 
@@ -91,7 +94,9 @@ function initRedis(): void {
       redisAvailable = false;
     });
   } catch (err) {
-    console.log("ℹ️ Redis initialization failed, using in-memory rate limiting");
+    console.log(
+      "ℹ️ Redis initialization failed, using in-memory rate limiting",
+    );
     redisAvailable = false;
   }
 }
@@ -121,7 +126,8 @@ setInterval(() => {
  * Uses IP address as identifier
  */
 function getRateLimitKey(req: Request, prefix: string): string {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
+  const ip =
+    req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
   const ipStr = Array.isArray(ip) ? ip[0] : ip;
   return `ratelimit:${prefix}:${ipStr}`;
 }
@@ -132,7 +138,7 @@ function getRateLimitKey(req: Request, prefix: string): string {
 async function checkRateLimitRedis(
   key: string,
   maxRequests: number,
-  windowMs: number
+  windowMs: number,
 ): Promise<{ allowed: boolean; count: number; resetAt: number }> {
   if (!redisClient || !redisAvailable) {
     throw new Error("Redis not available");
@@ -168,7 +174,7 @@ async function checkRateLimitRedis(
 function checkRateLimitMemory(
   key: string,
   maxRequests: number,
-  windowMs: number
+  windowMs: number,
 ): { allowed: boolean; count: number; resetAt: number } {
   const now = Date.now();
   let entry = rateLimitStore.get(key);
@@ -200,7 +206,11 @@ function checkRateLimitMemory(
 export function createRateLimiter(config: RateLimitConfig) {
   const { maxRequests, windowMs, message, keyPrefix = "default" } = config;
 
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     const key = getRateLimitKey(req, keyPrefix);
 
     try {
@@ -216,7 +226,10 @@ export function createRateLimiter(config: RateLimitConfig) {
 
       // Set rate limit headers
       res.setHeader("X-RateLimit-Limit", maxRequests);
-      res.setHeader("X-RateLimit-Remaining", Math.max(0, maxRequests - result.count));
+      res.setHeader(
+        "X-RateLimit-Remaining",
+        Math.max(0, maxRequests - result.count),
+      );
       res.setHeader("X-RateLimit-Reset", Math.ceil(result.resetAt / 1000));
 
       if (!result.allowed) {
@@ -301,7 +314,10 @@ export const apiRateLimiter = createRateLimiter({
  * Manually reset rate limit for a request
  * Useful for testing or manual intervention
  */
-export async function resetRateLimit(req: Request, prefix: string): Promise<void> {
+export async function resetRateLimit(
+  req: Request,
+  prefix: string,
+): Promise<void> {
   const key = getRateLimitKey(req, prefix);
 
   if (redisAvailable && redisClient) {
@@ -322,8 +338,13 @@ export async function getRateLimitStatus(
   req: Request,
   prefix: string,
   maxRequests: number,
-  windowMs: number
-): Promise<{ count: number; limit: number; resetAt: number; remaining: number } | null> {
+  windowMs: number,
+): Promise<{
+  count: number;
+  limit: number;
+  resetAt: number;
+  remaining: number;
+} | null> {
   const key = getRateLimitKey(req, prefix);
 
   if (redisAvailable && redisClient) {

@@ -72,7 +72,9 @@ export interface GitHubIssueCommentJobData {
 async function handlePushEvent(job: QueueJob, db: Database): Promise<void> {
   const data = job.data as unknown as GitHubPushJobData;
 
-  console.log(`📦 Processing GitHub push event: ${data.repository} (${data.ref})`);
+  console.log(
+    `📦 Processing GitHub push event: ${data.repository} (${data.ref})`,
+  );
   console.log(`   Commits: ${data.commits.length}`);
 
   // Log to audit trail
@@ -109,10 +111,15 @@ async function handlePushEvent(job: QueueJob, db: Database): Promise<void> {
  * Handles GitHub pull request events
  * Processes PR opened, closed, merged, review requested, etc.
  */
-async function handlePullRequestEvent(job: QueueJob, db: Database): Promise<void> {
+async function handlePullRequestEvent(
+  job: QueueJob,
+  db: Database,
+): Promise<void> {
   const data = job.data as unknown as GitHubPullRequestJobData;
 
-  console.log(`🔀 Processing GitHub PR event: ${data.repository} #${data.pullRequest.number} (${data.action})`);
+  console.log(
+    `🔀 Processing GitHub PR event: ${data.repository} #${data.pullRequest.number} (${data.action})`,
+  );
 
   // Log to audit trail
   db.createAuditEntry({
@@ -150,7 +157,9 @@ async function handlePullRequestEvent(job: QueueJob, db: Database): Promise<void
 async function handleIssuesEvent(job: QueueJob, db: Database): Promise<void> {
   const data = job.data as unknown as GitHubIssuesJobData;
 
-  console.log(`🐛 Processing GitHub issue event: ${data.repository} #${data.issue.number} (${data.action})`);
+  console.log(
+    `🐛 Processing GitHub issue event: ${data.repository} #${data.issue.number} (${data.action})`,
+  );
 
   // Log to audit trail
   db.createAuditEntry({
@@ -185,10 +194,15 @@ async function handleIssuesEvent(job: QueueJob, db: Database): Promise<void> {
  * Handles GitHub issue comment events
  * Processes comments created, edited, deleted
  */
-async function handleIssueCommentEvent(job: QueueJob, db: Database): Promise<void> {
+async function handleIssueCommentEvent(
+  job: QueueJob,
+  db: Database,
+): Promise<void> {
   const data = job.data as unknown as GitHubIssueCommentJobData;
 
-  console.log(`💬 Processing GitHub comment event: ${data.repository} #${data.issue.number} (${data.action})`);
+  console.log(
+    `💬 Processing GitHub comment event: ${data.repository} #${data.issue.number} (${data.action})`,
+  );
 
   // Log to audit trail
   db.createAuditEntry({

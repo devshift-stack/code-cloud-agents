@@ -1,7 +1,9 @@
 # UI BLUEPRINT (OTOP) – Code Cloud Agents
+
 Basis: backend/swagger.yaml (Tags: Health, Tasks, Audit, Enforcement, Chat, Demo, Slack)
 
 Regeln:
+
 - Jeder Screen: loading/error/empty/success
 - Delete gibt es aktuell nicht in OpenAPI → UI zeigt kein Delete (sonst Phantom-Button)
 - Jeder Button/Input: data-otop-id + data-testid
@@ -10,9 +12,11 @@ Regeln:
 ---
 
 ## SECTION: Health
+
 ### ENTITY: System
 
 #### SCREEN: API Info
+
 - PURPOSE: Zeigt API-Metadaten (Version, Status, Supervisor Mode)
 - UI ELEMENTS:
   - Card: Name, Version, Status, Supervisor, Mode
@@ -30,6 +34,7 @@ Regeln:
   - success: zeigt Daten + success toast optional
 
 #### SCREEN: Health Status
+
 - PURPOSE: Zeigt System Health (DB, Queue, Uptime)
 - UI ELEMENTS:
   - Status indicator (healthy / degraded)
@@ -46,9 +51,11 @@ Regeln:
 ---
 
 ## SECTION: Tasks
+
 ### ENTITY: Task
 
 #### SCREEN: Task List
+
 - PURPOSE: Liste aller Tasks + Status + Priorität + Assignee
 - UI ELEMENTS:
   - Search input (title/description)
@@ -80,6 +87,7 @@ Regeln:
 - STATES: loading/error/empty/success
 
 #### SCREEN: Task Create (Modal)
+
 - PURPOSE: Task erstellen und an Enforcement Gate übergeben
 - REQUIRED FIELDS:
   - title (min 1, max 200)
@@ -121,6 +129,7 @@ Regeln:
   - success: toast “Task created”
 
 #### SCREEN: Task Detail
+
 - PURPOSE: Task Details + Status (und Logs wenn im Schema)
 - UI ELEMENTS:
   - Read-only fields: title, description, priority, status, assignee
@@ -137,6 +146,7 @@ Regeln:
 - STATES: loading/error/empty/success
 
 #### SCREEN: Task Update (Modal)
+
 - PURPOSE: Task bearbeiten
 - UI ELEMENTS:
   - Form wie Create (falls Schema gleich)
@@ -155,9 +165,11 @@ Regeln:
 ---
 
 ## SECTION: Audit
+
 ### ENTITY: AuditLog
 
 #### SCREEN: Audit List
+
 - PURPOSE: Audit Logs anzeigen
 - UI ELEMENTS:
   - Search input
@@ -175,6 +187,7 @@ Regeln:
 - STATES: loading/error/empty/success
 
 #### SCREEN: Audit Detail
+
 - PURPOSE: Einzelnen Audit Eintrag anzeigen
 - UI ELEMENTS:
   - JSON viewer (payload) + Meta fields
@@ -189,9 +202,11 @@ Regeln:
 ---
 
 ## SECTION: Enforcement
+
 ### ENTITY: BlockedTask
 
 #### SCREEN: Blocked Tasks
+
 - PURPOSE: Tasks anzeigen, die Approval brauchen
 - UI ELEMENTS:
   - Table/List: task id, title, score, reason
@@ -211,6 +226,7 @@ Regeln:
 - STATES: loading/error/empty/success
 
 #### SCREEN: Approve Task (Modal)
+
 - PURPOSE: Human approval mit Kommentar
 - UI ELEMENTS:
   - Comment textarea
@@ -230,6 +246,7 @@ Regeln:
 - STATES: loading/error/success
 
 #### SCREEN: Reject Task (Modal)
+
 - PURPOSE: Human reject mit Kommentar
 - UI ELEMENTS:
   - Comment textarea
@@ -251,9 +268,11 @@ Regeln:
 ---
 
 ## SECTION: Chat
+
 ### ENTITY: Chat
 
 #### SCREEN: Chat Console
+
 - PURPOSE: Nachricht senden + Antwort anzeigen
 - UI ELEMENTS:
   - Agent select (optional)
@@ -275,6 +294,7 @@ Regeln:
 - STATES: loading/error/empty/success
 
 #### SCREEN: Agents List
+
 - PURPOSE: verfügbare Chat Agents anzeigen
 - UI ELEMENTS:
   - List of agents + Refresh
@@ -289,9 +309,11 @@ Regeln:
 ---
 
 ## SECTION: Demo
+
 ### ENTITY: DemoInvite
 
 #### SCREEN: Create Invite (Modal)
+
 - PURPOSE: Demo Invite erzeugen
 - UI ELEMENTS:
   - Form (gemäß Schema) + Submit/Cancel
@@ -307,6 +329,7 @@ Regeln:
 - STATES: loading/error/success
 
 #### SCREEN: Redeem Invite
+
 - PURPOSE: Invite Code einlösen
 - UI ELEMENTS:
   - Code input + Redeem button
@@ -322,6 +345,7 @@ Regeln:
 - STATES: loading/error/success
 
 #### SCREEN: Demo Stats
+
 - PURPOSE: Demo Stats anzeigen
 - UI ELEMENTS:
   - KPI Cards + Refresh
@@ -334,6 +358,7 @@ Regeln:
 - STATES: loading/error/empty/success
 
 #### SCREEN: Demo User Detail
+
 - PURPOSE: Demo User Infos anzeigen (by userid)
 - UI ELEMENTS:
   - userid input (optional) + Details + Back
@@ -351,9 +376,11 @@ Regeln:
 ---
 
 ## SECTION: Slack
+
 ### ENTITY: SlackIntegration
 
 #### SCREEN: Slack Events (Info/Status)
+
 - PURPOSE: Zeigt Slack Events Endpoint + Setup Hinweise. (Receive Endpoint ist normalerweise kein UI Button)
 - UI ELEMENTS:
   - Info card + Endpoint URL
@@ -368,6 +395,7 @@ Regeln:
 - STATES: success only (kein echter fetch, außer du baust später status endpoint)
 
 ### ENTITY: WebhookManagement (TODO)
+
 - NOTE: In OpenAPI fehlen Management-Endpunkte (list/create/edit/test/logs).
 - Wenn du Webhook-UI willst, musst du diese Endpoints ergänzen:
   - GET /api/slack/webhooks

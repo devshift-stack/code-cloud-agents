@@ -10,16 +10,19 @@ Zeige Status für: $ARGUMENTS (oder alle Agents)
 ## Prüfungen
 
 ### 1. Agent-Konfiguration
+
 - Supervisor-Hierarchie intakt?
 - STOP-Score Berechnung aktiv?
 - Evidence-Logging aktiviert?
 
 ### 2. Aktive Sessions
+
 - Laufende Aufträge
 - Pending Approvals
 - STOP_REQUIRED Events
 
 ### 3. Performance
+
 - Durchschnittlicher STOP-Score
 - Erfolgsrate
 - Letzte Aktivität

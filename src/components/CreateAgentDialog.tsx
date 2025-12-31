@@ -1,10 +1,23 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Button } from './ui/button';
-import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Button } from "./ui/button";
+import { useState } from "react";
 
 interface CreateAgentDialogProps {
   open: boolean;
@@ -17,19 +30,23 @@ interface CreateAgentDialogProps {
   }) => void;
 }
 
-export function CreateAgentDialog({ open, onOpenChange, onCreate }: CreateAgentDialogProps) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [language, setLanguage] = useState('python');
-  const [code, setCode] = useState('');
+export function CreateAgentDialog({
+  open,
+  onOpenChange,
+  onCreate,
+}: CreateAgentDialogProps) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [language, setLanguage] = useState("python");
+  const [code, setCode] = useState("");
 
   const handleCreate = () => {
     if (name && description && code) {
       onCreate({ name, description, language, code });
-      setName('');
-      setDescription('');
-      setLanguage('python');
-      setCode('');
+      setName("");
+      setDescription("");
+      setLanguage("python");
+      setCode("");
       onOpenChange(false);
     }
   };
@@ -92,10 +109,19 @@ export function CreateAgentDialog({ open, onOpenChange, onCreate }: CreateAgentD
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} data-testid="cloudagents.agent.create.cancel.button">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            data-testid="cloudagents.agent.create.cancel.button"
+          >
             Cancel
           </Button>
-          <Button onClick={handleCreate} data-testid="cloudagents.agent.create.submit.button">Create Agent</Button>
+          <Button
+            onClick={handleCreate}
+            data-testid="cloudagents.agent.create.submit.button"
+          >
+            Create Agent
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -38,7 +38,7 @@ function createMockResponse() {
 function createMockRequest(
   params: Record<string, string> = {},
   query: Record<string, string> = {},
-  body: any = {}
+  body: any = {},
 ): Request {
   return {
     params,
@@ -76,7 +76,9 @@ describe("GitHub REST API", () => {
       const res = createMockResponse();
 
       const routes = (router as any).stack;
-      const reposRoute = routes.find((r: any) => r.route?.path === "/repos" && r.route?.methods?.get);
+      const reposRoute = routes.find(
+        (r: any) => r.route?.path === "/repos" && r.route?.methods?.get,
+      );
       const handler = reposRoute?.route?.stack[0]?.handle;
 
       if (handler) {
@@ -96,7 +98,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const repoRoute = routes.find(
-        (r: any) => r.route?.path === "/repos/:owner/:repo"
+        (r: any) => r.route?.path === "/repos/:owner/:repo",
       );
       const handler = repoRoute?.route?.stack[0]?.handle;
 
@@ -115,7 +117,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const repoRoute = routes.find(
-        (r: any) => r.route?.path === "/repos/:owner/:repo"
+        (r: any) => r.route?.path === "/repos/:owner/:repo",
       );
       const handler = repoRoute?.route?.stack[0]?.handle;
 
@@ -136,7 +138,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const issuesRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get,
       );
       const handler = issuesRoute?.route?.stack[0]?.handle;
 
@@ -156,7 +158,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const issuesRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get,
       );
       const handler = issuesRoute?.route?.stack[0]?.handle;
 
@@ -177,7 +179,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const createIssueRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post,
       );
       const handler = createIssueRoute?.route?.stack[0]?.handle;
 
@@ -199,13 +201,13 @@ describe("GitHub REST API", () => {
         {
           repo: "invalid",
           title: "Test Issue",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createIssueRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post,
       );
       const handler = createIssueRoute?.route?.stack[0]?.handle;
 
@@ -225,13 +227,13 @@ describe("GitHub REST API", () => {
         {
           repo: "owner/repo",
           title: "", // Empty title
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createIssueRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post,
       );
       const handler = createIssueRoute?.route?.stack[0]?.handle;
 
@@ -252,7 +254,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const updateRoute = routes.find(
-        (r: any) => r.route?.path === "/issues/:issueNumber"
+        (r: any) => r.route?.path === "/issues/:issueNumber",
       );
       const handler = updateRoute?.route?.stack[0]?.handle;
 
@@ -274,7 +276,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const updateRoute = routes.find(
-        (r: any) => r.route?.path === "/issues/:issueNumber"
+        (r: any) => r.route?.path === "/issues/:issueNumber",
       );
       const handler = updateRoute?.route?.stack[0]?.handle;
 
@@ -298,13 +300,13 @@ describe("GitHub REST API", () => {
         {
           repo: "owner/repo",
           state: "invalid-state",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const updateRoute = routes.find(
-        (r: any) => r.route?.path === "/issues/:issueNumber"
+        (r: any) => r.route?.path === "/issues/:issueNumber",
       );
       const handler = updateRoute?.route?.stack[0]?.handle;
 
@@ -328,7 +330,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const pullsRoute = routes.find(
-        (r: any) => r.route?.path === "/pulls" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/pulls" && r.route?.methods?.get,
       );
       const handler = pullsRoute?.route?.stack[0]?.handle;
 
@@ -348,7 +350,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const createPRRoute = routes.find(
-        (r: any) => r.route?.path === "/pulls" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/pulls" && r.route?.methods?.post,
       );
       const handler = createPRRoute?.route?.stack[0]?.handle;
 
@@ -370,13 +372,13 @@ describe("GitHub REST API", () => {
           title: "Test PR",
           head: "",
           base: "",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createPRRoute = routes.find(
-        (r: any) => r.route?.path === "/pulls" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/pulls" && r.route?.methods?.post,
       );
       const handler = createPRRoute?.route?.stack[0]?.handle;
 
@@ -397,7 +399,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const commentsRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.get,
       );
       const handler = commentsRoute?.route?.stack[0]?.handle;
 
@@ -417,7 +419,7 @@ describe("GitHub REST API", () => {
 
       const routes = (router as any).stack;
       const createCommentRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post,
       );
       const handler = createCommentRoute?.route?.stack[0]?.handle;
 
@@ -438,13 +440,13 @@ describe("GitHub REST API", () => {
           repo: "owner/repo",
           issue_number: -1,
           body: "Test comment",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createCommentRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post,
       );
       const handler = createCommentRoute?.route?.stack[0]?.handle;
 
@@ -465,13 +467,13 @@ describe("GitHub REST API", () => {
           repo: "owner/repo",
           issue_number: 1,
           body: "",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createCommentRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post,
       );
       const handler = createCommentRoute?.route?.stack[0]?.handle;
 

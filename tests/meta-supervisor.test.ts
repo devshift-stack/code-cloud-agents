@@ -25,7 +25,10 @@ describe("MetaSupervisor", () => {
 
       assert.ok("test-system" in metrics.systemHealth);
       assert.strictEqual(metrics.systemHealth["test-system"].status, "healthy");
-      assert.strictEqual(metrics.systemHealth["test-system"].taskCompletionRate, 1.0);
+      assert.strictEqual(
+        metrics.systemHealth["test-system"].taskCompletionRate,
+        1.0,
+      );
       assert.strictEqual(metrics.systemHealth["test-system"].stopRate, 0);
     });
 
@@ -62,7 +65,9 @@ describe("MetaSupervisor", () => {
       supervisor.updateHealth("code-cloud-agents", { queueDepth: 15 });
       const decision = supervisor.route("task");
 
-      assert.ok(decision.monitoringNotes.some((n) => n.includes("queue depth")));
+      assert.ok(
+        decision.monitoringNotes.some((n) => n.includes("queue depth")),
+      );
     });
 
     it("should add monitoring notes for high stop rate", () => {

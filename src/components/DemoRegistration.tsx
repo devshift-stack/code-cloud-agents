@@ -4,14 +4,28 @@
  * Public registration page for demo invites
  */
 
-import { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription } from './ui/alert';
-import { CheckCircle2, XCircle, Loader2, Gift, Clock, MessageSquare, DollarSign } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Alert, AlertDescription } from "./ui/alert";
+import {
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Gift,
+  Clock,
+  MessageSquare,
+  DollarSign,
+} from "lucide-react";
+import { toast } from "sonner";
 
 interface InviteInfo {
   code: string;
@@ -28,17 +42,20 @@ interface Props {
   onSuccess?: (userId: string) => void;
 }
 
-export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) {
-  const [step, setStep] = useState<'code' | 'details'>('code');
-  const [inviteCode, setInviteCode] = useState(initialCode || '');
+export function DemoRegistration({
+  inviteCode: initialCode,
+  onSuccess,
+}: Props) {
+  const [step, setStep] = useState<"code" | "details">("code");
+  const [inviteCode, setInviteCode] = useState(initialCode || "");
   const [inviteInfo, setInviteInfo] = useState<InviteInfo | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Form fields
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
 
   // Load invite info if code provided
   useEffect(() => {
@@ -49,26 +66,26 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
 
   async function loadInviteInfo(code: string) {
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       const response = await fetch(`/api/demo/invites/${code}`);
 
       if (!response.ok) {
-        throw new Error('Invite code not found or expired');
+        throw new Error("Invite code not found or expired");
       }
 
       const data = await response.json();
       setInviteInfo(data);
 
       if (!data.available) {
-        setError('This invite code is no longer available');
+        setError("This invite code is no longer available");
       } else {
-        setStep('details');
+        setStep("details");
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load invite');
-      toast.error('Invalid invite code');
+      setError(err.message || "Failed to load invite");
+      toast.error("Invalid invite code");
     } finally {
       setLoading(false);
     }
@@ -77,7 +94,7 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
   async function handleSubmitCode(e: React.FormEvent) {
     e.preventDefault();
     if (!inviteCode.trim()) {
-      setError('Please enter an invite code');
+      setError("Please enter an invite code");
       return;
     }
     await loadInviteInfo(inviteCode.trim());
@@ -85,30 +102,30 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validation
     if (!email || !password) {
-      setError('Email and password are required');
+      setError("Email and password are required");
       return;
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError("Password must be at least 8 characters");
       return;
     }
 
     if (password !== passwordConfirm) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await fetch('/api/demo/redeem', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/demo/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: inviteCode,
           email,
@@ -118,25 +135,25 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Registration failed');
+        throw new Error(data.error || "Registration failed");
       }
 
       const data = await response.json();
 
-      toast.success('Demo account created successfully!');
+      toast.success("Demo account created successfully!");
 
       if (onSuccess) {
         onSuccess(data.user.id);
       }
     } catch (err: any) {
-      setError(err.message || 'Registration failed');
-      toast.error(err.message || 'Registration failed');
+      setError(err.message || "Registration failed");
+      toast.error(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   }
 
-  if (step === 'code') {
+  if (step === "code") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
         <Card className="w-full max-w-md">
@@ -174,14 +191,19 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
                 </Alert>
               )}
 
-              <Button type="submit" className="w-full" disabled={loading} data-testid="cloudagents.demo.invite.continue.button">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+                data-testid="cloudagents.demo.invite.continue.button"
+              >
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Checking...
                   </>
                 ) : (
-                  'Continue'
+                  "Continue"
                 )}
               </Button>
             </form>
@@ -199,7 +221,9 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
             <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
           </div>
           <CardTitle className="text-2xl">Create Demo Account</CardTitle>
-          <CardDescription>Complete your registration to activate your demo</CardDescription>
+          <CardDescription>
+            Complete your registration to activate your demo
+          </CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -281,21 +305,26 @@ export function DemoRegistration({ inviteCode: initialCode, onSuccess }: Props) 
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setStep('code')}
+                onClick={() => setStep("code")}
                 disabled={loading}
                 className="flex-1"
                 data-testid="cloudagents.demo.register.back.button"
               >
                 Back
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1" data-testid="cloudagents.demo.register.submit.button">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="flex-1"
+                data-testid="cloudagents.demo.register.submit.button"
+              >
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Creating...
                   </>
                 ) : (
-                  'Create Account'
+                  "Create Account"
                 )}
               </Button>
             </div>

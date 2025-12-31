@@ -30,7 +30,7 @@ export async function exampleStopScoreAlert() {
     const result = await notifications.sendStopScoreAlert(
       "Database Migration Task",
       stopScore,
-      "Missing test coverage and pricing claims without verification"
+      "Missing test coverage and pricing claims without verification",
     );
 
     if (result.success) {
@@ -68,7 +68,7 @@ export async function exampleSystemHealthMonitoring() {
   if (systemHealth) {
     const result = await notifications.sendSystemHealthAlert(
       "code-cloud-agents",
-      systemHealth
+      systemHealth,
     );
 
     if (result.success) {
@@ -104,7 +104,7 @@ export async function exampleTaskCompletion() {
   // Send notification
   const result = await notifications.sendTaskCompletionNotification(
     "TASK-123",
-    proposal
+    proposal,
   );
 
   if (result.success) {
@@ -140,12 +140,18 @@ export async function exampleCompleteWorkflow() {
 
   // Step 3: Detect risk
   assistant.recordRisk("No rollback plan for failed payments");
-  const stopScore = computeStopScore(["MISSING_DEPLOY_CONFIG", "COST_OR_LOAD_RISK"]);
+  const stopScore = computeStopScore([
+    "MISSING_DEPLOY_CONFIG",
+    "COST_OR_LOAD_RISK",
+  ]);
 
   // Step 4: Send STOP alert
   if (stopScore.stopRequired) {
     console.log(`\n🛑 STOP Required: Score ${stopScore.score}/100`);
-    await notifications.sendStopScoreAlert("FEAT-456: Payment Integration", stopScore);
+    await notifications.sendStopScoreAlert(
+      "FEAT-456: Payment Integration",
+      stopScore,
+    );
   }
 
   // Step 5: Complete task
@@ -173,21 +179,21 @@ export async function exampleCustomMessages() {
   await notifications.sendCustomMessage(
     "Deployment Started",
     "Production deployment initiated by Engineering Lead Supervisor\n\n*Target:* production-eu\n*Version:* v2.1.0\n*ETA:* 5 minutes",
-    "info"
+    "info",
   );
 
   // Warning message
   await notifications.sendCustomMessage(
     "High Memory Usage",
     "System memory usage at 85%\n\n*Action:* Monitoring for next 10 minutes\n*Threshold:* 90%",
-    "warning"
+    "warning",
   );
 
   // Error message
   await notifications.sendCustomMessage(
     "Deployment Failed",
     "Production deployment failed\n\n*Error:* Database migration timeout\n*Action:* Rolling back to v2.0.9",
-    "error"
+    "error",
   );
 
   console.log("✅ Custom messages sent");
@@ -216,11 +222,13 @@ export async function exampleMonitoringLoop() {
         await notifications.sendCustomMessage(
           "System Alert",
           alert,
-          alert.includes("CRITICAL") ? "error" : "warning"
+          alert.includes("CRITICAL") ? "error" : "warning",
         );
       }
     } else {
-      console.log(`✅ All systems healthy - Avg STOP Score: ${metrics.avgStopScore.toFixed(1)}`);
+      console.log(
+        `✅ All systems healthy - Avg STOP Score: ${metrics.avgStopScore.toFixed(1)}`,
+      );
     }
   }, 60000); // Every 60 seconds
 }

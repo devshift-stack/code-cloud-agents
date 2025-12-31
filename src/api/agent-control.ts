@@ -14,7 +14,12 @@ import { z } from "zod";
 import { requireAdmin } from "../auth/middleware.js";
 
 // Agent types and statuses
-export type AgentStatus = "online" | "offline" | "starting" | "stopping" | "error";
+export type AgentStatus =
+  | "online"
+  | "offline"
+  | "starting"
+  | "stopping"
+  | "error";
 
 export interface Agent {
   id: number;
@@ -33,76 +38,96 @@ export interface Agent {
 
 // In-memory agent store (in production, this would be in a database)
 const agents: Map<number, Agent> = new Map([
-  [0, {
-    id: 0,
-    name: "Agent 0",
-    role: "Lead Developer & Orchestrator",
-    status: "online",
-    currentTask: "Koordiniert Team, macht Code Reviews",
-    completedTasks: 13,
-    uptime: 86400, // 1 day
-    lastActivity: new Date().toISOString(),
-    metadata: {
-      version: "1.0.0",
-      capabilities: ["coordination", "code-review", "deployment", "architecture"],
+  [
+    0,
+    {
+      id: 0,
+      name: "Agent 0",
+      role: "Lead Developer & Orchestrator",
+      status: "online",
+      currentTask: "Koordiniert Team, macht Code Reviews",
+      completedTasks: 13,
+      uptime: 86400, // 1 day
+      lastActivity: new Date().toISOString(),
+      metadata: {
+        version: "1.0.0",
+        capabilities: [
+          "coordination",
+          "code-review",
+          "deployment",
+          "architecture",
+        ],
+      },
     },
-  }],
-  [1, {
-    id: 1,
-    name: "Agent 1",
-    role: "Frontend Developer",
-    status: "offline",
-    currentTask: null,
-    completedTasks: 0,
-    uptime: 0,
-    lastActivity: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-    metadata: {
-      version: "1.0.0",
-      capabilities: ["react", "typescript", "ui-design", "testing"],
+  ],
+  [
+    1,
+    {
+      id: 1,
+      name: "Agent 1",
+      role: "Frontend Developer",
+      status: "offline",
+      currentTask: null,
+      completedTasks: 0,
+      uptime: 0,
+      lastActivity: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["react", "typescript", "ui-design", "testing"],
+      },
     },
-  }],
-  [2, {
-    id: 2,
-    name: "Agent 2",
-    role: "Security & Backend Infrastructure",
-    status: "offline",
-    currentTask: null,
-    completedTasks: 0,
-    uptime: 0,
-    lastActivity: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-    metadata: {
-      version: "1.0.0",
-      capabilities: ["jwt", "authentication", "security", "infrastructure"],
+  ],
+  [
+    2,
+    {
+      id: 2,
+      name: "Agent 2",
+      role: "Security & Backend Infrastructure",
+      status: "offline",
+      currentTask: null,
+      completedTasks: 0,
+      uptime: 0,
+      lastActivity: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["jwt", "authentication", "security", "infrastructure"],
+      },
     },
-  }],
-  [3, {
-    id: 3,
-    name: "Agent 3",
-    role: "Integrations & APIs",
-    status: "online",
-    currentTask: "Implementiert Agent Control API",
-    completedTasks: 2,
-    uptime: 3600, // 1 hour
-    lastActivity: new Date().toISOString(),
-    metadata: {
-      version: "1.0.0",
-      capabilities: ["github", "linear", "slack", "webhooks", "rest-api"],
+  ],
+  [
+    3,
+    {
+      id: 3,
+      name: "Agent 3",
+      role: "Integrations & APIs",
+      status: "online",
+      currentTask: "Implementiert Agent Control API",
+      completedTasks: 2,
+      uptime: 3600, // 1 hour
+      lastActivity: new Date().toISOString(),
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["github", "linear", "slack", "webhooks", "rest-api"],
+      },
     },
-  }],
-  [4, {
-    id: 4,
-    name: "Agent 4",
-    role: "Documentation & DevOps",
-    status: "offline",
-    currentTask: null,
-    completedTasks: 0,
-    uptime: 0,
-    lastActivity: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-    metadata: {
-      version: "1.0.0",
-      capabilities: ["swagger", "postman", "devops", "ci-cd"],
+  ],
+  [
+    4,
+    {
+      id: 4,
+      name: "Agent 4",
+      role: "Documentation & DevOps",
+      status: "offline",
+      currentTask: null,
+      completedTasks: 0,
+      uptime: 0,
+      lastActivity: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+      metadata: {
+        version: "1.0.0",
+        capabilities: ["swagger", "postman", "devops", "ci-cd"],
+      },
     },
-  }],
+  ],
 ]);
 
 // Agent logs storage (in-memory for now)
@@ -111,76 +136,96 @@ const agentLogs: Map<number, string[]> = new Map();
 // Helper function to get default agents (for testing)
 function getDefaultAgents(): Map<number, Agent> {
   return new Map([
-    [0, {
-      id: 0,
-      name: "Agent 0",
-      role: "Lead Developer & Orchestrator",
-      status: "online",
-      currentTask: "Koordiniert Team, macht Code Reviews",
-      completedTasks: 13,
-      uptime: 86400,
-      lastActivity: new Date().toISOString(),
-      metadata: {
-        version: "1.0.0",
-        capabilities: ["coordination", "code-review", "deployment", "architecture"],
+    [
+      0,
+      {
+        id: 0,
+        name: "Agent 0",
+        role: "Lead Developer & Orchestrator",
+        status: "online",
+        currentTask: "Koordiniert Team, macht Code Reviews",
+        completedTasks: 13,
+        uptime: 86400,
+        lastActivity: new Date().toISOString(),
+        metadata: {
+          version: "1.0.0",
+          capabilities: [
+            "coordination",
+            "code-review",
+            "deployment",
+            "architecture",
+          ],
+        },
       },
-    }],
-    [1, {
-      id: 1,
-      name: "Agent 1",
-      role: "Frontend Developer",
-      status: "offline",
-      currentTask: null,
-      completedTasks: 0,
-      uptime: 0,
-      lastActivity: new Date(Date.now() - 3600000).toISOString(),
-      metadata: {
-        version: "1.0.0",
-        capabilities: ["react", "typescript", "ui-design", "testing"],
+    ],
+    [
+      1,
+      {
+        id: 1,
+        name: "Agent 1",
+        role: "Frontend Developer",
+        status: "offline",
+        currentTask: null,
+        completedTasks: 0,
+        uptime: 0,
+        lastActivity: new Date(Date.now() - 3600000).toISOString(),
+        metadata: {
+          version: "1.0.0",
+          capabilities: ["react", "typescript", "ui-design", "testing"],
+        },
       },
-    }],
-    [2, {
-      id: 2,
-      name: "Agent 2",
-      role: "Security & Backend Infrastructure",
-      status: "offline",
-      currentTask: null,
-      completedTasks: 0,
-      uptime: 0,
-      lastActivity: new Date(Date.now() - 7200000).toISOString(),
-      metadata: {
-        version: "1.0.0",
-        capabilities: ["jwt", "authentication", "security", "infrastructure"],
+    ],
+    [
+      2,
+      {
+        id: 2,
+        name: "Agent 2",
+        role: "Security & Backend Infrastructure",
+        status: "offline",
+        currentTask: null,
+        completedTasks: 0,
+        uptime: 0,
+        lastActivity: new Date(Date.now() - 7200000).toISOString(),
+        metadata: {
+          version: "1.0.0",
+          capabilities: ["jwt", "authentication", "security", "infrastructure"],
+        },
       },
-    }],
-    [3, {
-      id: 3,
-      name: "Agent 3",
-      role: "Integrations & APIs",
-      status: "online",
-      currentTask: "Implementiert Agent Control API",
-      completedTasks: 2,
-      uptime: 3600,
-      lastActivity: new Date().toISOString(),
-      metadata: {
-        version: "1.0.0",
-        capabilities: ["github", "linear", "slack", "webhooks", "rest-api"],
+    ],
+    [
+      3,
+      {
+        id: 3,
+        name: "Agent 3",
+        role: "Integrations & APIs",
+        status: "online",
+        currentTask: "Implementiert Agent Control API",
+        completedTasks: 2,
+        uptime: 3600,
+        lastActivity: new Date().toISOString(),
+        metadata: {
+          version: "1.0.0",
+          capabilities: ["github", "linear", "slack", "webhooks", "rest-api"],
+        },
       },
-    }],
-    [4, {
-      id: 4,
-      name: "Agent 4",
-      role: "Documentation & DevOps",
-      status: "offline",
-      currentTask: null,
-      completedTasks: 0,
-      uptime: 0,
-      lastActivity: new Date(Date.now() - 86400000).toISOString(),
-      metadata: {
-        version: "1.0.0",
-        capabilities: ["swagger", "postman", "devops", "ci-cd"],
+    ],
+    [
+      4,
+      {
+        id: 4,
+        name: "Agent 4",
+        role: "Documentation & DevOps",
+        status: "offline",
+        currentTask: null,
+        completedTasks: 0,
+        uptime: 0,
+        lastActivity: new Date(Date.now() - 86400000).toISOString(),
+        metadata: {
+          version: "1.0.0",
+          capabilities: ["swagger", "postman", "devops", "ci-cd"],
+        },
       },
-    }],
+    ],
   ]);
 }
 
@@ -196,9 +241,7 @@ export function resetAgents(): void {
 
 // Initialize logs for all agents
 agents.forEach((_, id) => {
-  agentLogs.set(id, [
-    `[${new Date().toISOString()}] Agent ${id} initialized`,
-  ]);
+  agentLogs.set(id, [`[${new Date().toISOString()}] Agent ${id} initialized`]);
 });
 
 // Request validation schemas
@@ -471,7 +514,9 @@ export function createAgentControlRouter(): Router {
             updatedAgent.lastActivity = new Date().toISOString();
 
             const logs = agentLogs.get(agentId) || [];
-            logs.push(`[${new Date().toISOString()}] Agent restarted successfully`);
+            logs.push(
+              `[${new Date().toISOString()}] Agent restarted successfully`,
+            );
             agentLogs.set(agentId, logs);
           }
         }, 2000);
@@ -601,7 +646,7 @@ export function createAgentControlRouter(): Router {
     // Log action
     const logs = agentLogs.get(agentId) || [];
     logs.push(
-      `[${new Date().toISOString()}] Task assigned: ${parsed.data.task} (priority: ${parsed.data.priority || "medium"})`
+      `[${new Date().toISOString()}] Task assigned: ${parsed.data.task} (priority: ${parsed.data.priority || "medium"})`,
     );
     agentLogs.set(agentId, logs);
 

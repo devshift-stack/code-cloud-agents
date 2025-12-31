@@ -6,7 +6,11 @@
  */
 
 import type { Database } from "../db/database.js";
-import { computeStopScore, analyzeContent, type StopReason } from "../audit/stopScorer.js";
+import {
+  computeStopScore,
+  analyzeContent,
+  type StopReason,
+} from "../audit/stopScorer.js";
 
 export type GateStatus = "OPEN" | "BLOCKED" | "AWAITING_APPROVAL";
 
@@ -139,7 +143,7 @@ export class EnforcementGate {
     taskId: string,
     approver: string,
     reason: string,
-    acknowledgedRisks: string[]
+    acknowledgedRisks: string[],
   ): GateDecision {
     const pending = this.blockedTasks.get(taskId);
 

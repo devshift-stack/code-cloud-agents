@@ -41,7 +41,9 @@ export class BrainSearch {
       this.openai = new OpenAI({ apiKey });
       this.enabled = true;
     } else {
-      console.warn("⚠️ OPENAI_API_KEY not set - brain semantic search disabled");
+      console.warn(
+        "⚠️ OPENAI_API_KEY not set - brain semantic search disabled",
+      );
     }
   }
 
@@ -77,7 +79,11 @@ export class BrainSearch {
   /**
    * Store embedding for a chunk
    */
-  async storeChunkEmbedding(chunkId: string, docId: string, text: string): Promise<void> {
+  async storeChunkEmbedding(
+    chunkId: string,
+    docId: string,
+    text: string,
+  ): Promise<void> {
     if (!this.enabled) {
       return;
     }
@@ -92,7 +98,14 @@ export class BrainSearch {
         VALUES (?, ?, ?, ?, ?, ?)
       `);
 
-      stmt.run(chunkId, docId, JSON.stringify(embedding), this.embeddingModel, embedding.length, now);
+      stmt.run(
+        chunkId,
+        docId,
+        JSON.stringify(embedding),
+        this.embeddingModel,
+        embedding.length,
+        now,
+      );
     } catch (error) {
       console.error("Failed to store chunk embedding:", error);
     }
@@ -125,7 +138,10 @@ export class BrainSearch {
         // Rate limiting
         await new Promise((resolve) => setTimeout(resolve, 100));
       } catch (error) {
-        console.error(`Failed to generate embedding for chunk ${row.id}:`, error);
+        console.error(
+          `Failed to generate embedding for chunk ${row.id}:`,
+          error,
+        );
       }
     }
 
@@ -135,7 +151,11 @@ export class BrainSearch {
   /**
    * Semantic search in knowledge base
    */
-  async semanticSearch(query: string, userId: string, limit: number = 10): Promise<BrainSearchResult[]> {
+  async semanticSearch(
+    query: string,
+    userId: string,
+    limit: number = 10,
+  ): Promise<BrainSearchResult[]> {
     if (!this.enabled) {
       return [];
     }
@@ -186,18 +206,27 @@ export class BrainSearch {
   /**
    * Keyword search in knowledge base
    */
-  keywordSearch(query: string, userId: string, limit: number = 20): KeywordSearchResult[] {
+  keywordSearch(
+    query: string,
+    userId: string,
+    limit: number = 20,
+  ): KeywordSearchResult[] {
     const rawDb = this.db.getRawDb();
 
     // Split query into words for matching
-    const words = query.toLowerCase().split(/\s+/).filter((w) => w.length > 2);
+    const words = query
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
 
     if (words.length === 0) {
       return [];
     }
 
     // Build LIKE conditions for each word
-    const likeConditions = words.map(() => "(LOWER(d.content) LIKE ? OR LOWER(d.title) LIKE ?)").join(" AND ");
+    const likeConditions = words
+      .map(() => "(LOWER(d.content) LIKE ? OR LOWER(d.title) LIKE ?)")
+      .join(" AND ");
     const params: any[] = [userId];
 
     words.forEach((word) => {
@@ -227,8 +256,10 @@ export class BrainSearch {
       const titleLower = (row.title || "").toLowerCase();
 
       words.forEach((word) => {
-        const contentMatches = (contentLower.match(new RegExp(word, "g")) || []).length;
-        const titleMatches = (titleLower.match(new RegExp(word, "g")) || []).length;
+        const contentMatches = (contentLower.match(new RegExp(word, "g")) || [])
+          .length;
+        const titleMatches = (titleLower.match(new RegExp(word, "g")) || [])
+          .length;
         matchCount += contentMatches + titleMatches;
       });
 
@@ -252,7 +283,7 @@ export class BrainSearch {
   async hybridSearch(
     query: string,
     userId: string,
-    options: { semanticWeight?: number; limit?: number } = {}
+    options: { semanticWeight?: number; limit?: number } = {},
   ): Promise<BrainSearchResult[]> {
     const { semanticWeight = 0.7, limit = 10 } = options;
 
@@ -263,7 +294,10 @@ export class BrainSearch {
     const keywordResults = this.keywordSearch(query, userId, limit * 2);
 
     // Combine and re-rank
-    const scoreMap = new Map<string, { result: BrainSearchResult; score: number }>();
+    const scoreMap = new Map<
+      string,
+      { result: BrainSearchResult; score: number }
+    >();
 
     // Add semantic scores
     semanticResults.forEach((result, index) => {
@@ -273,10 +307,13 @@ export class BrainSearch {
 
     // Add keyword scores
     keywordResults.forEach((kwResult, index) => {
-      const keywordScore = (1 - index / keywordResults.length) * (1 - semanticWeight);
+      const keywordScore =
+        (1 - index / keywordResults.length) * (1 - semanticWeight);
 
       // Find matching chunks from this doc
-      const docChunks = semanticResults.filter((r) => r.docId === kwResult.docId);
+      const docChunks = semanticResults.filter(
+        (r) => r.docId === kwResult.docId,
+      );
 
       if (docChunks.length > 0) {
         // Boost existing chunks
@@ -301,7 +338,11 @@ export class BrainSearch {
   /**
    * Find similar documents
    */
-  async findSimilar(docId: string, userId: string, limit: number = 5): Promise<BrainSearchResult[]> {
+  async findSimilar(
+    docId: string,
+    userId: string,
+    limit: number = 5,
+  ): Promise<BrainSearchResult[]> {
     if (!this.enabled) {
       return [];
     }
@@ -410,7 +451,8 @@ export class BrainSearch {
     return {
       totalEmbeddings,
       totalDocs,
-      embeddingCoverage: totalChunks > 0 ? Math.round((totalEmbeddings / totalChunks) * 100) : 0,
+      embeddingCoverage:
+        totalChunks > 0 ? Math.round((totalEmbeddings / totalChunks) * 100) : 0,
     };
   }
 
@@ -447,7 +489,11 @@ export class BrainSearch {
   /**
    * Generate snippet around a keyword
    */
-  private generateSnippet(text: string, keyword: string, maxLength: number): string {
+  private generateSnippet(
+    text: string,
+    keyword: string,
+    maxLength: number,
+  ): string {
     const lowerText = text.toLowerCase();
     const lowerKeyword = keyword.toLowerCase();
     const index = lowerText.indexOf(lowerKeyword);

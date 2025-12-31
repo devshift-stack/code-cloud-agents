@@ -38,7 +38,7 @@ function createMockResponse() {
 function createMockRequest(
   params: Record<string, string> = {},
   query: Record<string, string> = {},
-  body: any = {}
+  body: any = {},
 ): Request {
   return {
     params,
@@ -95,7 +95,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const issuesRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get,
       );
       const handler = issuesRoute?.route?.stack[0]?.handle;
 
@@ -113,7 +113,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const issuesRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get,
       );
       const handler = issuesRoute?.route?.stack[0]?.handle;
 
@@ -132,7 +132,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const issuesRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.get,
       );
       const handler = issuesRoute?.route?.stack[0]?.handle;
 
@@ -152,7 +152,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const createIssueRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post,
       );
       const handler = createIssueRoute?.route?.stack[0]?.handle;
 
@@ -173,7 +173,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const createIssueRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post,
       );
       const handler = createIssueRoute?.route?.stack[0]?.handle;
 
@@ -197,13 +197,13 @@ describe("Linear REST API", () => {
         {
           title: "Test Issue",
           priority: 10, // Invalid
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createIssueRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post,
       );
       const handler = createIssueRoute?.route?.stack[0]?.handle;
 
@@ -226,13 +226,13 @@ describe("Linear REST API", () => {
           teamId: "team-123",
           priority: 2,
           stateId: "state-123",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createIssueRoute = routes.find(
-        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/issues" && r.route?.methods?.post,
       );
       const handler = createIssueRoute?.route?.stack[0]?.handle;
 
@@ -253,7 +253,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const updateRoute = routes.find(
-        (r: any) => r.route?.path === "/issues/:issueId"
+        (r: any) => r.route?.path === "/issues/:issueId",
       );
       const handler = updateRoute?.route?.stack[0]?.handle;
 
@@ -272,7 +272,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const updateRoute = routes.find(
-        (r: any) => r.route?.path === "/issues/:issueId"
+        (r: any) => r.route?.path === "/issues/:issueId",
       );
       const handler = updateRoute?.route?.stack[0]?.handle;
 
@@ -289,13 +289,13 @@ describe("Linear REST API", () => {
       const req = createMockRequest(
         { issueId: "issue-123" },
         {},
-        { priority: -1 }
+        { priority: -1 },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const updateRoute = routes.find(
-        (r: any) => r.route?.path === "/issues/:issueId"
+        (r: any) => r.route?.path === "/issues/:issueId",
       );
       const handler = updateRoute?.route?.stack[0]?.handle;
 
@@ -314,13 +314,13 @@ describe("Linear REST API", () => {
         {},
         {
           title: "Updated Title",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const updateRoute = routes.find(
-        (r: any) => r.route?.path === "/issues/:issueId"
+        (r: any) => r.route?.path === "/issues/:issueId",
       );
       const handler = updateRoute?.route?.stack[0]?.handle;
 
@@ -341,7 +341,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const projectsRoute = routes.find(
-        (r: any) => r.route?.path === "/projects" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/projects" && r.route?.methods?.get,
       );
       const handler = projectsRoute?.route?.stack[0]?.handle;
 
@@ -359,7 +359,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const projectsRoute = routes.find(
-        (r: any) => r.route?.path === "/projects" && r.route?.methods?.get
+        (r: any) => r.route?.path === "/projects" && r.route?.methods?.get,
       );
       const handler = projectsRoute?.route?.stack[0]?.handle;
 
@@ -379,7 +379,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const createProjectRoute = routes.find(
-        (r: any) => r.route?.path === "/projects" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/projects" && r.route?.methods?.post,
       );
       const handler = createProjectRoute?.route?.stack[0]?.handle;
 
@@ -399,13 +399,13 @@ describe("Linear REST API", () => {
         {
           name: "Test Project",
           teamIds: [],
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createProjectRoute = routes.find(
-        (r: any) => r.route?.path === "/projects" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/projects" && r.route?.methods?.post,
       );
       const handler = createProjectRoute?.route?.stack[0]?.handle;
 
@@ -427,13 +427,13 @@ describe("Linear REST API", () => {
           description: "Test description",
           teamIds: ["team-123"],
           leadId: "user-123",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createProjectRoute = routes.find(
-        (r: any) => r.route?.path === "/projects" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/projects" && r.route?.methods?.post,
       );
       const handler = createProjectRoute?.route?.stack[0]?.handle;
 
@@ -562,7 +562,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const createCommentRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post,
       );
       const handler = createCommentRoute?.route?.stack[0]?.handle;
 
@@ -582,7 +582,7 @@ describe("Linear REST API", () => {
 
       const routes = (router as any).stack;
       const createCommentRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post,
       );
       const handler = createCommentRoute?.route?.stack[0]?.handle;
 
@@ -602,13 +602,13 @@ describe("Linear REST API", () => {
         {
           issueId: "issue-123",
           body: "",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createCommentRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post,
       );
       const handler = createCommentRoute?.route?.stack[0]?.handle;
 
@@ -628,13 +628,13 @@ describe("Linear REST API", () => {
         {
           issueId: "issue-123",
           body: "This is a test comment",
-        }
+        },
       );
       const res = createMockResponse();
 
       const routes = (router as any).stack;
       const createCommentRoute = routes.find(
-        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post
+        (r: any) => r.route?.path === "/comments" && r.route?.methods?.post,
       );
       const handler = createCommentRoute?.route?.stack[0]?.handle;
 

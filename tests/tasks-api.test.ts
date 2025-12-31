@@ -49,7 +49,15 @@ function createTask(db: Database.Database, task: Omit<Task, "id">): Task {
     INSERT INTO tasks (id, title, description, priority, status, assignee, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
-  stmt.run(id, task.title, task.description ?? null, task.priority, task.status, task.assignee, task.created_at);
+  stmt.run(
+    id,
+    task.title,
+    task.description ?? null,
+    task.priority,
+    task.status,
+    task.assignee,
+    task.created_at,
+  );
   return { id, ...task };
 }
 
@@ -68,11 +76,15 @@ function listTasks(db: Database.Database, options?: ListTasksOptions): Task[] {
     };
     const dbStatus = stateMap[options.state] ?? options.state;
 
-    const stmt = db.prepare("SELECT * FROM tasks WHERE status = ? ORDER BY created_at DESC LIMIT ?");
+    const stmt = db.prepare(
+      "SELECT * FROM tasks WHERE status = ? ORDER BY created_at DESC LIMIT ?",
+    );
     return stmt.all(dbStatus, limit) as Task[];
   }
 
-  const stmt = db.prepare("SELECT * FROM tasks ORDER BY created_at DESC LIMIT ?");
+  const stmt = db.prepare(
+    "SELECT * FROM tasks ORDER BY created_at DESC LIMIT ?",
+  );
   return stmt.all(limit) as Task[];
 }
 

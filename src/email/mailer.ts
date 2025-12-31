@@ -16,7 +16,11 @@ let testAccount: { user: string; pass: string } | null = null;
 export async function initEmailTransporter(): Promise<void> {
   try {
     // Check if production SMTP is configured
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    if (
+      process.env.SMTP_HOST &&
+      process.env.SMTP_USER &&
+      process.env.SMTP_PASS
+    ) {
       // Production SMTP
       transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
@@ -63,17 +67,24 @@ export async function sendEmail(options: {
   subject: string;
   text: string;
   html: string;
-}): Promise<{ success: boolean; messageId?: string; previewUrl?: string; error?: string }> {
+}): Promise<{
+  success: boolean;
+  messageId?: string;
+  previewUrl?: string;
+  error?: string;
+}> {
   if (!transporter) {
     return {
       success: false,
-      error: "Email transporter not initialized. Call initEmailTransporter() first.",
+      error:
+        "Email transporter not initialized. Call initEmailTransporter() first.",
     };
   }
 
   try {
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"Cloud Agents" <noreply@cloudagents.dev>',
+      from:
+        process.env.EMAIL_FROM || '"Cloud Agents" <noreply@cloudagents.dev>',
       to: options.to,
       subject: options.subject,
       text: options.text,
@@ -81,13 +92,17 @@ export async function sendEmail(options: {
     });
 
     // For Ethereal, get preview URL
-    const previewUrl = testAccount ? nodemailer.getTestMessageUrl(info) : undefined;
+    const previewUrl = testAccount
+      ? nodemailer.getTestMessageUrl(info)
+      : undefined;
 
     if (previewUrl) {
       console.log(`📧 Email sent to ${options.to}`);
       console.log(`   Preview: ${previewUrl}`);
     } else {
-      console.log(`📧 Email sent to ${options.to} (Message ID: ${info.messageId})`);
+      console.log(
+        `📧 Email sent to ${options.to} (Message ID: ${info.messageId})`,
+      );
     }
 
     return {
@@ -109,7 +124,7 @@ export async function sendEmail(options: {
  */
 export async function sendVerificationEmail(
   email: string,
-  token: string
+  token: string,
 ): Promise<{ success: boolean; previewUrl?: string; error?: string }> {
   const verifyUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/verify-email?token=${token}`;
 
@@ -170,7 +185,7 @@ Cloud Agents Team
  */
 export async function sendPasswordResetEmail(
   email: string,
-  token: string
+  token: string,
 ): Promise<{ success: boolean; previewUrl?: string; error?: string }> {
   const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password?token=${token}`;
 
@@ -232,7 +247,11 @@ Cloud Agents Team
 /**
  * Get test account info (Ethereal)
  */
-export function getTestAccountInfo(): { user: string; pass: string; url: string } | null {
+export function getTestAccountInfo(): {
+  user: string;
+  pass: string;
+  url: string;
+} | null {
   if (!testAccount) {
     return null;
   }

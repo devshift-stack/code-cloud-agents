@@ -16,7 +16,9 @@ export interface WhatsAppMessage {
 
 export interface WhatsAppClient {
   isEnabled(): boolean;
-  sendMessage(message: WhatsAppMessage): Promise<{ success: boolean; messageId?: string; error?: string }>;
+  sendMessage(
+    message: WhatsAppMessage,
+  ): Promise<{ success: boolean; messageId?: string; error?: string }>;
   getStatus(): Promise<{ connected: boolean; error?: string }>;
 }
 
@@ -32,11 +34,14 @@ export function createWhatsAppClient(_config?: WhatsAppConfig): WhatsAppClient {
       return enabled;
     },
 
-    async sendMessage(_message: WhatsAppMessage): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    async sendMessage(
+      _message: WhatsAppMessage,
+    ): Promise<{ success: boolean; messageId?: string; error?: string }> {
       if (!enabled) {
         return {
           success: false,
-          error: "STUB: WhatsApp integration is disabled. Set WHATSAPP_ENABLED=true to enable.",
+          error:
+            "STUB: WhatsApp integration is disabled. Set WHATSAPP_ENABLED=true to enable.",
         };
       }
 

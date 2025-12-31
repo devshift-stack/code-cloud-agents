@@ -73,7 +73,8 @@ export function createLinearRouter(): Router {
       if (!linearClient.isEnabled()) {
         return res.status(200).json({
           connected: false,
-          error: "Linear integration is disabled. Set LINEAR_ENABLED=true in .env",
+          error:
+            "Linear integration is disabled. Set LINEAR_ENABLED=true in .env",
         });
       }
 
@@ -181,7 +182,7 @@ export function createLinearRouter(): Router {
             : null,
           createdAt: issue.createdAt,
           updatedAt: issue.updatedAt,
-        }))
+        })),
       );
 
       res.json({
@@ -304,7 +305,7 @@ export function createLinearRouter(): Router {
             createdAt: project.createdAt,
             updatedAt: project.updatedAt,
           };
-        })
+        }),
       );
 
       res.json({

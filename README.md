@@ -22,6 +22,7 @@ Ein intelligentes Supervisor-System, das AI-Agenten überwacht, Risiken bewertet
 ## ✨ Features
 
 ### Core Features
+
 - **🎯 STOP-Score System**: Automatische Risikobewertung (0-100) basierend auf verschiedenen Faktoren
 - **🛡️ Enforcement Gate**: HARD STOP bei kritischen Entscheidungen (Score ≥ 70)
 - **👨‍💼 Engineering Lead Supervisor**: Meta-Supervisor für Planung, Delegation und Verifikation
@@ -36,6 +37,7 @@ Ein intelligentes Supervisor-System, das AI-Agenten überwacht, Risiken bewertet
 - **🛡️ Rate Limiting**: Brute-force protection auf Login und sensitive Endpoints
 
 ### Integrations
+
 - **Demo Invite System**: User-Onboarding mit Invite-Codes und Usage-Limits
 - **SQLite Database**: Leichtgewichtige, lokale Datenpersistenz
 - **Queue System**: Redis (production) oder In-Memory (development)
@@ -136,6 +138,7 @@ Server läuft auf: **http://localhost:3000**
 ### Tech Stack
 
 **Backend:**
+
 - Node.js v20+
 - TypeScript
 - Express.js
@@ -143,6 +146,7 @@ Server läuft auf: **http://localhost:3000**
 - Redis (optional)
 
 **Frontend:**
+
 - React 18
 - TypeScript
 - Vite
@@ -370,16 +374,19 @@ npm test -- --coverage
 ### JWT Authentication System
 
 **Access Tokens:**
+
 - Validity: 15 minutes
 - Purpose: API authentication
 - Automatic refresh via refresh token
 
 **Refresh Tokens:**
+
 - Validity: 7 days
 - Token rotation on refresh (security best practice)
 - Stored in-memory blacklist on logout
 
 **Security Features:**
+
 - Separate secrets for access/refresh tokens
 - Unique JWT IDs (jti) for refresh tokens
 - Issuer and Audience validation
@@ -389,11 +396,13 @@ npm test -- --coverage
 ### User Management
 
 **Role-Based Access Control (RBAC):**
+
 - **Admin**: Full system access, user management
 - **User**: Own profile access, password change
 - **Demo**: Read-only access
 
 **Features:**
+
 - bcrypt password hashing (10 salt rounds)
 - Email uniqueness enforcement
 - Case-insensitive email lookup
@@ -404,12 +413,14 @@ npm test -- --coverage
 ### Email Verification
 
 **Token System:**
+
 - Secure 32-byte hex tokens
 - 24-hour expiry
 - One-time use (marked as used after verification)
 - Automatic old token invalidation
 
 **Flow:**
+
 1. User registers → verification token generated
 2. Email sent with verification link (DEV: token returned in API)
 3. User clicks link → token verified → email marked as verified
@@ -417,12 +428,14 @@ npm test -- --coverage
 ### Password Reset
 
 **Token System:**
+
 - Secure 32-byte hex tokens
 - **1-hour expiry** (more secure than email verification)
 - One-time use
 - Automatic old token invalidation
 
 **Security Features:**
+
 - No user enumeration (always returns success)
 - Inactive users cannot reset password
 - Token marked as used after successful reset
@@ -431,17 +444,20 @@ npm test -- --coverage
 ### Rate Limiting
 
 **IP-Based Protection:**
+
 - **Login**: 5 attempts per 15 minutes
 - **Password Reset**: 3 attempts per hour
 - **Email Verification**: 3 attempts per hour
 
 **Implementation:**
+
 - In-memory store (Redis-ready for production)
 - Automatic cleanup of expired entries
 - Real-time IP tracking
 - Returns retry-after time on rate limit
 
 **Status Codes:**
+
 - `200`: Success
 - `401`: Unauthorized (invalid credentials/token)
 - `403`: Forbidden (inactive account, no permission)
@@ -462,6 +478,7 @@ Siehe auch: **[Security Guide](docs/SECURITY.md)** (coming soon)
 ## 📦 Dependencies
 
 ### Production
+
 - `express`: Web Framework
 - `better-sqlite3`: SQLite Database
 - `bcrypt`: Password hashing
@@ -471,6 +488,7 @@ Siehe auch: **[Security Guide](docs/SECURITY.md)** (coming soon)
 - `@radix-ui/*`: UI Components
 
 ### Development
+
 - `typescript`: Type Safety
 - `vite`: Build Tool
 - `tsx`: TypeScript Runtime
@@ -511,6 +529,7 @@ Contributions sind willkommen! Bitte lies zuerst den **[Contributing Guide](docs
 ## 🎯 Roadmap
 
 ### ✅ Completed
+
 - [x] **Authentication & User Management** (Agent 2 - Security Expert)
   - JWT-based authentication mit token rotation
   - User Management mit RBAC (Admin/User/Demo)
@@ -520,10 +539,12 @@ Contributions sind willkommen! Bitte lies zuerst den **[Contributing Guide](docs
   - 19 comprehensive tests (all passing)
 
 ### 🔄 In Progress
+
 - [ ] OpenAPI/Swagger Documentation
 - [ ] Postman Collection
 
 ### 📋 Planned
+
 - [ ] WebSocket Real-time Updates
 - [ ] Integration APIs (GitHub, Slack, Linear)
 - [ ] Multi-Provider AI Support

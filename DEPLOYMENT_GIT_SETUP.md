@@ -15,6 +15,7 @@
 **SSH Config:** `/root/.ssh/config` konfiguriert für github.com
 
 **Test-Befehl:**
+
 ```bash
 ssh -i ~/.ssh/activi_cloud_agent root@178.156.178.70 "ssh -T git@github.com"
 # Output: Hi dsactivi-2/code-cloud-agents! You've successfully authenticated...
@@ -27,6 +28,7 @@ ssh -i ~/.ssh/activi_cloud_agent root@178.156.178.70 "ssh -T git@github.com"
 **Status:** Up to date mit origin/main
 
 **Verifikation:**
+
 ```bash
 ssh -i ~/.ssh/activi_cloud_agent root@178.156.178.70 "cd /root/cloud-agents && git status"
 # On branch main
@@ -43,6 +45,7 @@ ssh -i ~/.ssh/activi_cloud_agent root@178.156.178.70 "cd /root/cloud-agents && g
 Das Deployment-Script wurde von rsync auf git-basiert umgestellt:
 
 **Schritte:**
+
 1. **Local Checks** - Prüft auf uncommitted changes
 2. **Push to GitHub** - Pusht zum main branch
 3. **Pull on Server** - Fetcht und reset auf origin/main
@@ -51,6 +54,7 @@ Das Deployment-Script wurde von rsync auf git-basiert umgestellt:
 6. **Health Check** - Verifiziert Server-Status
 
 **Verwendung:**
+
 ```bash
 cd /Users/dsselmanovic/activi-dev-repos/Optimizecodecloudagents
 ./deploy.sh
@@ -127,11 +131,13 @@ Nach jedem Deployment:
 ## 🔐 Sicherheit
 
 **SSH Keys:**
+
 - Server Key: `/root/.ssh/github_deploy` (privat, bleibt auf Server)
 - GitHub Deploy Key: Nur für dieses Repository, Write-Access
 - SSH Config: `StrictHostKeyChecking no` für automatisierte Deployments
 
 **Secrets Management:**
+
 - Doppler für alle Secrets (ANTHROPIC_API_KEY, etc.)
 - Keine `.env` Dateien im Git-Repository
 - Server-seitige Doppler-Konfiguration unabhängig von local

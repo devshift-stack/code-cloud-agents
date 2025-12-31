@@ -67,7 +67,7 @@ export function initUsersTable(db: BetterSqlite3.Database): void {
  */
 export async function createUser(
   db: BetterSqlite3.Database,
-  data: UserCreateData
+  data: UserCreateData,
 ): Promise<User> {
   const id = randomUUID();
   const createdAt = new Date().toISOString();
@@ -86,7 +86,7 @@ export async function createUser(
     passwordHash,
     data.role,
     data.displayName ?? null,
-    createdAt
+    createdAt,
   );
 
   return {
@@ -103,7 +103,10 @@ export async function createUser(
 /**
  * Get user by ID
  */
-export function getUserById(db: BetterSqlite3.Database, id: string): User | null {
+export function getUserById(
+  db: BetterSqlite3.Database,
+  id: string,
+): User | null {
   const stmt = db.prepare("SELECT * FROM users WHERE id = ?");
   const row = stmt.get(id) as any;
 
@@ -125,7 +128,10 @@ export function getUserById(db: BetterSqlite3.Database, id: string): User | null
 /**
  * Get user by email
  */
-export function getUserByEmail(db: BetterSqlite3.Database, email: string): User | null {
+export function getUserByEmail(
+  db: BetterSqlite3.Database,
+  email: string,
+): User | null {
   const stmt = db.prepare("SELECT * FROM users WHERE email = ?");
   const row = stmt.get(email.toLowerCase()) as any;
 
@@ -154,7 +160,7 @@ export function listUsers(
     isActive?: boolean;
     limit?: number;
     offset?: number;
-  } = {}
+  } = {},
 ): Omit<User, "passwordHash">[] {
   let query = "SELECT * FROM users WHERE 1=1";
   const params: any[] = [];
@@ -202,7 +208,7 @@ export function listUsers(
 export function updateUser(
   db: BetterSqlite3.Database,
   id: string,
-  updates: UserUpdateData
+  updates: UserUpdateData,
 ): User | null {
   const user = getUserById(db, id);
   if (!user) return null;
@@ -258,7 +264,7 @@ export function deleteUser(db: BetterSqlite3.Database, id: string): boolean {
 export async function changeUserPassword(
   db: BetterSqlite3.Database,
   id: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<boolean> {
   const user = getUserById(db, id);
   if (!user) return false;
@@ -281,7 +287,7 @@ export async function changeUserPassword(
 export async function verifyUserPassword(
   db: BetterSqlite3.Database,
   email: string,
-  password: string
+  password: string,
 ): Promise<User | null> {
   const user = getUserByEmail(db, email);
   if (!user) return null;
@@ -313,10 +319,18 @@ export function getUserStats(db: BetterSqlite3.Database): {
   demos: number;
 } {
   const totalStmt = db.prepare("SELECT COUNT(*) as count FROM users");
-  const activeStmt = db.prepare("SELECT COUNT(*) as count FROM users WHERE is_active = 1");
-  const adminsStmt = db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'admin'");
-  const usersStmt = db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'user'");
-  const demosStmt = db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'demo'");
+  const activeStmt = db.prepare(
+    "SELECT COUNT(*) as count FROM users WHERE is_active = 1",
+  );
+  const adminsStmt = db.prepare(
+    "SELECT COUNT(*) as count FROM users WHERE role = 'admin'",
+  );
+  const usersStmt = db.prepare(
+    "SELECT COUNT(*) as count FROM users WHERE role = 'user'",
+  );
+  const demosStmt = db.prepare(
+    "SELECT COUNT(*) as count FROM users WHERE role = 'demo'",
+  );
 
   return {
     total: (totalStmt.get() as { count: number }).count,
@@ -334,11 +348,15 @@ export function getUserStats(db: BetterSqlite3.Database): {
  *   SEED_ADMIN_PASSWORD (default: ChangeMe123!)
  *   SEED_ADMIN_NAME (default: Admin)
  */
-export async function seedDefaultAdmin(db: BetterSqlite3.Database): Promise<void> {
+export async function seedDefaultAdmin(
+  db: BetterSqlite3.Database,
+): Promise<void> {
   const stats = getUserStats(db);
 
   if (stats.total > 0) {
-    console.log("ℹ️ Users exist (" + stats.total + " users), admin seed skipped");
+    console.log(
+      "ℹ️ Users exist (" + stats.total + " users), admin seed skipped",
+    );
     return;
   }
 

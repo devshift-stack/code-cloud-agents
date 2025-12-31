@@ -261,9 +261,11 @@ export function createMemoryRouter(db: Database): Router {
 
       // Generate embedding in background (non-blocking)
       if (embeddingsManager.isEnabled()) {
-        embeddingsManager.storeEmbedding(message.id, message.content).catch((error) => {
-          console.error("Failed to generate embedding:", error);
-        });
+        embeddingsManager
+          .storeEmbedding(message.id, message.content)
+          .catch((error) => {
+            console.error("Failed to generate embedding:", error);
+          });
       }
 
       res.status(201).json({
@@ -491,7 +493,11 @@ export function createMemoryRouter(db: Database): Router {
         });
       }
 
-      const results = await embeddingsManager.semanticSearch(query, userId, limit || 10);
+      const results = await embeddingsManager.semanticSearch(
+        query,
+        userId,
+        limit || 10,
+      );
 
       res.json({
         success: true,

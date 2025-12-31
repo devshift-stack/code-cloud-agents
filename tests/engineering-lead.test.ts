@@ -234,19 +234,23 @@ describe("EngineeringLeadSupervisor", () => {
       const result = supervisor.quickValidate("I implemented the feature");
 
       assert.strictEqual(result.valid, false);
-      assert.ok(result.issues.some((i) => i.includes("without file reference")));
+      assert.ok(
+        result.issues.some((i) => i.includes("without file reference")),
+      );
     });
 
     it("should pass claims with file reference", () => {
       const result = supervisor.quickValidate(
-        "I implemented the feature - see file:src/feature.ts"
+        "I implemented the feature - see file:src/feature.ts",
       );
 
       assert.strictEqual(result.valid, true);
     });
 
     it("should flag deployed claims without file reference", () => {
-      const result = supervisor.quickValidate("Successfully deployed to production");
+      const result = supervisor.quickValidate(
+        "Successfully deployed to production",
+      );
 
       assert.strictEqual(result.valid, false);
       assert.ok(result.issues.some((i) => i.includes("deployed")));

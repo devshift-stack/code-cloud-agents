@@ -81,7 +81,9 @@ export async function exampleCreateFullIssue() {
 
   // Get labels
   const labels = await linear.listLabels(teamId);
-  const bugLabel = labels.labels?.find((l) => l.name.toLowerCase().includes("bug"));
+  const bugLabel = labels.labels?.find((l) =>
+    l.name.toLowerCase().includes("bug"),
+  );
 
   // Create issue
   const result = await linear.createIssue({

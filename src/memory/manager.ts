@@ -73,7 +73,7 @@ export class MemoryManager {
       0,
       options.initialMessage || null,
       now,
-      now
+      now,
     );
 
     return {
@@ -139,7 +139,10 @@ export class MemoryManager {
   /**
    * Update chat metadata
    */
-  updateChat(chatId: string, updates: { title?: string; agentName?: string }): boolean {
+  updateChat(
+    chatId: string,
+    updates: { title?: string; agentName?: string },
+  ): boolean {
     const rawDb = this.db.getRawDb();
     const now = new Date().toISOString();
 
@@ -190,7 +193,8 @@ export class MemoryManager {
   addMessage(options: AddMessageOptions): ChatMessage {
     const messageId = randomUUID();
     const now = new Date().toISOString();
-    const tokensTotal = (options.tokensInput || 0) + (options.tokensOutput || 0);
+    const tokensTotal =
+      (options.tokensInput || 0) + (options.tokensOutput || 0);
 
     const rawDb = this.db.getRawDb();
 
@@ -209,7 +213,7 @@ export class MemoryManager {
       options.tokensInput || null,
       options.tokensOutput || null,
       tokensTotal || null,
-      now
+      now,
     );
 
     // Update chat metadata
@@ -224,7 +228,7 @@ export class MemoryManager {
     updateStmt.run(
       options.content.substring(0, 200), // First 200 chars
       now,
-      options.chatId
+      options.chatId,
     );
 
     return {
@@ -243,7 +247,11 @@ export class MemoryManager {
   /**
    * Get messages for a chat
    */
-  getMessages(chatId: string, limit: number = 100, offset: number = 0): ChatMessage[] {
+  getMessages(
+    chatId: string,
+    limit: number = 100,
+    offset: number = 0,
+  ): ChatMessage[] {
     const rawDb = this.db.getRawDb();
     const stmt = rawDb.prepare(`
       SELECT * FROM chat_messages
@@ -308,7 +316,11 @@ export class MemoryManager {
   /**
    * Get total token usage for a chat
    */
-  getChatTokens(chatId: string): { input: number; output: number; total: number } {
+  getChatTokens(chatId: string): {
+    input: number;
+    output: number;
+    total: number;
+  } {
     const rawDb = this.db.getRawDb();
     const stmt = rawDb.prepare(`
       SELECT
@@ -393,7 +405,9 @@ export class MemoryManager {
   } {
     const rawDb = this.db.getRawDb();
 
-    const chatStmt = rawDb.prepare("SELECT COUNT(*) as count FROM chats WHERE user_id = ?");
+    const chatStmt = rawDb.prepare(
+      "SELECT COUNT(*) as count FROM chats WHERE user_id = ?",
+    );
     const chatRow = chatStmt.get(userId) as any;
 
     const msgStmt = rawDb.prepare(`

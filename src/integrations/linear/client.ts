@@ -46,11 +46,30 @@ export interface LinearLabel {
 
 export interface LinearClient {
   isEnabled(): boolean;
-  createIssue(issue: LinearIssue): Promise<{ success: boolean; issue?: LinearIssueResult; error?: string }>;
-  listTeams(): Promise<{ success: boolean; teams?: LinearTeam[]; error?: string }>;
-  listWorkflowStates(teamId: string): Promise<{ success: boolean; states?: LinearWorkflowState[]; error?: string }>;
-  listLabels(teamId?: string): Promise<{ success: boolean; labels?: LinearLabel[]; error?: string }>;
-  getStatus(): Promise<{ connected: boolean; user?: string; organization?: string; error?: string }>;
+  createIssue(
+    issue: LinearIssue,
+  ): Promise<{ success: boolean; issue?: LinearIssueResult; error?: string }>;
+  listTeams(): Promise<{
+    success: boolean;
+    teams?: LinearTeam[];
+    error?: string;
+  }>;
+  listWorkflowStates(
+    teamId: string,
+  ): Promise<{
+    success: boolean;
+    states?: LinearWorkflowState[];
+    error?: string;
+  }>;
+  listLabels(
+    teamId?: string,
+  ): Promise<{ success: boolean; labels?: LinearLabel[]; error?: string }>;
+  getStatus(): Promise<{
+    connected: boolean;
+    user?: string;
+    organization?: string;
+    error?: string;
+  }>;
 }
 
 /**
@@ -81,7 +100,13 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
      * @param issue - Issue details
      * @returns Promise with created issue details
      */
-    async createIssue(issue: LinearIssue): Promise<{ success: boolean; issue?: LinearIssueResult; error?: string }> {
+    async createIssue(
+      issue: LinearIssue,
+    ): Promise<{
+      success: boolean;
+      issue?: LinearIssueResult;
+      error?: string;
+    }> {
       if (!enabled) {
         return { success: false, error: "Linear integration disabled" };
       }
@@ -97,7 +122,10 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
           const teams = await client.teams();
           const firstTeam = teams.nodes[0];
           if (!firstTeam) {
-            return { success: false, error: "No teams found in Linear workspace" };
+            return {
+              success: false,
+              error: "No teams found in Linear workspace",
+            };
           }
           teamId = firstTeam.id;
         }
@@ -116,7 +144,10 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
         const createdIssue = await result.issue;
 
         if (!createdIssue) {
-          return { success: false, error: "Issue created but could not retrieve details" };
+          return {
+            success: false,
+            error: "Issue created but could not retrieve details",
+          };
         }
 
         return {
@@ -129,7 +160,8 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
           },
         };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { success: false, error: `Linear API error: ${errorMessage}` };
       }
     },
@@ -138,7 +170,11 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
      * List all teams in the workspace
      * @returns Promise with teams list
      */
-    async listTeams(): Promise<{ success: boolean; teams?: LinearTeam[]; error?: string }> {
+    async listTeams(): Promise<{
+      success: boolean;
+      teams?: LinearTeam[];
+      error?: string;
+    }> {
       if (!enabled) {
         return { success: false, error: "Linear integration disabled" };
       }
@@ -158,7 +194,8 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
 
         return { success: true, teams };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { success: false, error: `Linear API error: ${errorMessage}` };
       }
     },
@@ -168,7 +205,13 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
      * @param teamId - Team ID
      * @returns Promise with workflow states
      */
-    async listWorkflowStates(teamId: string): Promise<{ success: boolean; states?: LinearWorkflowState[]; error?: string }> {
+    async listWorkflowStates(
+      teamId: string,
+    ): Promise<{
+      success: boolean;
+      states?: LinearWorkflowState[];
+      error?: string;
+    }> {
       if (!enabled) {
         return { success: false, error: "Linear integration disabled" };
       }
@@ -189,7 +232,8 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
 
         return { success: true, states };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { success: false, error: `Linear API error: ${errorMessage}` };
       }
     },
@@ -199,7 +243,9 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
      * @param teamId - Optional team ID to filter labels
      * @returns Promise with labels list
      */
-    async listLabels(teamId?: string): Promise<{ success: boolean; labels?: LinearLabel[]; error?: string }> {
+    async listLabels(
+      teamId?: string,
+    ): Promise<{ success: boolean; labels?: LinearLabel[]; error?: string }> {
       if (!enabled) {
         return { success: false, error: "Linear integration disabled" };
       }
@@ -226,7 +272,8 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
 
         return { success: true, labels };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { success: false, error: `Linear API error: ${errorMessage}` };
       }
     },
@@ -235,7 +282,12 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
      * Get connection status and user info
      * @returns Promise with connection status
      */
-    async getStatus(): Promise<{ connected: boolean; user?: string; organization?: string; error?: string }> {
+    async getStatus(): Promise<{
+      connected: boolean;
+      user?: string;
+      organization?: string;
+      error?: string;
+    }> {
       if (!enabled) {
         return { connected: false, error: "Linear integration disabled" };
       }
@@ -254,7 +306,8 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
           organization: org.name,
         };
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         return { connected: false, error: `Linear API error: ${errorMessage}` };
       }
     },

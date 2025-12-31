@@ -1,32 +1,67 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Switch } from './ui/switch';
-import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Separator } from './ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Switch } from "./ui/switch";
+import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Separator } from "./ui/separator";
 
 export function SettingsPanel() {
   return (
     <Tabs defaultValue="general" className="w-full">
       <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="general" data-testid="cloudagents.settings.tab.general">General</TabsTrigger>
-        <TabsTrigger value="cloud" data-testid="cloudagents.settings.tab.cloud">Cloud</TabsTrigger>
-        <TabsTrigger value="security" data-testid="cloudagents.settings.tab.security">Security</TabsTrigger>
-        <TabsTrigger value="notifications" data-testid="cloudagents.settings.tab.notifications">Notifications</TabsTrigger>
+        <TabsTrigger
+          value="general"
+          data-testid="cloudagents.settings.tab.general"
+        >
+          General
+        </TabsTrigger>
+        <TabsTrigger value="cloud" data-testid="cloudagents.settings.tab.cloud">
+          Cloud
+        </TabsTrigger>
+        <TabsTrigger
+          value="security"
+          data-testid="cloudagents.settings.tab.security"
+        >
+          Security
+        </TabsTrigger>
+        <TabsTrigger
+          value="notifications"
+          data-testid="cloudagents.settings.tab.notifications"
+        >
+          Notifications
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="general" className="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>General Settings</CardTitle>
-            <CardDescription>Configure your workspace preferences</CardDescription>
+            <CardDescription>
+              Configure your workspace preferences
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="workspace">Workspace Name</Label>
-              <Input id="workspace" placeholder="My Workspace" data-testid="cloudagents.settings.general.workspace.input" />
+              <Input
+                id="workspace"
+                placeholder="My Workspace"
+                data-testid="cloudagents.settings.general.workspace.input"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="region">Default Region</Label>
@@ -35,10 +70,14 @@ export function SettingsPanel() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="us-east-1">US East (N. Virginia)</SelectItem>
+                  <SelectItem value="us-east-1">
+                    US East (N. Virginia)
+                  </SelectItem>
                   <SelectItem value="us-west-2">US West (Oregon)</SelectItem>
                   <SelectItem value="eu-west-1">EU West (Ireland)</SelectItem>
-                  <SelectItem value="ap-southeast-1">Asia Pacific (Singapore)</SelectItem>
+                  <SelectItem value="ap-southeast-1">
+                    Asia Pacific (Singapore)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -50,7 +89,10 @@ export function SettingsPanel() {
                   Automatically save changes
                 </p>
               </div>
-              <Switch defaultChecked data-testid="cloudagents.settings.general.autosave.switch" />
+              <Switch
+                defaultChecked
+                data-testid="cloudagents.settings.general.autosave.switch"
+              />
             </div>
           </CardContent>
         </Card>
@@ -60,7 +102,9 @@ export function SettingsPanel() {
         <Card>
           <CardHeader>
             <CardTitle>Cloud Configuration</CardTitle>
-            <CardDescription>Manage your cloud provider settings</CardDescription>
+            <CardDescription>
+              Manage your cloud provider settings
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -78,13 +122,25 @@ export function SettingsPanel() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="api-key">API Key</Label>
-              <Input id="api-key" type="password" placeholder="••••••••••••••••" data-testid="cloudagents.settings.cloud.apikey.input" />
+              <Input
+                id="api-key"
+                type="password"
+                placeholder="••••••••••••••••"
+                data-testid="cloudagents.settings.cloud.apikey.input"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="secret">Secret Key</Label>
-              <Input id="secret" type="password" placeholder="••••••••••••••••" data-testid="cloudagents.settings.cloud.secret.input" />
+              <Input
+                id="secret"
+                type="password"
+                placeholder="••••••••••••••••"
+                data-testid="cloudagents.settings.cloud.secret.input"
+              />
             </div>
-            <Button data-testid="cloudagents.settings.cloud.connect.button">Connect Cloud Provider</Button>
+            <Button data-testid="cloudagents.settings.cloud.connect.button">
+              Connect Cloud Provider
+            </Button>
           </CardContent>
         </Card>
       </TabsContent>
@@ -93,7 +149,9 @@ export function SettingsPanel() {
         <Card>
           <CardHeader>
             <CardTitle>Security Settings</CardTitle>
-            <CardDescription>Configure security and access controls</CardDescription>
+            <CardDescription>
+              Configure security and access controls
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -123,7 +181,10 @@ export function SettingsPanel() {
                   Track all actions in your workspace
                 </p>
               </div>
-              <Switch defaultChecked data-testid="cloudagents.settings.security.audit.switch" />
+              <Switch
+                defaultChecked
+                data-testid="cloudagents.settings.security.audit.switch"
+              />
             </div>
           </CardContent>
         </Card>
@@ -133,7 +194,9 @@ export function SettingsPanel() {
         <Card>
           <CardHeader>
             <CardTitle>Notification Preferences</CardTitle>
-            <CardDescription>Choose what updates you want to receive</CardDescription>
+            <CardDescription>
+              Choose what updates you want to receive
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -143,7 +206,10 @@ export function SettingsPanel() {
                   Get notified when agents start or stop
                 </p>
               </div>
-              <Switch defaultChecked data-testid="cloudagents.settings.notifications.status.switch" />
+              <Switch
+                defaultChecked
+                data-testid="cloudagents.settings.notifications.status.switch"
+              />
             </div>
             <Separator />
             <div className="flex items-center justify-between">
@@ -153,7 +219,10 @@ export function SettingsPanel() {
                   Receive alerts when agents encounter errors
                 </p>
               </div>
-              <Switch defaultChecked data-testid="cloudagents.settings.notifications.errors.switch" />
+              <Switch
+                defaultChecked
+                data-testid="cloudagents.settings.notifications.errors.switch"
+              />
             </div>
             <Separator />
             <div className="flex items-center justify-between">
@@ -168,7 +237,12 @@ export function SettingsPanel() {
             <Separator />
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
-              <Input id="email" type="email" placeholder="you@example.com" data-testid="cloudagents.settings.notifications.email.input" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                data-testid="cloudagents.settings.notifications.email.input"
+              />
             </div>
           </CardContent>
         </Card>

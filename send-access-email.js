@@ -1,19 +1,19 @@
 // Direktes E-Mail-Senden über den Server
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const testAccount = {
-  user: 'qri2cxpgnyc2etcw@ethereal.email',
-  pass: 'U3RKC7kwmsx4hQxxUZ'
+  user: "qri2cxpgnyc2etcw@ethereal.email",
+  pass: "U3RKC7kwmsx4hQxxUZ",
 };
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.ethereal.email',
+  host: "smtp.ethereal.email",
   port: 587,
   secure: false,
   auth: {
     user: testAccount.user,
-    pass: testAccount.pass
-  }
+    pass: testAccount.pass,
+  },
 });
 
 const emailHTML = `
@@ -137,7 +137,7 @@ const emailHTML = `
     <div class="footer">
       <p>🤖 Generated with Cloud Agents v0.1.0</p>
       <p>Supervisor: ENGINEERING_LEAD_SUPERVISOR</p>
-      <p>Generiert am: ${new Date().toLocaleString('de-DE')}</p>
+      <p>Generiert am: ${new Date().toLocaleString("de-DE")}</p>
     </div>
   </div>
 </body>
@@ -148,17 +148,17 @@ async function sendEmail() {
   try {
     const info = await transporter.sendMail({
       from: '"Cloud Agents" <noreply@cloudagents.dev>',
-      to: 'd.selmanovic@step2job.com',
-      subject: '🚀 Cloud Agents - Production Access & Test Guide',
+      to: "d.selmanovic@step2job.com",
+      subject: "🚀 Cloud Agents - Production Access & Test Guide",
       html: emailHTML,
-      text: 'Cloud Agents Production Access - Siehe HTML Version für vollständige Details.'
+      text: "Cloud Agents Production Access - Siehe HTML Version für vollständige Details.",
     });
 
-    console.log('✅ E-Mail gesendet!');
-    console.log('📧 Message ID:', info.messageId);
-    console.log('🔗 Preview URL:', nodemailer.getTestMessageUrl(info));
+    console.log("✅ E-Mail gesendet!");
+    console.log("📧 Message ID:", info.messageId);
+    console.log("🔗 Preview URL:", nodemailer.getTestMessageUrl(info));
   } catch (error) {
-    console.error('❌ Fehler beim Senden:', error);
+    console.error("❌ Fehler beim Senden:", error);
   }
 }
 

@@ -39,7 +39,7 @@ export class ChatStorage {
     this.db
       .prepare(
         `INSERT INTO chats (id, user_id, title, agent_name, created_at, updated_at, message_count)
-         VALUES (?, ?, ?, ?, ?, ?, 0)`
+         VALUES (?, ?, ?, ?, ?, ?, 0)`,
       )
       .run(id, userId, title, agentName, now, now);
 
@@ -59,7 +59,7 @@ export class ChatStorage {
     const row = this.db
       .prepare(
         `SELECT id, user_id, title, agent_name, created_at, updated_at, message_count, last_message
-         FROM chats WHERE id = ?`
+         FROM chats WHERE id = ?`,
       )
       .get(chatId) as ChatRow | undefined;
 
@@ -85,7 +85,7 @@ export class ChatStorage {
          FROM chats
          WHERE user_id = ?
          ORDER BY updated_at DESC
-         LIMIT ? OFFSET ?`
+         LIMIT ? OFFSET ?`,
       )
       .all(userId, limit, offset);
 
@@ -114,15 +114,13 @@ export class ChatStorage {
     const id = randomUUID();
     const timestamp = new Date().toISOString();
 
-    const metadata = message.metadata
-      ? JSON.stringify(message.metadata)
-      : null;
+    const metadata = message.metadata ? JSON.stringify(message.metadata) : null;
 
     this.db
       .prepare(
         `INSERT INTO chat_messages
          (id, chat_id, role, content, agent_name, timestamp, input_tokens, output_tokens, total_tokens, metadata)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         id,
@@ -134,7 +132,7 @@ export class ChatStorage {
         message.tokens?.input || null,
         message.tokens?.output || null,
         message.tokens?.total || null,
-        metadata
+        metadata,
       );
 
     // Update chat metadata
@@ -144,13 +142,9 @@ export class ChatStorage {
          SET updated_at = ?,
              message_count = message_count + 1,
              last_message = ?
-         WHERE id = ?`
+         WHERE id = ?`,
       )
-      .run(
-        timestamp,
-        message.content.substring(0, 100),
-        message.chatId
-      );
+      .run(timestamp, message.content.substring(0, 100), message.chatId);
 
     return {
       id,
@@ -160,11 +154,7 @@ export class ChatStorage {
   }
 
   // Get messages for chat
-  getMessages(
-    chatId: string,
-    limit = 50,
-    offset = 0
-  ): ChatMessage[] {
+  getMessages(chatId: string, limit = 50, offset = 0): ChatMessage[] {
     const rows = this.db
       .prepare(
         `SELECT id, chat_id, role, content, agent_name, timestamp,
@@ -172,7 +162,7 @@ export class ChatStorage {
          FROM chat_messages
          WHERE chat_id = ?
          ORDER BY timestamp ASC
-         LIMIT ? OFFSET ?`
+         LIMIT ? OFFSET ?`,
       )
       .all(chatId, limit, offset);
 
@@ -203,7 +193,7 @@ export class ChatStorage {
          FROM chat_messages
          WHERE chat_id = ?
          ORDER BY timestamp DESC
-         LIMIT ?`
+         LIMIT ?`,
       )
       .all(chatId, limit);
 

@@ -45,60 +45,70 @@ export function createPasswordResetRouter(db: Database): Router {
    * Request password reset (generates token)
    * Rate limited: 3 attempts per hour
    */
-  router.post("/request", passwordResetRateLimiter, async (req: Request, res: Response) => {
-    try {
-      const { email } = req.body as PasswordResetRequestBody;
+  router.post(
+    "/request",
+    passwordResetRateLimiter,
+    async (req: Request, res: Response) => {
+      try {
+        const { email } = req.body as PasswordResetRequestBody;
 
-      if (!email) {
-        return res.status(400).json({
-          error: "Email required",
-        });
-      }
+        if (!email) {
+          return res.status(400).json({
+            error: "Email required",
+          });
+        }
 
-      // Find user by email
-      const user = getUserByEmail(rawDb, email);
+        // Find user by email
+        const user = getUserByEmail(rawDb, email);
 
-      // Security: Always return success even if user doesn't exist
-      // This prevents user enumeration attacks
-      if (!user) {
-        return res.json({
+        // Security: Always return success even if user doesn't exist
+        // This prevents user enumeration attacks
+        if (!user) {
+          return res.json({
+            success: true,
+            message:
+              "If an account with that email exists, a password reset link has been sent.",
+          });
+        }
+
+        // Check if user is active
+        if (!user.isActive) {
+          return res.json({
+            success: true,
+            message:
+              "If an account with that email exists, a password reset link has been sent.",
+          });
+        }
+
+        // Generate reset token
+        const token = generatePasswordResetToken(rawDb, user.id, user.email);
+
+        // Send password reset email
+        const emailResult = await sendPasswordResetEmail(user.email, token);
+
+        if (!emailResult.success) {
+          // Don't reveal email send failure to prevent user enumeration
+          console.error(
+            "[Password Reset] Email send failed:",
+            emailResult.error,
+          );
+        }
+
+        res.json({
           success: true,
-          message: "If an account with that email exists, a password reset link has been sent.",
+          message:
+            "If an account with that email exists, a password reset link has been sent.",
+          // Include preview URL for development (Ethereal)
+          ...(emailResult.previewUrl && { previewUrl: emailResult.previewUrl }),
+        });
+      } catch (error) {
+        console.error("[Password Reset] Request error:", error);
+        res.status(500).json({
+          error: "Failed to process password reset request",
         });
       }
-
-      // Check if user is active
-      if (!user.isActive) {
-        return res.json({
-          success: true,
-          message: "If an account with that email exists, a password reset link has been sent.",
-        });
-      }
-
-      // Generate reset token
-      const token = generatePasswordResetToken(rawDb, user.id, user.email);
-
-      // Send password reset email
-      const emailResult = await sendPasswordResetEmail(user.email, token);
-
-      if (!emailResult.success) {
-        // Don't reveal email send failure to prevent user enumeration
-        console.error("[Password Reset] Email send failed:", emailResult.error);
-      }
-
-      res.json({
-        success: true,
-        message: "If an account with that email exists, a password reset link has been sent.",
-        // Include preview URL for development (Ethereal)
-        ...(emailResult.previewUrl && { previewUrl: emailResult.previewUrl }),
-      });
-    } catch (error) {
-      console.error("[Password Reset] Request error:", error);
-      res.status(500).json({
-        error: "Failed to process password reset request",
-      });
-    }
-  });
+    },
+  );
 
   /**
    * POST /api/password-reset/verify

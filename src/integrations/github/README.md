@@ -24,6 +24,7 @@ Vollständig funktionale GitHub Integration mit [@octokit/rest](https://github.c
 Gehe zu: https://github.com/settings/tokens
 
 **Token (classic):**
+
 - Klicke "Generate new token (classic)"
 - Name: `Cloud Agents Integration`
 - Scopes aktivieren:
@@ -120,6 +121,7 @@ export default router;
 Erstellt GitHub Client Instanz.
 
 **Parameters:**
+
 - `config?` (optional) - Config-Objekt
   - `token: string` - GitHub Personal Access Token
   - `org?: string` - Organization Name
@@ -133,6 +135,7 @@ Erstellt GitHub Client Instanz.
 Erstellt ein Issue in einem Repository.
 
 **Parameters:**
+
 - `repo: string` - Repository im Format "owner/repo"
 - `issue: GitHubIssue` - Issue Details
   - `title: string` - Issue Titel
@@ -143,6 +146,7 @@ Erstellt ein Issue in einem Repository.
 **Returns:** `Promise<{ success: boolean; issue?: GitHubIssueResult; error?: string }>`
 
 **Example:**
+
 ```typescript
 const result = await github.createIssue("dsactivi-2/repo", {
   title: "Feature Request",
@@ -160,10 +164,11 @@ Listet alle Repositories auf (User oder Org).
 **Returns:** `Promise<{ success: boolean; repos?: Array<{name, fullName, private}>; error?: string }>`
 
 **Example:**
+
 ```typescript
 const result = await github.listRepos();
 if (result.success) {
-  result.repos.forEach(r => console.log(r.fullName));
+  result.repos.forEach((r) => console.log(r.fullName));
 }
 ```
 
@@ -176,6 +181,7 @@ Prüft Verbindung und gibt User-Info zurück.
 **Returns:** `Promise<{ connected: boolean; user?: string; error?: string }>`
 
 **Example:**
+
 ```typescript
 const status = await github.getStatus();
 if (status.connected) {
@@ -207,15 +213,19 @@ if (!result.success) {
 ## Use Cases
 
 ### 1. Automatisches Issue-Tracking
+
 Wenn der Supervisor einen Fehler erkennt, automatisch GitHub Issue erstellen.
 
 ### 2. PR-Notifications
+
 Bei erfolgreicher Task-Completion automatisch PR erstellen oder Issue schließen.
 
 ### 3. Repository-Management
+
 Liste alle Repos auf und zeige sie im Dashboard.
 
 ### 4. Integration mit Linear/Slack
+
 GitHub Issue erstellen → Slack Notification → Linear Ticket
 
 ---
@@ -225,6 +235,7 @@ GitHub Issue erstellen → Slack Notification → Linear Ticket
 Die Integration nutzt [@octokit/rest](https://octokit.github.io/rest.js/).
 
 Du kannst weitere Methoden hinzufügen:
+
 - Pull Requests erstellen
 - Comments hinzufügen
 - Labels verwalten
@@ -236,15 +247,19 @@ Du kannst weitere Methoden hinzufügen:
 ## Troubleshooting
 
 ### Error: "GitHub integration disabled"
+
 → Setze `GITHUB_ENABLED=true` in `.env`
 
 ### Error: "GitHub token not configured"
+
 → Setze `GITHUB_TOKEN=ghp_...` in `.env`
 
 ### Error: "Bad credentials"
+
 → Token ist ungültig oder abgelaufen. Erstelle neuen Token.
 
 ### Error: "Not Found"
+
 → Repo existiert nicht oder du hast keine Zugriffsrechte.
 
 ---
