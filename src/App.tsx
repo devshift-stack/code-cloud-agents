@@ -10,6 +10,7 @@ import { CreateAgentDialog } from './components/CreateAgentDialog';
 import { StatsCard } from './components/StatsCard';
 import { ActivityLog } from './components/ActivityLog';
 import { SettingsPanel } from './components/SettingsPanel';
+import { BrainMemoryPage } from './components/BrainMemoryPage';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
@@ -33,6 +34,7 @@ import {
   Settings as SettingsIcon,
   MessageSquare,
   CheckSquare,
+  Brain,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -353,6 +355,14 @@ export default function App() {
                       <SettingsIcon className="w-4 h-4 mr-2" />
                       Settings
                     </Button>
+                    <Button
+                      variant={currentTab === 'memory' ? 'default' : 'ghost'}
+                      className="justify-start"
+                      onClick={() => setCurrentTab('memory')}
+                    >
+                      <Brain className="w-4 h-4 mr-2" />
+                      Brain
+                    </Button>
                   </nav>
                 </SheetContent>
               </Sheet>
@@ -449,6 +459,14 @@ export default function App() {
             >
               <SettingsIcon className="w-4 h-4 mr-2" />
               Settings
+            </TabsTrigger>
+            <TabsTrigger
+              value="memory"
+              data-testid="agents.navigation.memory.tab"
+              data-otop-id="agents.navigation.memory.tab"
+            >
+              <Brain className="w-4 h-4 mr-2" />
+              Brain
             </TabsTrigger>
           </TabsList>
 
@@ -598,6 +616,10 @@ export default function App() {
 
           <TabsContent value="settings">
             <SettingsPanel />
+          </TabsContent>
+
+          <TabsContent value="memory">
+            <BrainMemoryPage />
           </TabsContent>
         </Tabs>
       </main>

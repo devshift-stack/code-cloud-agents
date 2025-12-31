@@ -205,9 +205,9 @@ export function createChatRouter(chatManager: ChatManager): Router {
       }
 
       const limit = parseInt(req.query.limit as string) || 50;
-      const offset = parseInt(req.query.offset as string) || 0;
+      const page = parseInt(req.query.page as string) || 1;
 
-      const result = chatManager.listChats(userId, 1, limit); const chats = result.chats || [];
+      const result = chatManager.listChats(userId, page, limit); const chats = result.chats || [];
       
       const threads = chats.map((chat: any) => ({
         id: chat.id,
