@@ -9,6 +9,7 @@ import { Router, type Request, type Response } from "express";
 import { ChatManager } from "../chat/manager.ts";
 import type { ChatRequest } from "../chat/types.ts";
 import { requireAuth } from "../auth/middleware.ts";
+import { taskQueue } from "../agents/task-queue.js";
 
 export function createChatRouter(chatManager: ChatManager): Router {
   const router = Router();
@@ -34,6 +35,16 @@ export function createChatRouter(chatManager: ChatManager): Router {
       }
 
       const response = await chatManager.sendMessage(request);
+
+      // Create task from message if it looks like a command
+      const task = taskQueue.createTaskFromChat(
+        request.message,
+        request.userId,
+        response.chatId
+      );
+      if (task) {
+        console.log("[Chat] Created task from message:", task.id);
+      }
       res.json(response);
     } catch (error: any) {
       console.error("Chat send error:", error);

@@ -346,6 +346,13 @@ export class WebSocketManager {
   /**
    * Get connected clients count
    */
+  /**
+   * Get the underlying WebSocketServer instance
+   */
+  public getWss(): WebSocketServer {
+    return this.wss;
+  }
+
   public getClientsCount(): number {
     return this.clients.size;
   }

@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Initialize Sentry BEFORE any other imports
-import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler, flushSentry } from "./monitoring/sentry.js";
+import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler, flushSentry, log, metrics } from "./monitoring/sentry.js";
 initSentry();
 
 import express from "express";
@@ -54,29 +54,36 @@ const PORT = process.env.PORT ?? 3000;
 
 async function main() {
   console.log("🚀 Starting Code Cloud Agents...");
+  log.info("Server starting", { version: "0.1.0", nodeVersion: process.version });
 
   // Initialize database
   const db = initDatabase();
   console.log("✅ Database initialized");
+  log.info("Database initialized");
 
   // Initialize queue
   const queue = initQueue();
   console.log("✅ Queue initialized (mode:", queue.mode, ")");
+  log.info("Queue initialized", { mode: queue.mode });
 
   // Register webhook event workers
   registerAllWebhookWorkers(queue, db);
+  log.info("Webhook workers registered");
 
   // Initialize email transporter
   await initEmailTransporter();
+  log.info("Email transporter initialized");
 
   // Initialize enforcement gate (HARD STOP enforcement)
   const gate = createEnforcementGate(db);
   console.log("✅ Enforcement Gate active (STOP decisions are BLOCKING)");
+  log.info("Enforcement Gate activated");
 
   // Initialize Chat system
   const chatStorage = new ChatStorage(db);
   const chatManager = new ChatManager(chatStorage);
   console.log("✅ Chat system initialized");
+  log.info("Chat system initialized");
 
   // Create Express app
   const app = express();
@@ -84,6 +91,20 @@ async function main() {
   // Sentry request handler (must be first)
   app.use(sentryRequestHandler());
   app.use(sentryTracingHandler());
+
+  // Metrics middleware - track all API requests
+  app.use((req, res, next) => {
+    const start = Date.now();
+    res.on("finish", () => {
+      const duration = Date.now() - start;
+      metrics.increment("api.requests.total", 1, { method: req.method, path: req.path });
+      metrics.distribution("api.response_time", duration, { method: req.method, path: req.path });
+      if (res.statusCode >= 400) {
+        metrics.increment("api.errors", 1, { method: req.method, path: req.path, status: String(res.statusCode) });
+      }
+    });
+    next();
+  });
 
   // Enable CORS for all origins
   app.use(cors());
@@ -174,6 +195,7 @@ async function main() {
   // Start server
   server.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
+    log.info("Server started", { port: Number(PORT), environment: process.env.NODE_ENV || "development" });
     console.log("📋 Dashboard: http://localhost:" + PORT);
     console.log("🔌 WebSocket: ws://localhost:" + PORT + "/ws");
     console.log("📋 API Endpoints:");
@@ -255,12 +277,10 @@ async function main() {
   // Graceful shutdown handler
   const shutdown = async (signal: string) => {
     console.log(`\n🛑 ${signal} received, shutting down gracefully...`);
+    log.warn("Server shutting down", { signal });
 
     // Clear intervals
     clearInterval(statusInterval);
-
-    // Flush Sentry events
-    await flushSentry();
 
     // Stop accepting new connections
     server.close(() => {
@@ -272,6 +292,11 @@ async function main() {
 
     // Close database connection
     db.close();
+
+    log.info("Shutdown complete", { signal });
+
+    // Flush Sentry events (must be last)
+    await flushSentry();
 
     console.log("👋 Shutdown complete");
     process.exit(0);
