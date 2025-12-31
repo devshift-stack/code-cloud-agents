@@ -23,8 +23,20 @@ export function initSentry(): boolean {
   Sentry.init({
     dsn: SENTRY_DSN,
     environment: NODE_ENV,
-    tracesSampleRate: NODE_ENV === "production" ? 0.2 : 1.0,
-    // Enable AI monitoring
+    integrations: [
+      // OpenAI automatic instrumentation
+      Sentry.openAIIntegration({
+        recordInputs: true,
+        recordOutputs: true,
+      }),
+      // Anthropic automatic instrumentation
+      Sentry.anthropicAIIntegration({
+        recordInputs: true,
+        recordOutputs: true,
+      }),
+    ],
+    // Tracing must be enabled for AI monitoring
+    tracesSampleRate: 1.0,
     sendDefaultPii: true,
     beforeSend(event) {
       // Redact sensitive data
