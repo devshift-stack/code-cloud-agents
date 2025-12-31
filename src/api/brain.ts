@@ -80,7 +80,7 @@ export function createBrainRouter(db: Database): Router {
         });
       }
 
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -128,7 +128,7 @@ export function createBrainRouter(db: Database): Router {
         });
       }
 
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -181,7 +181,7 @@ export function createBrainRouter(db: Database): Router {
         });
       }
 
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -231,7 +231,7 @@ export function createBrainRouter(db: Database): Router {
         });
       }
 
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -300,7 +300,7 @@ export function createBrainRouter(db: Database): Router {
         });
       }
 
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -357,7 +357,7 @@ export function createBrainRouter(db: Database): Router {
    */
   router.get("/docs", (req, res) => {
     try {
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -403,7 +403,7 @@ export function createBrainRouter(db: Database): Router {
       }
 
       // Check ownership
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (doc.userId !== userId) {
         return res.status(403).json({
           success: false,
@@ -444,7 +444,7 @@ export function createBrainRouter(db: Database): Router {
       }
 
       // Check ownership
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (doc.userId !== userId) {
         return res.status(403).json({
           success: false,
@@ -492,7 +492,7 @@ export function createBrainRouter(db: Database): Router {
       }
 
       // Check ownership
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (doc.userId !== userId) {
         return res.status(403).json({
           success: false,
@@ -525,7 +525,7 @@ export function createBrainRouter(db: Database): Router {
       const { docId } = req.params;
       const limit = parseInt(req.query.limit as string) || 5;
 
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -582,7 +582,7 @@ export function createBrainRouter(db: Database): Router {
       }
 
       // Check ownership
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (doc.userId !== userId) {
         return res.status(403).json({
           success: false,
@@ -698,7 +698,7 @@ export function createBrainRouter(db: Database): Router {
    */
   router.get("/stats", (req, res) => {
     try {
-      const userId = (req as any).user?.userId;
+      const userId = (req as any).userId;
       if (!userId) {
         return res.status(401).json({
           success: false,
