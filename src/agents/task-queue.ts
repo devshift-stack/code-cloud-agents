@@ -96,8 +96,6 @@ class TaskQueue extends EventEmitter {
    */
   createTaskFromChat(message: string, userId: string, chatId: string): AgentTask | null {
     // Parse message to determine if it's a command
-    const lowerMessage = message.toLowerCase();
-    
     // Command patterns
     const codePatterns = [
       /erstell(e|en)?.*code/i,

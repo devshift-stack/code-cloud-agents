@@ -1,17 +1,18 @@
 /**
  * Sentry Error Monitoring Integration
  * Captures and reports errors to Sentry for production monitoring
- * Includes AI Agent Monitoring for LLM calls
+ * Includes AI Agent Monitoring for LLM calls and Profiling
  */
 
 import * as Sentry from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import type { Request, Response, NextFunction } from "express";
 
 const SENTRY_DSN = process.env.SENTRY_DSN;
 const NODE_ENV = process.env.NODE_ENV ?? "development";
 
 /**
- * Initialize Sentry SDK with AI monitoring
+ * Initialize Sentry SDK with AI monitoring and Logs
  * Must be called before any other code runs
  */
 export function initSentry(): boolean {
@@ -24,6 +25,8 @@ export function initSentry(): boolean {
     dsn: SENTRY_DSN,
     environment: NODE_ENV,
     integrations: [
+      // Profiling integration for performance analysis
+      nodeProfilingIntegration(),
       // OpenAI automatic instrumentation
       Sentry.openAIIntegration({
         recordInputs: true,
@@ -34,10 +37,20 @@ export function initSentry(): boolean {
         recordInputs: true,
         recordOutputs: true,
       }),
+      // Send console.log, console.warn, console.error as logs to Sentry
+      Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
     ],
-    // Tracing must be enabled for AI monitoring
+    // Tracing must be enabled for AI monitoring and Profiling
     tracesSampleRate: 1.0,
+    // Set sampling rate for profiling - evaluated once per SDK.init call
+    profileSessionSampleRate: 1.0,
+    // Trace lifecycle automatically enables profiling during active traces
+    profileLifecycle: "trace",
     sendDefaultPii: true,
+    // Enable Sentry Logs
+    _experiments: {
+      enableLogs: true,
+    },
     beforeSend(event) {
       // Redact sensitive data
       if (event.request?.headers) {
@@ -48,7 +61,7 @@ export function initSentry(): boolean {
     },
   });
 
-  console.log("✅ Sentry initialized with AI monitoring (env:", NODE_ENV, ")");
+  console.log("✅ Sentry initialized with AI monitoring + Logs + Profiling (env:", NODE_ENV, ")");
   return true;
 }
 
@@ -191,3 +204,151 @@ export async function trackAICall<T>(
     }
   );
 }
+
+// ============================================
+// SENTRY LOGS - Real-time logging to Sentry
+// ============================================
+
+type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
+
+interface LogAttributes {
+  [key: string]: string | number | boolean | undefined;
+}
+
+/**
+ * Send a log message to Sentry Logs
+ * @param level - Log level (trace, debug, info, warn, error, fatal)
+ * @param message - Log message (supports printf-style formatting)
+ * @param attributes - Additional attributes to attach to the log
+ */
+export function sentryLog(
+  level: LogLevel,
+  message: string,
+  attributes?: LogAttributes
+): void {
+  if (!SENTRY_DSN) {
+    // Fallback to console
+    const consoleFn = level === "fatal" ? "error" : level === "trace" ? "debug" : level;
+    console[consoleFn]?.(`[${level.toUpperCase()}]`, message, attributes || "");
+    return;
+  }
+
+  const logger = Sentry.logger;
+
+  switch (level) {
+    case "trace":
+      logger.trace(message, attributes);
+      break;
+    case "debug":
+      logger.debug(message, attributes);
+      break;
+    case "info":
+      logger.info(message, attributes);
+      break;
+    case "warn":
+      logger.warn(message, attributes);
+      break;
+    case "error":
+      logger.error(message, attributes);
+      break;
+    case "fatal":
+      logger.fatal(message, attributes);
+      break;
+  }
+}
+
+// Convenience functions for each log level
+export const log = {
+  trace: (message: string, attrs?: LogAttributes) => sentryLog("trace", message, attrs),
+  debug: (message: string, attrs?: LogAttributes) => sentryLog("debug", message, attrs),
+  info: (message: string, attrs?: LogAttributes) => sentryLog("info", message, attrs),
+  warn: (message: string, attrs?: LogAttributes) => sentryLog("warn", message, attrs),
+  error: (message: string, attrs?: LogAttributes) => sentryLog("error", message, attrs),
+  fatal: (message: string, attrs?: LogAttributes) => sentryLog("fatal", message, attrs),
+};
+
+/**
+ * Flush all pending logs before shutdown
+ */
+export async function flushLogs(timeout = 2000): Promise<boolean> {
+  if (!SENTRY_DSN) return true;
+  return Sentry.flush(timeout);
+}
+
+// ============================================
+// SENTRY METRICS - Application metrics
+// ============================================
+
+type MetricTags = Record<string, string>;
+
+/**
+ * Sentry Metrics - Track application metrics
+ *
+ * Usage:
+ * metrics.increment("api.requests", 1, { endpoint: "/health" });
+ * metrics.gauge("queue.size", 42);
+ * metrics.distribution("response.time", 235, { route: "/api/chat" });
+ * metrics.set("users.active", "user-123");
+ */
+export const metrics = {
+  /**
+   * Counter - Count incrementing values (e.g., request count, errors)
+   * @param name - Metric name
+   * @param value - Value to increment (default 1)
+   * @param tags - Additional attributes for filtering
+   */
+  increment: (name: string, value = 1, tags?: MetricTags) => {
+    if (!SENTRY_DSN) return;
+    Sentry.metrics.count(name, value, { attributes: tags });
+  },
+
+  /**
+   * Gauge - Set a value that can go up or down (e.g., queue size, memory usage)
+   */
+  gauge: (name: string, value: number, tags?: MetricTags) => {
+    if (!SENTRY_DSN) return;
+    Sentry.metrics.gauge(name, value, { attributes: tags });
+  },
+
+  /**
+   * Distribution - Track value distributions (e.g., response times, sizes)
+   */
+  distribution: (name: string, value: number, tags?: MetricTags) => {
+    if (!SENTRY_DSN) return;
+    Sentry.metrics.distribution(name, value, { attributes: tags });
+  },
+
+  /**
+   * Set - Track unique values (e.g., unique users, unique IPs)
+   * Note: @sentry/node uses count for unique tracking with unique attribute
+   */
+  set: (name: string, value: string | number, tags?: MetricTags) => {
+    if (!SENTRY_DSN) return;
+    // Use count with unique identifier as attribute
+    Sentry.metrics.count(name, 1, { attributes: { ...tags, unique_id: String(value) } });
+  },
+
+  /**
+   * Timing helper - Measure execution time
+   */
+  timing: async <T>(name: string, fn: () => Promise<T>, tags?: MetricTags): Promise<T> => {
+    const start = performance.now();
+    try {
+      const result = await fn();
+      const duration = performance.now() - start;
+      if (SENTRY_DSN) {
+        Sentry.metrics.distribution(name, duration, { attributes: tags, unit: "millisecond" });
+      }
+      return result;
+    } catch (error) {
+      const duration = performance.now() - start;
+      if (SENTRY_DSN) {
+        Sentry.metrics.distribution(name, duration, {
+          attributes: { ...tags, error: "true" },
+          unit: "millisecond"
+        });
+      }
+      throw error;
+    }
+  },
+};
