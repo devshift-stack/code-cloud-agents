@@ -7,6 +7,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+// Initialize Sentry BEFORE any other imports
+import { initSentry, sentryRequestHandler, sentryTracingHandler, sentryErrorHandler, flushSentry } from "./monitoring/sentry.js";
+initSentry();
+
 import express from "express";
 import cors from "cors";
 import { fileURLToPath } from "url";
@@ -76,7 +80,11 @@ async function main() {
 
   // Create Express app
   const app = express();
-  
+
+  // Sentry request handler (must be first)
+  app.use(sentryRequestHandler());
+  app.use(sentryTracingHandler());
+
   // Enable CORS for all origins
   app.use(cors());
 
@@ -128,6 +136,14 @@ async function main() {
 
   // Setup Swagger UI Documentation
   setupSwagger(app);
+
+  // Sentry test endpoint (for verifying integration)
+  app.get("/api/sentry/test", () => {
+    throw new Error("Sentry Test Error - This is a test to verify error tracking works");
+  });
+
+  // Sentry error handler (must be before other error handlers)
+  app.use(sentryErrorHandler());
 
   // API info endpoint
   app.get("/api", (_req, res) => {
@@ -242,6 +258,9 @@ async function main() {
 
     // Clear intervals
     clearInterval(statusInterval);
+
+    // Flush Sentry events
+    await flushSentry();
 
     // Stop accepting new connections
     server.close(() => {
