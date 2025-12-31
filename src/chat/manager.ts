@@ -13,7 +13,7 @@ import type {
 import { costTracker } from "../billing/costTracker.ts";
 import { selectModel } from "../billing/modelSelector.ts";
 import { agentTools, executeTool } from "./tools.ts";
-import { trackAICall } from "../monitoring/sentry.js";
+import { trackAICall, log, metrics } from "../monitoring/sentry.js";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -60,11 +60,23 @@ export class ChatManager {
    * Send message to agent and get response
    */
   async sendMessage(request: ChatRequest): Promise<ChatResponse> {
+    log.info("Chat message received", {
+      userId: request.userId,
+      agentName: request.agentName,
+      chatId: request.chatId || "new",
+      messageLength: request.message.length,
+    });
+
+    // Track chat metrics
+    metrics.increment("chat.messages.received", 1, { agentName: request.agentName });
+    metrics.set("chat.users.active", request.userId);
+
     // Get or create chat
     let chat: Chat;
     if (request.chatId) {
       chat = this.storage.getChat(request.chatId)!;
       if (!chat) {
+        log.warn("Chat not found", { chatId: request.chatId });
         throw new Error(`Chat ${request.chatId} not found`);
       }
     } else {
@@ -75,6 +87,7 @@ export class ChatManager {
         title,
         request.agentName
       );
+      log.info("New chat created", { chatId: chat.id, userId: request.userId, agentName: request.agentName });
     }
 
     // Store user message
@@ -130,6 +143,24 @@ export class ChatManager {
         inputTokens: aiResponse.tokens.input,
         outputTokens: aiResponse.tokens.output,
       });
+
+      log.info("AI response completed", {
+        chatId: chat.id,
+        provider: providerToUse,
+        model: modelToUse,
+        inputTokens: aiResponse.tokens.input,
+        outputTokens: aiResponse.tokens.output,
+        costUSD: aiResponse.cost?.usd,
+        responseLength: aiResponse.content.length,
+      });
+
+      // Track AI usage metrics
+      metrics.increment("ai.requests.total", 1, { provider: providerToUse, model: modelToUse });
+      metrics.distribution("ai.tokens.input", aiResponse.tokens.input, { provider: providerToUse });
+      metrics.distribution("ai.tokens.output", aiResponse.tokens.output, { provider: providerToUse });
+      if (aiResponse.cost?.usd) {
+        metrics.distribution("ai.cost.usd", aiResponse.cost.usd * 100, { provider: providerToUse }); // in cents
+      }
     }
 
     return {
@@ -241,7 +272,22 @@ export class ChatManager {
   }
 
   /**
-   * Call AI provider with actual API integration
+   * Get provider fallback order
+   * Returns array of providers to try in sequence
+   */
+  private getProviderOrder(preferredProvider: string): string[] {
+    const allProviders = ["anthropic", "openai", "gemini"];
+    const preferred = preferredProvider.toLowerCase();
+
+    if (allProviders.includes(preferred)) {
+      return [preferred, ...allProviders.filter(p => p !== preferred)];
+    }
+    return allProviders;
+  }
+
+  /**
+   * Call AI provider with automatic fallback
+   * Tries providers in order: preferred -> anthropic -> openai -> gemini
    * Includes Sentry AI monitoring for token usage, costs, and latency
    */
   private async callAIProvider(
@@ -260,22 +306,70 @@ export class ChatManager {
     return trackAICall(
       { provider, model, agentName, prompt },
       async () => {
-        try {
-          switch (provider.toLowerCase()) {
-            case "anthropic":
-              return await this.callAnthropic(model, prompt, agentName);
-            case "openai":
-              return await this.callOpenAI(model, prompt, agentName);
-            case "gemini":
-              return await this.callGemini(model, prompt, agentName);
-            default:
-              throw new Error(`Unsupported provider: ${provider}`);
+        const providers = this.getProviderOrder(provider);
+        let lastError: Error | null = null;
+
+        for (const p of providers) {
+          try {
+            console.log(`[Chat] Trying provider: ${p}`);
+
+            switch (p.toLowerCase()) {
+              case "anthropic":
+                if (!process.env.ANTHROPIC_API_KEY) {
+                  console.log("[Chat] Anthropic: No API key, skipping");
+                  continue;
+                }
+                return await this.callAnthropic(model, prompt, agentName);
+
+              case "openai":
+                if (!process.env.OPENAI_API_KEY) {
+                  console.log("[Chat] OpenAI: No API key, skipping");
+                  continue;
+                }
+                // Use gpt-4o as fallback model
+                return await this.callOpenAI("gpt-4o", prompt, agentName);
+
+              case "gemini":
+                if (!process.env.GEMINI_API_KEY) {
+                  console.log("[Chat] Gemini: No API key, skipping");
+                  continue;
+                }
+                return await this.callGemini(model, prompt, agentName);
+
+              default:
+                continue;
+            }
+          } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            console.warn(`[Chat] ${p} failed: ${errorMessage}`);
+
+            // Check if it's a rate limit error - try next provider
+            if (errorMessage.includes("429") || errorMessage.includes("rate_limit")) {
+              console.log(`[Chat] ${p} rate limited, trying next provider...`);
+              log.warn("AI provider rate limited, trying fallback", {
+                provider: p,
+                error: errorMessage,
+              });
+            } else {
+              log.error("AI provider call failed", {
+                provider: p,
+                model,
+                agentName,
+                error: errorMessage,
+              });
+            }
+
+            lastError = error instanceof Error ? error : new Error(errorMessage);
+            continue; // Try next provider
           }
-        } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : "Unknown error";
-          console.error(`[Chat] Error calling ${provider}:`, error);
-          throw new Error(`Failed to call ${provider}: ${errorMessage}`);
         }
+
+        // All providers failed
+        log.error("All AI providers failed", {
+          attemptedProviders: providers.join(", "),
+          lastError: lastError?.message,
+        });
+        throw lastError || new Error("All AI providers failed");
       }
     );
   }
@@ -332,10 +426,19 @@ export class ChatManager {
         for (const block of response.content) {
           if (block.type === "tool_use") {
             console.log(`[Chat] Executing tool: ${block.name}`);
+            log.debug("Tool execution started", {
+              tool: block.name,
+              toolId: block.id,
+            });
             const result = await executeTool(
               block.name,
               block.input as Record<string, unknown>
             );
+            log.debug("Tool execution completed", {
+              tool: block.name,
+              toolId: block.id,
+              resultLength: result.length,
+            });
             toolResults.push({
               type: "tool_result",
               tool_use_id: block.id,
