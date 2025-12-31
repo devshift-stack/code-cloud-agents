@@ -39,6 +39,9 @@ import { createChatRouter } from "./api/chat.js";
 import { handleSlackEvents } from "./api/slack-events.js";
 import { ChatStorage } from "./chat/storage.js";
 import { ChatManager } from "./chat/manager.js";
+import { createAgentTasksRouter } from "./api/agent-tasks.js";
+import { initializeLiveUpdates } from "./agents/live-updates.js";
+import { agentWorker } from "./agents/agent-worker.js";
 import { WebSocketManager } from "./websocket/server.js";
 import { initDatabase } from "./db/database.js";
 import { initQueue } from "./queue/queue.js";
@@ -151,6 +154,7 @@ async function main() {
   app.use("/api/billing", createBillingRouter());
   app.use("/api/modules", createModulesRouter());
   app.use("/api/chat", createChatRouter(chatManager));
+  app.use("/api/agent-tasks", createAgentTasksRouter());
 
   // Slack Events (Mujo Interactive Bot)
   app.post("/api/slack/events", handleSlackEvents);
@@ -182,6 +186,14 @@ async function main() {
 
   // Initialize WebSocket server
   const wsManager = new WebSocketManager(server);
+
+  // Initialize live updates for real-time agent activity
+  initializeLiveUpdates(wsManager.getWss());
+  console.log("✅ Live Updates initialized");
+
+  // Start agent worker
+  agentWorker.start();
+  console.log("✅ Agent Worker started");
 
   // Example: Broadcast agent status every 10 seconds
   const statusInterval = setInterval(() => {

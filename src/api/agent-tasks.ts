@@ -12,7 +12,7 @@ export function createAgentTasksRouter(): Router {
   /**
    * GET /api/agent-tasks - Get all tasks
    */
-  router.get('/', (req, res) => {
+  router.get('/', (_req, res) => {
     try {
       const tasks = taskQueue.getAllTasks();
       res.json({
@@ -20,23 +20,48 @@ export function createAgentTasksRouter(): Router {
         count: tasks.length,
         stats: taskQueue.getStats()
       });
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Failed to get tasks' });
     }
   });
 
   /**
-   * GET /api/agent-tasks/:id - Get single task
+   * GET /api/agent-tasks/status/all - Get worker and task status
+   * MUST be before /:id route!
    */
-  router.get('/:id', (req, res) => {
+  router.get('/status/all', (_req, res) => {
     try {
-      const task = taskQueue.getTask(req.params.id);
-      if (!task) {
-        return res.status(404).json({ error: 'Task not found' });
-      }
-      res.json(task);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to get task' });
+      res.json({
+        worker: agentWorker.getStatus(),
+        stats: taskQueue.getStats(),
+        recentTasks: taskQueue.getAllTasks().slice(0, 5)
+      });
+    } catch {
+      res.status(500).json({ error: 'Failed to get status' });
+    }
+  });
+
+  /**
+   * POST /api/agent-tasks/worker/start - Start agent worker
+   */
+  router.post('/worker/start', (_req, res) => {
+    try {
+      agentWorker.start();
+      res.json({ success: true, message: 'Worker started' });
+    } catch {
+      res.status(500).json({ error: 'Failed to start worker' });
+    }
+  });
+
+  /**
+   * POST /api/agent-tasks/worker/stop - Stop agent worker
+   */
+  router.post('/worker/stop', (_req, res) => {
+    try {
+      agentWorker.stop();
+      res.json({ success: true, message: 'Worker stopped' });
+    } catch {
+      res.status(500).json({ error: 'Failed to stop worker' });
     }
   });
 
@@ -60,47 +85,24 @@ export function createAgentTasksRouter(): Router {
       });
 
       res.status(201).json(task);
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Failed to create task' });
     }
   });
 
   /**
-   * GET /api/agent-tasks/status/all - Get worker and task status
+   * GET /api/agent-tasks/:id - Get single task
+   * MUST be after specific routes like /status/all!
    */
-  router.get('/status/all', (_req, res) => {
+  router.get('/:id', (req, res) => {
     try {
-      res.json({
-        worker: agentWorker.getStatus(),
-        stats: taskQueue.getStats(),
-        recentTasks: taskQueue.getAllTasks().slice(0, 5)
-      });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to get status' });
-    }
-  });
-
-  /**
-   * POST /api/agent-tasks/worker/start - Start agent worker
-   */
-  router.post('/worker/start', (_req, res) => {
-    try {
-      agentWorker.start();
-      res.json({ success: true, message: 'Worker started' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to start worker' });
-    }
-  });
-
-  /**
-   * POST /api/agent-tasks/worker/stop - Stop agent worker
-   */
-  router.post('/worker/stop', (_req, res) => {
-    try {
-      agentWorker.stop();
-      res.json({ success: true, message: 'Worker stopped' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to stop worker' });
+      const task = taskQueue.getTask(req.params.id);
+      if (!task) {
+        return res.status(404).json({ error: 'Task not found' });
+      }
+      res.json(task);
+    } catch {
+      res.status(500).json({ error: 'Failed to get task' });
     }
   });
 
