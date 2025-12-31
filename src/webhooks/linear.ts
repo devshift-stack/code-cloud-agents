@@ -187,19 +187,25 @@ export function createLinearWebhookRouter(db: Database, queue: QueueAdapter): Ro
       const signature = req.headers["linear-signature"] as string;
       const secret = process.env.LINEAR_WEBHOOK_SECRET || "";
 
-      // Verify signature if secret is configured
-      if (secret) {
-        // req.body will be a string because we use express.text() middleware
-        const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
-        const isValid = verifyLinearSignature(rawBody, signature, secret);
+      // Phase-1 Hardening: Signature verification is MANDATORY
+      if (!secret) {
+        console.error("❌ LINEAR_WEBHOOK_SECRET not configured - rejecting webhook");
+        return res.status(500).json({
+          success: false,
+          error: "Webhook secret not configured",
+        });
+      }
 
-        if (!isValid) {
-          console.warn("⚠️ Invalid Linear webhook signature");
-          return res.status(401).json({
-            success: false,
-            error: "Invalid signature",
-          });
-        }
+      // req.body will be a string because we use express.text() middleware
+      const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+      const isValid = verifyLinearSignature(rawBody, signature, secret);
+
+      if (!isValid) {
+        console.warn("⚠️ Invalid Linear webhook signature");
+        return res.status(401).json({
+          success: false,
+          error: "Invalid signature",
+        });
       }
 
       // Parse JSON if body is string

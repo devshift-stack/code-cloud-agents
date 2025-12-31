@@ -209,8 +209,17 @@ export function createGitHubWebhookRouter(db: Database, queue: QueueAdapter): Ro
         });
       }
 
-      // Verify signature (skip for ping events in development)
-      if (githubEvent !== "ping" && secret) {
+      // Phase-1 Hardening: Signature verification is MANDATORY (except ping events)
+      if (githubEvent !== "ping") {
+        // Require secret to be configured
+        if (!secret) {
+          console.error("❌ GITHUB_WEBHOOK_SECRET not configured - rejecting webhook");
+          return res.status(500).json({
+            success: false,
+            error: "Webhook secret not configured",
+          });
+        }
+
         // req.body will be a string because we use express.text() middleware
         const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
         const isValid = verifyGitHubSignature(rawBody, signature, secret);
