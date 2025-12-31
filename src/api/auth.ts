@@ -60,6 +60,15 @@ export function createAuthRouter(): Router {
         email: user.email,
       });
 
+      // Log login event
+      db.audit.log({
+        kind: "user_login",
+        message: `User ${user.email} logged in`,
+        userId: user.id,
+        severity: "info",
+        meta: { email: user.email, role: user.role },
+      });
+
       // Return tokens
       res.json({
         success: true,
@@ -98,6 +107,9 @@ export function createAuthRouter(): Router {
         });
       }
 
+      // Get user from token before revoking
+      const payload = verifyAccessToken(accessToken);
+
       // Get refresh token from body
       const { refreshToken } = req.body;
 
@@ -107,6 +119,17 @@ export function createAuthRouter(): Router {
       // Revoke refresh token if provided
       if (refreshToken) {
         revokeToken(refreshToken);
+      }
+
+      // Log logout event
+      if (payload) {
+        db.audit.log({
+          kind: "user_logout",
+          message: `User ${payload.email} logged out`,
+          userId: payload.userId,
+          severity: "info",
+          meta: { email: payload.email },
+        });
       }
 
       res.json({

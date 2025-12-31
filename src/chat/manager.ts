@@ -14,6 +14,7 @@ import { costTracker } from "../billing/costTracker.ts";
 import { selectModel } from "../billing/modelSelector.ts";
 import { agentTools, executeTool } from "./tools.ts";
 import { trackAICall, log, metrics } from "../monitoring/sentry.js";
+import { events } from "../lib/events.js";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -162,6 +163,9 @@ export class ChatManager {
         metrics.distribution("ai.cost.usd", aiResponse.cost.usd * 100, { provider: providerToUse }); // in cents
       }
     }
+
+    // Log chat event for audit trail
+    events.chatSent(request.userId, request.agentName, request.message);
 
     return {
       chatId: chat.id,

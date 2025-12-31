@@ -51,6 +51,7 @@ import { createEnforcementGate } from "./audit/enforcementGate.js";
 import { setupSwagger } from "./swagger/index.js";
 import { registerAllWebhookWorkers } from "./queue/workers/index.js";
 import { initEmailTransporter } from "./email/mailer.js";
+import { initEventRecorder, events } from "./lib/events.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -65,6 +66,10 @@ async function main() {
   const db = initDatabase();
   console.log("✅ Database initialized");
   log.info("Database initialized");
+
+  // Initialize event recorder for persistent event logging
+  initEventRecorder(db.audit);
+  events.deploy("Server starting", { version: "0.1.0" });
 
   // Seed default admin if users table is empty
   await seedDefaultAdmin(db.getRawDb());
