@@ -1,6 +1,7 @@
 /**
  * Sentry Error Monitoring Integration
  * Captures and reports errors to Sentry for production monitoring
+ * Includes AI Agent Monitoring for LLM calls
  */
 
 import * as Sentry from "@sentry/node";
@@ -10,7 +11,7 @@ const SENTRY_DSN = process.env.SENTRY_DSN;
 const NODE_ENV = process.env.NODE_ENV ?? "development";
 
 /**
- * Initialize Sentry SDK
+ * Initialize Sentry SDK with AI monitoring
  * Must be called before any other code runs
  */
 export function initSentry(): boolean {
@@ -23,6 +24,8 @@ export function initSentry(): boolean {
     dsn: SENTRY_DSN,
     environment: NODE_ENV,
     tracesSampleRate: NODE_ENV === "production" ? 0.2 : 1.0,
+    // Enable AI monitoring
+    sendDefaultPii: true,
     beforeSend(event) {
       // Redact sensitive data
       if (event.request?.headers) {
@@ -33,7 +36,7 @@ export function initSentry(): boolean {
     },
   });
 
-  console.log("✅ Sentry initialized (env:", NODE_ENV, ")");
+  console.log("✅ Sentry initialized with AI monitoring (env:", NODE_ENV, ")");
   return true;
 }
 
@@ -123,4 +126,56 @@ export function addBreadcrumb(breadcrumb: {
 export async function flushSentry(timeout = 2000): Promise<boolean> {
   if (!SENTRY_DSN) return true;
   return Sentry.close(timeout);
+}
+
+/**
+ * Track AI/LLM call with Sentry
+ * Creates a span for AI monitoring dashboard
+ */
+export async function trackAICall<T>(
+  options: {
+    provider: string;
+    model: string;
+    agentName: string;
+    prompt: string;
+  },
+  fn: () => Promise<T & { tokens?: { input: number; output: number }; cost?: { usd: number } }>
+): Promise<T> {
+  if (!SENTRY_DSN) {
+    return fn();
+  }
+
+  return Sentry.startSpan(
+    {
+      op: "ai.chat_completions.create",
+      name: `${options.provider}/${options.model}`,
+      attributes: {
+        "ai.model.id": options.model,
+        "ai.model.provider": options.provider,
+        "ai.agent.name": options.agentName,
+        "ai.prompt.length": options.prompt.length,
+      },
+    },
+    async (span) => {
+      try {
+        const result = await fn();
+
+        // Add token and cost metrics
+        if (result.tokens) {
+          span.setAttribute("ai.usage.input_tokens", result.tokens.input);
+          span.setAttribute("ai.usage.output_tokens", result.tokens.output);
+          span.setAttribute("ai.usage.total_tokens", result.tokens.input + result.tokens.output);
+        }
+        if (result.cost) {
+          span.setAttribute("ai.usage.cost_usd", result.cost.usd);
+        }
+
+        span.setStatus({ code: 1 }); // OK
+        return result;
+      } catch (error) {
+        span.setStatus({ code: 2, message: String(error) }); // ERROR
+        throw error;
+      }
+    }
+  );
 }

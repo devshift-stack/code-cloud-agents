@@ -13,6 +13,7 @@ import type {
 import { costTracker } from "../billing/costTracker.ts";
 import { selectModel } from "../billing/modelSelector.ts";
 import { agentTools, executeTool } from "./tools.ts";
+import { trackAICall } from "../monitoring/sentry.js";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -241,6 +242,7 @@ export class ChatManager {
 
   /**
    * Call AI provider with actual API integration
+   * Includes Sentry AI monitoring for token usage, costs, and latency
    */
   private async callAIProvider(
     provider: string,
@@ -254,23 +256,28 @@ export class ChatManager {
   }> {
     console.log(`[Chat] Calling ${provider}/${model} for agent ${agentName}`);
 
-    try {
-      switch (provider.toLowerCase()) {
-        case "anthropic":
-          return await this.callAnthropic(model, prompt, agentName);
-        case "openai":
-          return await this.callOpenAI(model, prompt, agentName);
-        case "gemini":
-          return await this.callGemini(model, prompt, agentName);
-        default:
-          throw new Error(`Unsupported provider: ${provider}`);
+    // Wrap AI call with Sentry tracking
+    return trackAICall(
+      { provider, model, agentName, prompt },
+      async () => {
+        try {
+          switch (provider.toLowerCase()) {
+            case "anthropic":
+              return await this.callAnthropic(model, prompt, agentName);
+            case "openai":
+              return await this.callOpenAI(model, prompt, agentName);
+            case "gemini":
+              return await this.callGemini(model, prompt, agentName);
+            default:
+              throw new Error(`Unsupported provider: ${provider}`);
+          }
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
+          console.error(`[Chat] Error calling ${provider}:`, error);
+          throw new Error(`Failed to call ${provider}: ${errorMessage}`);
+        }
       }
-    } catch (error: any) {
-      console.error(`[Chat] Error calling ${provider}:`, error);
-      throw new Error(
-        `Failed to call ${provider}: ${error.message || "Unknown error"}`
-      );
-    }
+    );
   }
 
   /**
