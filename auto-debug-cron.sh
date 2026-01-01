@@ -35,27 +35,37 @@ run_diagnosis() {
         DETAILS="${DETAILS}\n⚠️ PM2: Keine Prozesse laufen"
     fi
 
-    # 2. Port Check (4000 = Backend)
-    if netstat -tuln 2>/dev/null | grep -q ":4000 " || ss -tuln 2>/dev/null | grep -q ":4000 "; then
+    # 2. Port Check (Backend: 4000 oder 3002)
+    BACKEND_PORT=""
+    for PORT in 4000 3002; do
+        if ss -tuln 2>/dev/null | grep -q ":$PORT "; then
+            BACKEND_PORT=$PORT
+            break
+        fi
+    done
+
+    if [ -n "$BACKEND_PORT" ]; then
         ((PASS++))
     else
         ((FAIL++))
-        DETAILS="${DETAILS}\n❌ Backend Port 4000 nicht belegt"
+        DETAILS="${DETAILS}\n❌ Backend Port (4000/3002) nicht belegt"
     fi
 
-    # 3. API Health Check
-    API_RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 http://localhost:4000/api/health 2>/dev/null)
-    if [ "$API_RESP" == "200" ]; then
-        ((PASS++))
-    elif [ "$API_RESP" == "404" ]; then
-        # Kein health endpoint, aber Server antwortet
-        ((PASS++))
-    elif [ "$API_RESP" == "000" ]; then
-        ((FAIL++))
-        DETAILS="${DETAILS}\n❌ API nicht erreichbar (Port 4000)"
+    # 3. API Health Check (korrekter Endpoint: /health)
+    if [ -n "$BACKEND_PORT" ]; then
+        API_RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 http://localhost:$BACKEND_PORT/health 2>/dev/null)
+        if [ "$API_RESP" == "200" ]; then
+            ((PASS++))
+        elif [ "$API_RESP" == "000" ]; then
+            ((FAIL++))
+            DETAILS="${DETAILS}\n❌ API nicht erreichbar (Port $BACKEND_PORT)"
+        else
+            ((WARN++))
+            DETAILS="${DETAILS}\n⚠️ API /health antwortet mit $API_RESP"
+        fi
     else
-        ((WARN++))
-        DETAILS="${DETAILS}\n⚠️ API antwortet mit $API_RESP"
+        ((FAIL++))
+        DETAILS="${DETAILS}\n❌ Kein Backend-Port gefunden"
     fi
 
     # 4. Disk Check

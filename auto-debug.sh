@@ -68,7 +68,7 @@ echo ""
 echo -e "${BLUE}[2/7] Port-Belegung prüfen${NC}"
 echo "────────────────────────────────────────────────────────────"
 
-PORTS_TO_CHECK="3000 3001 4000 5432 8000"
+PORTS_TO_CHECK="3000 3001 4000 8000"
 for PORT in $PORTS_TO_CHECK; do
     if netstat -tuln 2>/dev/null | grep -q ":$PORT " || ss -tuln 2>/dev/null | grep -q ":$PORT "; then
         SERVICE=$(lsof -i :$PORT 2>/dev/null | tail -1 | awk '{print $1}')
@@ -83,30 +83,40 @@ echo ""
 echo -e "${BLUE}[3/7] Backend Health-Checks${NC}"
 echo "────────────────────────────────────────────────────────────"
 
-# Cloud-Agents Backend (Port 4000)
-BACKEND_RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:4000/api/health 2>/dev/null)
-if [ "$BACKEND_RESP" == "200" ]; then
-    check_pass "Cloud-Agents Backend (Port 4000) antwortet"
-elif [ "$BACKEND_RESP" == "000" ]; then
-    check_fail "Cloud-Agents Backend (Port 4000) nicht erreichbar"
-else
-    check_warn "Cloud-Agents Backend (Port 4000) antwortet mit $BACKEND_RESP"
+# Cloud-Agents Backend - versuche Port 4000, dann 3002 (Server-abhängig)
+BACKEND_PORT=""
+for PORT in 4000 3002; do
+    BACKEND_RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:$PORT/health 2>/dev/null)
+    if [ "$BACKEND_RESP" == "200" ]; then
+        check_pass "Cloud-Agents Backend (Port $PORT) antwortet"
+        BACKEND_PORT=$PORT
+        break
+    fi
+done
+
+if [ -z "$BACKEND_PORT" ]; then
+    # Prüfe ob irgendwas auf den Ports läuft
+    if ss -tuln 2>/dev/null | grep -qE ":4000|:3002"; then
+        check_warn "Backend-Port belegt aber /health antwortet nicht"
+    else
+        check_fail "Cloud-Agents Backend nicht erreichbar (4000/3002)"
+    fi
 fi
 
-# Admin Dashboard (Port 3000)
-ADMIN_RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:3000 2>/dev/null)
-if [ "$ADMIN_RESP" == "200" ]; then
-    check_pass "Admin Dashboard (Port 3000) antwortet"
-elif [ "$ADMIN_RESP" == "000" ]; then
-    # Versuche Port 3001
-    ADMIN_RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:3001 2>/dev/null)
-    if [ "$ADMIN_RESP" == "200" ]; then
-        check_pass "Admin Dashboard (Port 3001) antwortet"
-    else
-        check_fail "Admin Dashboard nicht erreichbar (3000/3001)"
+# Admin Dashboard (Port 3000 oder 3001) - 200 oder 307 (Redirect) ist OK
+ADMIN_PORT=""
+for PORT in 3000 3001; do
+    ADMIN_RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:$PORT 2>/dev/null)
+    # 200 = OK, 307/308 = Redirect (normal für Next.js)
+    if [[ "$ADMIN_RESP" == "200" || "$ADMIN_RESP" == "307" || "$ADMIN_RESP" == "308" ]]; then
+        check_pass "Admin Dashboard (Port $PORT) antwortet ($ADMIN_RESP)"
+        ADMIN_PORT=$PORT
+        break
     fi
-else
-    check_warn "Admin Dashboard antwortet mit $ADMIN_RESP"
+done
+
+if [ -z "$ADMIN_PORT" ]; then
+    check_fail "Admin Dashboard nicht erreichbar (3000/3001)"
 fi
 echo ""
 
@@ -114,11 +124,12 @@ echo ""
 echo -e "${BLUE}[4/7] API Endpoints testen${NC}"
 echo "────────────────────────────────────────────────────────────"
 
-# Test verschiedene API Endpoints
+# Test verschiedene API Endpoints (nutze erkannten Backend-Port)
+API_PORT=${BACKEND_PORT:-4000}
 ENDPOINTS=(
-    "http://localhost:4000/api/health"
-    "http://localhost:4000/api/agents"
-    "http://localhost:4000/api/status"
+    "http://localhost:$API_PORT/health"
+    "http://localhost:$API_PORT/api"
+    "http://localhost:$API_PORT/api/tasks"
 )
 
 for EP in "${ENDPOINTS[@]}"; do
@@ -142,19 +153,24 @@ echo ""
 echo -e "${BLUE}[5/7] Datenbank-Verbindung prüfen${NC}"
 echo "────────────────────────────────────────────────────────────"
 
-# PostgreSQL
-if command -v pg_isready &> /dev/null; then
-    if pg_isready -q 2>/dev/null; then
-        check_pass "PostgreSQL läuft"
-    else
-        check_fail "PostgreSQL nicht erreichbar"
-    fi
+# SQLite (Code Cloud Agents verwendet SQLite, nicht PostgreSQL)
+SQLITE_DB="/root/cloud-agents/data/database.sqlite"
+SQLITE_DB_ALT="./data/database.sqlite"
+
+if [ -f "$SQLITE_DB" ]; then
+    DB_SIZE=$(ls -lh "$SQLITE_DB" 2>/dev/null | awk '{print $5}')
+    check_pass "SQLite Datenbank vorhanden ($DB_SIZE)"
+elif [ -f "$SQLITE_DB_ALT" ]; then
+    DB_SIZE=$(ls -lh "$SQLITE_DB_ALT" 2>/dev/null | awk '{print $5}')
+    check_pass "SQLite Datenbank vorhanden ($DB_SIZE)"
 else
-    # Alternativ: Prüfe Port 5432
-    if netstat -tuln 2>/dev/null | grep -q ":5432 " || ss -tuln 2>/dev/null | grep -q ":5432 "; then
-        check_pass "PostgreSQL Port 5432 offen"
+    # Suche nach SQLite DB in gängigen Orten
+    FOUND_DB=$(find /root -name "*.sqlite" -o -name "*.db" 2>/dev/null | head -1)
+    if [ -n "$FOUND_DB" ]; then
+        DB_SIZE=$(ls -lh "$FOUND_DB" 2>/dev/null | awk '{print $5}')
+        check_pass "SQLite gefunden: $FOUND_DB ($DB_SIZE)"
     else
-        check_warn "PostgreSQL Status unbekannt"
+        check_warn "Keine SQLite Datenbank gefunden"
     fi
 fi
 echo ""
