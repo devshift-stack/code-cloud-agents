@@ -32,9 +32,7 @@ export interface SlackChannel {
 
 export interface SlackClient {
   isEnabled(): boolean;
-  sendMessage(
-    message: SlackMessage,
-  ): Promise<{
+  sendMessage(message: SlackMessage): Promise<{
     success: boolean;
     message?: SlackMessageResult;
     error?: string;
@@ -82,9 +80,7 @@ export function createSlackClient(config?: SlackConfig): SlackClient {
      * @param message - Message details including channel and text
      * @returns Promise with message result
      */
-    async sendMessage(
-      message: SlackMessage,
-    ): Promise<{
+    async sendMessage(message: SlackMessage): Promise<{
       success: boolean;
       message?: SlackMessageResult;
       error?: string;

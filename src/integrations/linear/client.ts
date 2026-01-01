@@ -54,9 +54,7 @@ export interface LinearClient {
     teams?: LinearTeam[];
     error?: string;
   }>;
-  listWorkflowStates(
-    teamId: string,
-  ): Promise<{
+  listWorkflowStates(teamId: string): Promise<{
     success: boolean;
     states?: LinearWorkflowState[];
     error?: string;
@@ -100,9 +98,7 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
      * @param issue - Issue details
      * @returns Promise with created issue details
      */
-    async createIssue(
-      issue: LinearIssue,
-    ): Promise<{
+    async createIssue(issue: LinearIssue): Promise<{
       success: boolean;
       issue?: LinearIssueResult;
       error?: string;
@@ -205,9 +201,7 @@ export function createLinearClient(config?: LinearConfig): LinearClient {
      * @param teamId - Team ID
      * @returns Promise with workflow states
      */
-    async listWorkflowStates(
-      teamId: string,
-    ): Promise<{
+    async listWorkflowStates(teamId: string): Promise<{
       success: boolean;
       states?: LinearWorkflowState[];
       error?: string;

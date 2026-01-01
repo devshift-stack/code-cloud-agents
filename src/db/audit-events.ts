@@ -20,6 +20,9 @@ export type AuditEventKind =
   | "brain_search"
   | "user_login"
   | "user_logout"
+  | "user_created"
+  | "user_deleted"
+  | "password_reset"
   | "api_call";
 
 export type AuditSeverity = "info" | "warn" | "error";

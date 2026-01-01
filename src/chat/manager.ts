@@ -10,6 +10,11 @@ import { selectModel } from "../billing/modelSelector.ts";
 import { agentTools, executeTool } from "./tools.ts";
 import { trackAICall, log, metrics } from "../monitoring/sentry.js";
 import { events } from "../lib/events.js";
+import {
+  coreBrainSearch,
+  coreBrainStore,
+  buildCoreBrainContext,
+} from "../brain/core-brain.js";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -100,11 +105,33 @@ export class ChatManager {
       ? this.storage.getRecentMessages(chat.id, request.maxHistory || 10)
       : [];
 
-    // Build prompt with history
+    // Pre-Recall: Search core brain for relevant context
+    let coreBrainContext = "";
+    try {
+      const coreBrainResults = await coreBrainSearch({
+        userId: request.userId,
+        query: request.message,
+        limit: 5,
+      });
+      if (coreBrainResults.length > 0) {
+        coreBrainContext = buildCoreBrainContext(coreBrainResults);
+        log.info("Core brain pre-recall", {
+          userId: request.userId,
+          resultsCount: coreBrainResults.length,
+        });
+      }
+    } catch (error) {
+      log.warn("Core brain pre-recall failed", {
+        error: error instanceof Error ? error.message : "Unknown",
+      });
+    }
+
+    // Build prompt with history and core brain context
     const prompt = this.buildPrompt(
       request.message,
       history,
       request.agentName,
+      coreBrainContext,
     );
 
     // Select optimal model
@@ -173,6 +200,27 @@ export class ChatManager {
 
     // Log chat event for audit trail
     events.chatSent(request.userId, request.agentName, request.message);
+
+    // Writeback: Store conversation in core brain (append-only, no overwrites)
+    try {
+      // Store the Q&A pair as a single memory entry
+      const memoryContent = `Q: ${request.message.substring(0, 500)}\nA: ${aiResponse.content.substring(0, 1000)}`;
+      await coreBrainStore({
+        userId: request.userId,
+        content: memoryContent,
+        type: "chat",
+        tags: ["chat", request.agentName],
+      });
+      log.info("Core brain writeback", {
+        userId: request.userId,
+        chatId: chat.id,
+        agentName: request.agentName,
+      });
+    } catch (error) {
+      log.warn("Core brain writeback failed", {
+        error: error instanceof Error ? error.message : "Unknown",
+      });
+    }
 
     return {
       chatId: chat.id,
@@ -256,17 +304,24 @@ export class ChatManager {
   }
 
   /**
-   * Build prompt with chat history
+   * Build prompt with chat history and core brain context
    */
   private buildPrompt(
     message: string,
     history: ChatMessage[],
     agentName: string,
+    coreBrainContext: string = "",
   ): string {
     let prompt = "";
 
     // Add system message for agent
     prompt += `You are ${agentName}, a helpful AI assistant.\n\n`;
+
+    // Add core brain context if available
+    if (coreBrainContext) {
+      prompt += coreBrainContext;
+      prompt += "\n";
+    }
 
     // Add chat history
     if (history.length > 0) {

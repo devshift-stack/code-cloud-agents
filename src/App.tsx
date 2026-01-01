@@ -11,6 +11,9 @@ import { StatsCard } from "./components/StatsCard";
 import { ActivityLog } from "./components/ActivityLog";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { BrainMemoryPage } from "./components/BrainMemoryPage";
+import { UsersPage } from "./components/UsersPage";
+import { AuditPage } from "./components/AuditPage";
+import { IntegrationsPage } from "./components/IntegrationsPage";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
@@ -35,6 +38,9 @@ import {
   MessageSquare,
   CheckSquare,
   Brain,
+  Users,
+  FileText,
+  Link2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -485,6 +491,30 @@ export default function App() {
               <Brain className="w-4 h-4 mr-2" />
               Brain
             </TabsTrigger>
+            <TabsTrigger
+              value="users"
+              data-testid="agents.navigation.users.tab"
+              data-otop-id="agents.navigation.users.tab"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Users
+            </TabsTrigger>
+            <TabsTrigger
+              value="audit"
+              data-testid="agents.navigation.audit.tab"
+              data-otop-id="agents.navigation.audit.tab"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Audit
+            </TabsTrigger>
+            <TabsTrigger
+              value="integrations"
+              data-testid="agents.navigation.integrations.tab"
+              data-otop-id="agents.navigation.integrations.tab"
+            >
+              <Link2 className="w-4 h-4 mr-2" />
+              Integrations
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-8">
@@ -643,6 +673,18 @@ export default function App() {
 
           <TabsContent value="memory">
             <BrainMemoryPage />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <UsersPage />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <AuditPage />
+          </TabsContent>
+
+          <TabsContent value="integrations">
+            <IntegrationsPage />
           </TabsContent>
         </Tabs>
       </main>

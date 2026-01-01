@@ -11,8 +11,13 @@ import {
   revokeToken,
   refreshAccessToken,
 } from "../auth/jwt.js";
-import { verifyUserPassword, getUserById } from "../db/users.js";
+import {
+  verifyUserPassword,
+  getUserById,
+  changeUserPassword,
+} from "../db/users.js";
 import { loginRateLimiter } from "../auth/rate-limiter.js";
+import { requireAdmin, type AuthenticatedRequest } from "../auth/middleware.js";
 
 const db = initDatabase();
 
@@ -281,6 +286,85 @@ export function createAuthRouter(): Router {
       });
     }
   });
+
+  /**
+   * POST /api/auth/reset-password
+   * Reset user password (Admin only)
+   * Body: { userId: string, newPassword: string }
+   */
+  router.post(
+    "/reset-password",
+    requireAdmin,
+    async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        const { userId, newPassword } = req.body;
+
+        // Validation
+        if (!userId || !newPassword) {
+          return res.status(400).json({
+            error: "Missing required fields",
+            message: "userId and newPassword are required",
+          });
+        }
+
+        // Password strength validation
+        if (newPassword.length < 8) {
+          return res.status(400).json({
+            error: "Password too weak",
+            message: "Password must be at least 8 characters",
+          });
+        }
+
+        // Check if target user exists
+        const rawDb = db.getRawDb();
+        const targetUser = getUserById(rawDb, userId);
+
+        if (!targetUser) {
+          return res.status(404).json({
+            error: "User not found",
+            message: `No user found with ID: ${userId}`,
+          });
+        }
+
+        // Reset password
+        const success = await changeUserPassword(rawDb, userId, newPassword);
+
+        if (!success) {
+          return res.status(500).json({
+            error: "Password reset failed",
+            message: "Could not update password",
+          });
+        }
+
+        // Log password reset event
+        db.audit.log({
+          kind: "password_reset",
+          message: `Admin ${req.userId} reset password for user ${targetUser.email}`,
+          userId: req.userId!,
+          severity: "warn",
+          meta: {
+            targetUserId: userId,
+            targetEmail: targetUser.email,
+            adminId: req.userId,
+          },
+        });
+
+        res.json({
+          success: true,
+          message: "Password reset successfully",
+          user: {
+            id: targetUser.id,
+            email: targetUser.email,
+          },
+        });
+      } catch (error) {
+        console.error("Reset password error:", error);
+        res.status(500).json({
+          error: "Internal server error",
+        });
+      }
+    },
+  );
 
   return router;
 }
