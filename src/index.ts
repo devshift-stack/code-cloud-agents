@@ -5,7 +5,7 @@
 
 // Load environment variables first
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: "/root/cloud-agents/.env" });
 
 // Initialize Sentry BEFORE any other imports
 import {
