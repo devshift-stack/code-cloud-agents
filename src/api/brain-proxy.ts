@@ -1,6 +1,6 @@
 /**
  * Brain API Proxy
- * 
+ *
  * Proxies all brain requests to the central Brain-Server (49.13.158.176:5001)
  * Maps between Cloud-Agents brain API and The-Brain memory API
  */
@@ -8,7 +8,8 @@
 import { Router } from "express";
 import { requireAuth } from "../auth/middleware.js";
 
-const BRAIN_SERVER_URL = process.env.BRAIN_SERVER_URL || "http://49.13.158.176:5001";
+const BRAIN_SERVER_URL =
+  process.env.BRAIN_SERVER_URL || "http://49.13.158.176:5001";
 
 interface BrainProxyOptions {
   fallbackToLocal?: boolean;
@@ -17,7 +18,9 @@ interface BrainProxyOptions {
 /**
  * Creates Brain API Proxy router
  */
-export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router {
+export function createBrainProxyRouter(
+  _options: BrainProxyOptions = {},
+): Router {
   const router = Router();
   router.use(requireAuth);
 
@@ -26,7 +29,7 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
     endpoint: string,
     method: string,
     userId: string,
-    body?: any
+    body?: any,
   ): Promise<any> {
     const url = `${BRAIN_SERVER_URL}${endpoint}`;
     const headers: Record<string, string> = {
@@ -41,7 +44,9 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }));
+      const error = await response
+        .json()
+        .catch(() => ({ error: response.statusText }));
       throw new Error(error.error || "Brain server error");
     }
 
@@ -57,7 +62,9 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
       const { title, content, metadata } = req.body;
 
       if (!title || !content) {
-        return res.status(400).json({ success: false, error: "title and content required" });
+        return res
+          .status(400)
+          .json({ success: false, error: "title and content required" });
       }
 
       const result = await proxyToBrain("/api/memory/store", "POST", userId, {
@@ -89,7 +96,9 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
       const { title, url, content, metadata } = req.body;
 
       if (!title || !url || !content) {
-        return res.status(400).json({ success: false, error: "title, url and content required" });
+        return res
+          .status(400)
+          .json({ success: false, error: "title, url and content required" });
       }
 
       const result = await proxyToBrain("/api/memory/store", "POST", userId, {
@@ -119,10 +128,13 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
   router.post("/ingest/file", async (req, res) => {
     try {
       const userId = (req as any).userId;
-      const { title, filePath, fileName, fileType, content, metadata } = req.body;
+      const { title, filePath, fileName, fileType, content, metadata } =
+        req.body;
 
       if (!title || !content) {
-        return res.status(400).json({ success: false, error: "title and content required" });
+        return res
+          .status(400)
+          .json({ success: false, error: "title and content required" });
       }
 
       const result = await proxyToBrain("/api/memory/store", "POST", userId, {
@@ -159,7 +171,9 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
       const { query, limit = 10, mode = "keyword" } = req.body;
 
       if (!query) {
-        return res.status(400).json({ success: false, error: "query required" });
+        return res
+          .status(400)
+          .json({ success: false, error: "query required" });
       }
 
       const result = await proxyToBrain("/api/memory/search", "POST", userId, {
@@ -191,7 +205,9 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
       const limit = parseInt(req.query.limit as string) || 10;
 
       if (!query) {
-        return res.status(400).json({ success: false, error: "q parameter required" });
+        return res
+          .status(400)
+          .json({ success: false, error: "q parameter required" });
       }
 
       const result = await proxyToBrain("/api/memory/search", "POST", userId, {
@@ -208,7 +224,12 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
         snippet: r.content.substring(0, 200),
       }));
 
-      res.json({ success: true, results, count: results.length, mode: "keyword" });
+      res.json({
+        success: true,
+        results,
+        count: results.length,
+        mode: "keyword",
+      });
     } catch (error: any) {
       console.error("Brain proxy search failed:", error.message);
       res.status(500).json({ success: false, error: error.message });
@@ -222,7 +243,11 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
       const userId = (req as any).userId;
       const limit = parseInt(req.query.limit as string) || 50;
 
-      const result = await proxyToBrain(`/api/memory/recent?limit=${limit}`, "GET", userId);
+      const result = await proxyToBrain(
+        `/api/memory/recent?limit=${limit}`,
+        "GET",
+        userId,
+      );
 
       // Transform memory entries to docs
       const docs = (result.results || []).map((r: any) => ({
@@ -248,7 +273,11 @@ export function createBrainProxyRouter(options: BrainProxyOptions = {}): Router 
       const userId = (req as any).userId;
 
       // Get recent documents to calculate stats
-      const result = await proxyToBrain("/api/memory/recent?limit=50", "GET", userId);
+      const result = await proxyToBrain(
+        "/api/memory/recent?limit=50",
+        "GET",
+        userId,
+      );
       const docs = result.results || [];
 
       res.json({

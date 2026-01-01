@@ -1,11 +1,12 @@
 /**
  * BrainClient - HTTP Client for Brain Server
- * 
+ *
  * Calls the centralized Brain Server at 49.13.158.176:5001
  * instead of using local database operations.
  */
 
-const BRAIN_SERVER_URL = process.env.BRAIN_SERVER_URL || "http://49.13.158.176:5001";
+const BRAIN_SERVER_URL =
+  process.env.BRAIN_SERVER_URL || "http://49.13.158.176:5001";
 
 export interface MemoryEntry {
   id: string;
@@ -34,7 +35,11 @@ export class BrainClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
 
-  constructor(options?: { baseUrl?: string; userId?: string; projectId?: string }) {
+  constructor(options?: {
+    baseUrl?: string;
+    userId?: string;
+    projectId?: string;
+  }) {
     this.baseUrl = options?.baseUrl || BRAIN_SERVER_URL;
     this.defaultHeaders = {
       "Content-Type": "application/json",
@@ -47,7 +52,11 @@ export class BrainClient {
     }
   }
 
-  async health(): Promise<{ status: string; service: string; version: string }> {
+  async health(): Promise<{
+    status: string;
+    service: string;
+    version: string;
+  }> {
     const res = await fetch(`${this.baseUrl}/health`);
     if (!res.ok) throw new Error(`Brain health check failed: ${res.status}`);
     return res.json();
@@ -75,7 +84,9 @@ export class BrainClient {
     return res.json();
   }
 
-  async searchMemory(options: SearchOptions): Promise<{ results: MemoryEntry[] }> {
+  async searchMemory(
+    options: SearchOptions,
+  ): Promise<{ results: MemoryEntry[] }> {
     const headers = { ...this.defaultHeaders };
     if (options.userId) headers["x-user-id"] = options.userId;
     if (options.projectId) headers["x-project-id"] = options.projectId;
@@ -96,15 +107,22 @@ export class BrainClient {
     return res.json();
   }
 
-  async recentMemory(options?: { userId?: string; projectId?: string; limit?: number }): Promise<{ results: MemoryEntry[] }> {
+  async recentMemory(options?: {
+    userId?: string;
+    projectId?: string;
+    limit?: number;
+  }): Promise<{ results: MemoryEntry[] }> {
     const headers = { ...this.defaultHeaders };
     if (options?.userId) headers["x-user-id"] = options.userId;
     if (options?.projectId) headers["x-project-id"] = options.projectId;
 
     const limit = options?.limit || 10;
-    const res = await fetch(`${this.baseUrl}/api/memory/recent?limit=${limit}`, {
-      headers,
-    });
+    const res = await fetch(
+      `${this.baseUrl}/api/memory/recent?limit=${limit}`,
+      {
+        headers,
+      },
+    );
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ error: res.statusText }));
@@ -113,7 +131,9 @@ export class BrainClient {
     return res.json();
   }
 
-  async listProjects(): Promise<{ projects: Array<{ id: string; name: string }> }> {
+  async listProjects(): Promise<{
+    projects: Array<{ id: string; name: string }>;
+  }> {
     const res = await fetch(`${this.baseUrl}/api/projects`, {
       headers: this.defaultHeaders,
     });
@@ -121,7 +141,11 @@ export class BrainClient {
     return res.json();
   }
 
-  async logAudit(options: { userId?: string; action: string; details?: Record<string, any> }): Promise<{ id: string }> {
+  async logAudit(options: {
+    userId?: string;
+    action: string;
+    details?: Record<string, any>;
+  }): Promise<{ id: string }> {
     const headers = { ...this.defaultHeaders };
     if (options.userId) headers["x-user-id"] = options.userId;
 
@@ -142,7 +166,10 @@ export class BrainClient {
 // Singleton instance
 let brainClient: BrainClient | null = null;
 
-export function getBrainClient(options?: { userId?: string; projectId?: string }): BrainClient {
+export function getBrainClient(options?: {
+  userId?: string;
+  projectId?: string;
+}): BrainClient {
   if (!brainClient) {
     brainClient = new BrainClient(options);
   }

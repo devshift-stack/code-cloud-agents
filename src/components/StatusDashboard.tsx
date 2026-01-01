@@ -109,33 +109,64 @@ export function StatusDashboard() {
   }
 
   return (
-    <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div
+      className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      data-testid="cloudagents.statusdashboard"
+    >
       {/* Server Status Card */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div
+        className="bg-white p-6 rounded-lg shadow"
+        data-testid="cloudagents.statusdashboard.card.server"
+      >
         <h3 className="text-gray-500 text-sm">Server Status</h3>
         <p
           className={`text-2xl font-bold ${stats.serverStatus === "online" ? "text-green-600" : "text-red-600"}`}
+          data-testid="cloudagents.statusdashboard.card.server.value"
         >
           {stats.serverStatus}
         </p>
       </div>
 
       {/* User Count Card */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div
+        className="bg-white p-6 rounded-lg shadow"
+        data-testid="cloudagents.statusdashboard.card.users"
+      >
         <h3 className="text-gray-500 text-sm">Users</h3>
-        <p className="text-2xl font-bold text-blue-600">{stats.userCount}</p>
+        <p
+          className="text-2xl font-bold text-blue-600"
+          data-testid="cloudagents.statusdashboard.card.users.value"
+        >
+          {stats.userCount}
+        </p>
       </div>
 
       {/* Agent Count Card */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div
+        className="bg-white p-6 rounded-lg shadow"
+        data-testid="cloudagents.statusdashboard.card.agents"
+      >
         <h3 className="text-gray-500 text-sm">Active Agents</h3>
-        <p className="text-2xl font-bold text-purple-600">{stats.agentCount}</p>
+        <p
+          className="text-2xl font-bold text-purple-600"
+          data-testid="cloudagents.statusdashboard.card.agents.value"
+        >
+          {stats.agentCount}
+        </p>
       </div>
 
       {/* Chat Count Card */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div
+        className="bg-white p-6 rounded-lg shadow"
+        data-testid="cloudagents.statusdashboard.card.chats"
+      >
         <h3 className="text-gray-500 text-sm">Total Chats</h3>
-        <p className="text-2xl font-bold text-indigo-600">{stats.chatCount}</p>
+        <p
+          className="text-2xl font-bold text-indigo-600"
+          data-testid="cloudagents.statusdashboard.card.chats.value"
+        >
+          {stats.chatCount}
+        </p>
       </div>
     </div>
   );

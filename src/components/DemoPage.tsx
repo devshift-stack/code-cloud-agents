@@ -33,13 +33,19 @@ export function DemoPage() {
   }
 
   if (userId) {
-    return <DemoDashboard userId={userId} />;
+    return (
+      <div data-testid="cloudagents.demopage.dashboard">
+        <DemoDashboard userId={userId} />
+      </div>
+    );
   }
 
   return (
-    <DemoRegistration
-      inviteCode={inviteCode}
-      onSuccess={handleRegistrationSuccess}
-    />
+    <div data-testid="cloudagents.demopage.registration">
+      <DemoRegistration
+        inviteCode={inviteCode}
+        onSuccess={handleRegistrationSuccess}
+      />
+    </div>
   );
 }
