@@ -45,6 +45,7 @@ import { createBillingRouter } from "./api/billing.js";
 import { createModulesRouter } from "./api/modules.js";
 import { createChatRouter } from "./api/chat.js";
 import { createBrainRouter } from "./api/brain.js";
+import { createBrainProxyRouter } from "./api/brain-proxy.js";
 import { handleSlackEvents } from "./api/slack-events.js";
 import { ChatStorage } from "./chat/storage.js";
 import { ChatManager } from "./chat/manager.js";
@@ -65,7 +66,7 @@ import { initEventRecorder, events } from "./lib/events.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const PORT = process.env.PORT ?? 3000;
+const PORT = process.env.PORT || 3001;
 
 async function main() {
   console.log("🚀 Starting Code Cloud Agents...");
@@ -202,7 +203,14 @@ async function main() {
   app.use("/api/billing", createBillingRouter());
   app.use("/api/modules", createModulesRouter());
   app.use("/api/chat", createChatRouter(chatManager));
-  app.use("/api/brain", createBrainRouter(db));
+  // Use proxy if BRAIN_SERVER_URL is set, otherwise local
+  if (process.env.BRAIN_SERVER_URL) {
+    console.log("🧠 Brain: Proxy mode -> " + process.env.BRAIN_SERVER_URL);
+    app.use("/api/brain", createBrainProxyRouter());
+  } else {
+    console.log("🧠 Brain: Local mode");
+    app.use("/api/brain", createBrainRouter(db));
+  }
   app.use("/api/agent-tasks", createAgentTasksRouter());
   app.use("/api/ops", createOpsRouter(db));
 

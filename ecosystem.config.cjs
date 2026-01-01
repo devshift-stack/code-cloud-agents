@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports = {
   apps: [{
     name: 'cloud-agents-backend',
@@ -5,9 +7,10 @@ module.exports = {
     args: 'tsx src/index.ts',
     cwd: '/root/cloud-agents',
     env: {
-      PORT: 3000,
+      PORT: 3001,
       NODE_ENV: 'production',
-      SENTRY_DSN: 'https://66a26f4df181c1c92a9b4178fd8e4913@o4510621142024192.ingest.de.sentry.io/4510627168649296'
+      BRAIN_SERVER_URL: 'http://49.13.158.176:5001',
+      ...process.env
     }
   }]
 };
